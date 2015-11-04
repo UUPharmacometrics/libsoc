@@ -51,6 +51,7 @@ clean:
 	rm -f R/src/static-*
 	rm -f R/src/gen-*
 	rm -f R/R/gen-*
+	rm -f R/NAMESPACE
 	rm -rf html/
 	rm -rf latex/
 	rm -f *.tar.gz
