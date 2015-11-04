@@ -22,6 +22,15 @@
 #include <so/private/util.h>
 #include <pharmml/common_types.h>
 
+/** \struct so_Matrix
+	 \brief A structure representing a matrix
+*/
+
+/** \memberof so_Matrix
+ * Create a new empty so_Matrix structure.
+ * \return A pointer to the newly created struct
+ * \sa so_Matrix_free
+ */
 so_Matrix *so_Matrix_new(char *name)
 {
     so_Matrix *matrix = extcalloc(sizeof(so_Matrix));
@@ -31,6 +40,11 @@ so_Matrix *so_Matrix_new(char *name)
     return matrix;
 }
 
+/** \memberof so_Matrix
+ * Free all memory associated with a so_Matrix structure.
+ * \param self - a pointer to the structure to free
+ * \sa so_Matrix_new
+ */
 void so_Matrix_free(so_Matrix *self)
 {
     if (self) {
@@ -52,11 +66,22 @@ void so_Matrix_free(so_Matrix *self)
     }
 }
 
+/** \memberof so_Matrix
+ * Increase the reference count of an so_Matrix structure 
+ * \param self - a pointer to the structure
+ * \sa so_Matrix_unref
+ */
 void so_Matrix_ref(so_Matrix *self)
 {
     self->reference_count++;
 }
 
+/** \memberof so_Matrix
+ * Decrease the reference count of an so_Matrix structure.
+ * If the reference count reaches zero the so_Matrix will be freed
+ * \param self - a pointer to the Matrix
+ * \sa so_Matrix_ref, so_Matrix_free
+ */
 void so_Matrix_unref(so_Matrix *self)
 {
     if (self) {
@@ -67,17 +92,35 @@ void so_Matrix_unref(so_Matrix *self)
     }
 }
 
+/** \memberof so_Matrix
+ * Get the number of columns in a matrix
+ * \param self - pointer to an so_Marix
+ * \return the number of columns in the matrix
+ * \sa so_Matrix_get_number_of_rows
+ */
 int so_Matrix_get_number_of_columns(so_Matrix *self)
 {
     return self->numcols;
 }
 
+/** \memberof so_Matrix
+ * Get the number of rows in a matrix
+ * \param self - pointer to an so_Matrix
+ * \return the number of rows in the matrix
+ * \sa so_Matrix_get_number_of_columns
+ */
 int so_Matrix_get_number_of_rows(so_Matrix *self)
 {
     return self->numrows;
 }
 
-/* Only new matrix. Does not support resizing */
+/** \memberof so_Matrix
+ * Set the size of a newly created matrix.
+ * Note that resizing of a matrix is not supported.
+ * \param self - pointer to an so_Matrix
+ * \param numrows - the number of rows to set
+ * \param numcols - the number of columns to set
+ */
 void so_Matrix_set_size(so_Matrix *self, int numrows, int numcols)
 {
     self->data = extcalloc(numcols * numrows * sizeof(double));
@@ -87,16 +130,37 @@ void so_Matrix_set_size(so_Matrix *self, int numrows, int numcols)
     self->numcols = numcols;
 }
 
+/** \memberof so_Matrix
+ * Get the name of a specific row in a matrix
+ * \param self - pointer to an so_Matrix
+ * \param index - index of the row
+ * \return the name of the row
+ * \sa so_Matrix_get_ColumnNames
+ */
 char *so_Matrix_get_RowNames(so_Matrix *self, int index)
 {
     return self->rownames[index];
 }
 
+/** \memberof so_Matrix
+ * Get the name of a specific column in a matrix
+ * \param self - pointer to an so_Matrix
+ * \param index - index of the column
+ * \return the name of the column
+ * \sa so_Matrix_get_RowNames
+ */
 char *so_Matrix_get_ColumnNames(so_Matrix *self, int index)
 {
     return self->colnames[index];
 }
 
+/** \memberof so_Matrix
+ * Set the name of a specific row in a matrix
+ * \param self - pointer to an so_Matrix
+ * \param index - index of the row
+ * \param RowName - the name of the row
+ * \sa so_Matrix_set_ColumnNames
+ */
 void so_Matrix_set_RowNames(so_Matrix *self, int index, char *RowName)
 {
     if (self->rownames[index]) {
@@ -105,6 +169,13 @@ void so_Matrix_set_RowNames(so_Matrix *self, int index, char *RowName)
     self->rownames[index] = extstrdup(RowName);
 }
 
+/** \memberof so_Matrix
+ * Set the name of a specific column in a matrix
+ * \param self - pointer to an so_Matrix
+ * \param index - index of the column
+ * \param ColumnName - the name of the column
+ * \sa so_Matrix_set_RowNames
+ */
 void so_Matrix_set_ColumnNames(so_Matrix *self, int index, char *ColumnName)
 {
     if (self->colnames[index]) {
@@ -113,6 +184,11 @@ void so_Matrix_set_ColumnNames(so_Matrix *self, int index, char *ColumnName)
     self->colnames[index] = extstrdup(ColumnName);
 }
 
+/** \memberof so_Matrix
+ * Get a pointer to the marix data
+ * \param self - pointer to an so_Matrix
+ * \result - a pointer to the matrix data in row major order
+ */
 double *so_Matrix_get_data(so_Matrix *self)
 {
     return self->data;

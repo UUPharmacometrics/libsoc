@@ -36,31 +36,6 @@ void so_SO_on_start_element(void *ctx, const xmlChar *localname, const xmlChar *
     char *name = (char *) localname;
     so_SO *so = (so_SO *) ctx;
     so_SO_start_element(so, name, nb_attributes, (const char **) attributes);
-/*
-    if (strcmp(name, "SOBlock") == 0) {
-        so->in_SOBlock = 1;
-        unsigned int index = 0;
-        for (int indexAttribute = 0; indexAttribute < nb_attributes; ++indexAttribute, index += 5) {
-            char *localname = (char *) attributes[index];
-            const xmlChar *prefix = attributes[index+1];
-            const xmlChar *nsURI = attributes[index+2];
-            char *valueBegin = (char *) attributes[index+3];
-            xmlChar *valueEnd = (xmlChar *) attributes[index+4];
-
-            if (strcmp(localname, "blkId") == 0) {
-                char end_char = *valueEnd;
-                *valueEnd = '\0';
-                so_SOBlock *block = so_SO_create_SOBlock(so);
-                so_SOBlock_set_blkId(block, valueBegin);
-                *valueEnd = end_char;
-                break;
-            }
-        }
-
-    } else if (so->in_SOBlock) {
-        so_SOBlock_start_element(so->SOBlock[so->num_SOBlock - 1], name, nb_attributes, (const char **) attributes);
-    }
-    */
 }
 
 void so_SO_on_end_element(void *ctx, const xmlChar *localname, const xmlChar *prefix, const xmlChar *URI)
@@ -81,6 +56,12 @@ void error_func(void *ctx, const char *msg, ...)
 
 }
 
+/** \memberof so_SO
+ * Read an SO from file
+ * \param filename - the file to read
+ * \return A pointer to an so_SO structure containing the read file
+ * \sa so_SO_write
+ */
 so_SO *so_SO_read(char *filename)
 {
     so_SO *so = so_SO_new();
@@ -109,11 +90,18 @@ so_SO *so_SO_read(char *filename)
     }
 }
 
-void so_SO_write(so_SO *so, char *filename, int pretty)
+/** \memberof so_SO
+ * Write an SO structure to file
+ * \param self - The SO to write
+ * \param filename - the file to write to
+ * \param pretty - 1 for nice indentation, 0 for compact
+ * \sa so_SO_read
+ */
+void so_SO_write(so_SO *self, char *filename, int pretty)
 {
     xmlDocPtr doc = xmlNewDoc(BAD_CAST "1.0");
 
-    xmlNodePtr root = (xmlNodePtr) so_SO_xml(so);
+    xmlNodePtr root = (xmlNodePtr) so_SO_xml(self);
     
     xmlNewProp(root, BAD_CAST "xmlns", BAD_CAST "http://www.pharmml.org/so/0.2/StandardisedOutput");
     xmlNewProp(root, BAD_CAST "xmlns:xsi", BAD_CAST "http://www.w3.org/2001/XMLSchema-instance");
@@ -129,7 +117,14 @@ void so_SO_write(so_SO *so, char *filename, int pretty)
     xmlSaveFormatFileEnc(filename, doc, "UTF-8", pretty);
 }
 
-so_SOBlock *so_SO_get_block_from_name(so_SO *self, char *name)
+/** \memberof so_SO
+ * Get a specific SOBlock given its name
+ * \param self - The SO structure
+ * \param name - the name (blkId) to look for
+ * \return - A pointer to the SOBlock with the given name or NULL if not found
+ * \sa so_SO_get_SOBlock
+ */
+so_SOBlock *so_SO_get_SOBlock_from_name(so_SO *self, char *name)
 {
     for (int i = 0; i < self->num_SOBlock; i++) {
         if (strcmp(name, self->SOBlock[i]->blkId) == 0) {

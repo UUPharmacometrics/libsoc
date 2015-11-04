@@ -25,4 +25,8 @@ R/src/static-*
 R/src/include/*
 R/NAMESPACE
 
+doxygen_sqlite3.db
+html/*
+latex/*
+
 *.swp

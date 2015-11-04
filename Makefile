@@ -42,8 +42,11 @@ gen/%.o: gen/%.c include/so/%.h include/so/private/%.h
 #%.h: generator/generate.py
 #	cd generator; python3 generate.py
 
-.PHONY: clean
+.PHONY: doc
+doc:
+	doxygen
 
+.PHONY: clean
 clean:
 	rm -f libsoc.so
 	rm -f *.o
@@ -59,7 +62,6 @@ clean:
 	cd generator; python3 generate.py clean
 
 .PHONY: R
-
 R:
 	cd generator; python3 R.py
 	cp -r include R/src/

@@ -86,7 +86,6 @@ void so_Table_unref(so_Table *self)
     }
 }
 
-
 /** \memberof so_Table
  * Set the number of rows in a table
  * \param self - pointer to an so_Table
@@ -253,7 +252,16 @@ void *so_Table_get_column_from_name(so_Table *self, char *name)
     return NULL;
 }
 
-// Copy numrows from data into new column
+/** \memberof so_Table
+ * Create a new column and add to table. A new buffer will be created for the data
+ * and number_of_rows of the data will be copied.
+ * \param self - pointer to an so_Table
+ * \param columnId - name of column
+ * \param columnType - type of column
+ * \param valueType - valueType of column
+ * \param data - array of column data
+ * \sa so_Table_new_column_no_copy
+ */
 void so_Table_new_column(so_Table *self, char *columnId, pharmml_columnType columnType, pharmml_valueType valueType, void *data)
 {
     int element_size = pharmml_valueType_to_size(valueType);
@@ -279,6 +287,15 @@ void so_Table_new_column(so_Table *self, char *columnId, pharmml_columnType colu
     self->columns[self->numcols - 1] = column;
 }
 
+/** \memberof so_Table
+ * Create a new column and add to table. Only the pointer to the data will be copied
+ * \param self - pointer to an so_Table
+ * \param columnId - name of column
+ * \param columnType - type of column
+ * \param valueType - valueType of column
+ * \param data - array of column data
+ * \sa so_Table_new_column
+ */
 void so_Table_new_column_no_copy(so_Table *self, char *columnId, pharmml_columnType columnType, pharmml_valueType valueType, void *data)
 {
     so_Column *column = so_Column_new();
