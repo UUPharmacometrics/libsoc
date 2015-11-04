@@ -1,0 +1,35 @@
+/**
+    \author Rikard Nordgren
+*/
+
+/**
+\mainpage main
+
+\section Examples
+
+\subsection example_1 Read existing SO
+
+\code
+#include "so.h"
+
+main()
+{
+    so *my_so = so_read("file.SO.xml");
+
+    // If error print error message and exit
+    if (!my_so) {
+        printf("%s", so_get_last_error());
+        exit(-1);
+    }
+
+    // Do stuff with my_so
+
+    so_free(my_so);
+}
+\endcode
+
+\subsection example_2 Create a new SO
+\code
+    so *my_so = so_new();
+\endcode
+*/

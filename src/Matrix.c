@@ -1,0 +1,215 @@
+/* libsoc - Library to handle standardised output files
+ * Copyright (C) 2015 Rikard Nordgren
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * his library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ */
+
+#include <libxml/SAX.h>
+#include <libxml/tree.h>
+
+#include <so/Matrix.h>
+#include <so/private/Matrix.h>
+#include <so/private/util.h>
+#include <pharmml/common_types.h>
+
+so_Matrix *so_Matrix_new(char *name)
+{
+    so_Matrix *matrix = extcalloc(sizeof(so_Matrix));
+    matrix->name = extstrdup(name);
+    matrix->reference_count = 1;
+    
+    return matrix;
+}
+
+void so_Matrix_free(so_Matrix *self)
+{
+    if (self) {
+        free(self->name);
+        free(self->data);
+        if (self->rownames) {
+            for (int i = 0; i < self->numrows; i++) {
+                free(self->rownames[i]);
+            }
+            free(self->rownames);
+        }
+        if (self->colnames) {
+            for (int i = 0; i < self->numcols; i++) {
+                free(self->colnames[i]);
+            }
+            free(self->colnames);
+        }
+        free(self);
+    }
+}
+
+void so_Matrix_ref(so_Matrix *self)
+{
+    self->reference_count++;
+}
+
+void so_Matrix_unref(so_Matrix *self)
+{
+    if (self) {
+        self->reference_count--;
+        if (!self->reference_count) {
+            so_Matrix_free(self);
+        }
+    }
+}
+
+int so_Matrix_get_number_of_columns(so_Matrix *self)
+{
+    return self->numcols;
+}
+
+int so_Matrix_get_number_of_rows(so_Matrix *self)
+{
+    return self->numrows;
+}
+
+/* Only new matrix. Does not support resizing */
+void so_Matrix_set_size(so_Matrix *self, int numrows, int numcols)
+{
+    self->data = extcalloc(numcols * numrows * sizeof(double));
+    self->colnames = extcalloc(numcols * sizeof(char *));
+    self->rownames = extcalloc(numrows * sizeof(char *));
+    self->numrows = numrows;
+    self->numcols = numcols;
+}
+
+char *so_Matrix_get_RowNames(so_Matrix *self, int index)
+{
+    return self->rownames[index];
+}
+
+char *so_Matrix_get_ColumnNames(so_Matrix *self, int index)
+{
+    return self->colnames[index];
+}
+
+void so_Matrix_set_RowNames(so_Matrix *self, int index, char *RowName)
+{
+    if (self->rownames[index]) {
+        free(self->rownames[index]);
+    }
+    self->rownames[index] = extstrdup(RowName);
+}
+
+void so_Matrix_set_ColumnNames(so_Matrix *self, int index, char *ColumnName)
+{
+    if (self->colnames[index]) {
+        free(self->colnames[index]);
+    }
+    self->colnames[index] = extstrdup(ColumnName);
+}
+
+double *so_Matrix_get_data(so_Matrix *self)
+{
+    return self->data;
+}
+
+so_xml so_Matrix_xml(so_Matrix *self)
+{
+    xmlNodePtr xml = xmlNewNode(NULL, BAD_CAST self->name);
+
+    xmlNodePtr def = xmlNewChild(xml, NULL, BAD_CAST "ct:Matrix", NULL);
+    xmlNewProp(def, BAD_CAST "matrixType", BAD_CAST "Any");
+
+    xmlNodePtr rownames = xmlNewChild(def, NULL, BAD_CAST "ct:RowNames", NULL);
+    for (int i = 0; i < self->numrows; i++) {
+        xmlNewChild(rownames, NULL, BAD_CAST "ct:String", BAD_CAST self->rownames[i]);
+    }
+
+    xmlNodePtr colnames = xmlNewChild(def, NULL, BAD_CAST "ct:ColumnNames", NULL);
+    for (int i = 0; i < self->numcols; i++) {
+        xmlNewChild(colnames, NULL, BAD_CAST "ct:String", BAD_CAST self->colnames[i]); 
+    }
+
+    for (int row = 0; row < self->numrows; row++) {
+        xmlNodePtr matrix_row = xmlNewChild(def, NULL, BAD_CAST "ct:MatrixRow", NULL);
+        for (int col = 0; col < self->numcols; col++) {
+            char *value_string = pharmml_double_to_string(self->data[row * self->numcols + col]);
+            xmlNewChild(matrix_row, NULL, BAD_CAST "ct:Real", BAD_CAST value_string);
+            free(value_string);
+        }
+    }
+
+    return xml;
+}
+
+void so_Matrix_start_element(so_Matrix *self, const char *localname, int nb_attributes, const char **attributes)
+{
+    if (strcmp("Matrix", localname) == 0) {
+        self->in_matrix = 1;
+    } else if (strcmp("RowNames", localname) == 0) {
+        self->in_rownames = 1;
+    } else if (strcmp("ColumnNames", localname) == 0) {
+        self->in_columnnames = 1;
+    } else if (strcmp("MatrixRow", localname) == 0) {
+        self->in_matrixrow = 1;
+    } else if (strcmp("String", localname) == 0) {
+        self->in_string = 1;
+    } else if (strcmp("Real", localname) == 0) {
+        self->in_real = 1;
+    }
+}
+
+void so_Matrix_end_element(so_Matrix *self, const char *localname)
+{
+    if (strcmp("Matrix", localname) == 0) {
+        self->in_matrix = 0;
+    } else if (strcmp("RowNames", localname) == 0) {
+        self->in_rownames = 0;
+    } else if (strcmp("ColumnNames", localname) == 0) {
+        self->in_columnnames = 0;
+    } else if (strcmp("MatrixRow", localname) == 0) {
+        self->in_matrixrow = 0;
+        self->current_col = 0;
+        self->current_row++;
+    } else if (strcmp("String", localname) == 0) {
+        self->in_string = 0;
+    } else if (strcmp("Real", localname) == 0) {
+        self->in_real = 0;
+        self->current_col++;
+    }
+}
+
+void so_Matrix_characters(so_Matrix *self, const char *ch, int len)
+{
+    char *str = (char *) ch;
+    char saved = str[len];
+
+    if (self->in_rownames && self->in_string) {
+        self->numrows++;
+        self->rownames = extrealloc(self->rownames, self->numrows * (sizeof(char *)));
+        str[len] = '\0';
+        char *row_name = extstrdup(str);
+        self->rownames[self->numrows - 1] = row_name;
+        str[len] = saved;
+    } else if (self->in_columnnames && self->in_string) {
+        self->numcols++;
+        self->colnames = extrealloc(self->colnames, self->numcols * (sizeof(char *)));
+        str[len] = '\0';
+        char *col_name = extstrdup(str);
+        self->colnames[self->numcols - 1] = col_name;
+        str[len] = saved;
+    } else if (self->in_matrixrow && self->in_real) {
+        if (self->data == NULL) {
+            self->data = extmalloc(self->numcols * self->numrows * sizeof(double));
+        }
+        str[len] = '\0';
+        double num = pharmml_string_to_double(str);
+        self->data[self->current_row * self->numcols + self->current_col] = num; 
+        str[len] = saved;
+    }
+}

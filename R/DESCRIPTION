@@ -1,0 +1,9 @@
+Package: soc
+Version: 0.1
+Date: 2015-09-28
+Title: A package to handle so xml files
+Author: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
+Maintainer: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
+Depends: R (>= 2.14.1)
+Description: A package to handle so xml files
+License: LGPL
