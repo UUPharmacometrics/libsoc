@@ -30,6 +30,29 @@ main()
 
 \subsection example_2 Create a new SO
 \code
-    so *my_so = so_new();
+#include <stdio.h>
+#include <so.h>
+
+int main()
+{
+    so_SO *so = so_SO_new();
+    so_SOBlock *block = so_SO_create_SOBlock(so);
+    so_SOBlock_set_blkId(block, "SOBlockExample");
+    so_Estimation *est = so_SOBlock_create_Estimation(block);
+    so_PopulationEstimates *pe = so_Estimation_create_PopulationEstimates(est);
+    so_Table *mle = so_PopulationEstimates_create_MLE(pe);
+    so_Table_set_number_of_rows(mle, 1);
+    double cl_value = 3.54;
+    double v_value = 0.0023;
+    double k_value = 289.2;
+    so_Table_new_column(mle, "CL", PHARMML_COLTYPE_UNDEFINED, PHARMML_VALUETYPE_REAL, &cl_value);
+    so_Table_new_column(mle, "V", PHARMML_COLTYPE_UNDEFINED, PHARMML_VALUETYPE_REAL, &v_value);
+    so_Table_new_column(mle, "K", PHARMML_COLTYPE_UNDEFINED, PHARMML_VALUETYPE_REAL, &k_value);
+
+    so_SO_write(so, "example.SO.xml", 1);
+    so_SO_free(so); 
+
+    return 0;
+}
 \endcode
 */

@@ -43,7 +43,7 @@ def print_comment(string, language="C"):
         print("!", split[0])
 
     # Print rest of lines
-    for line in split[1:-1]:
+    for line in split[1:]:
         if language == "C":
             print(" *", line)
         elif language == "R" or language == "PYTHON" or language == "PERL":

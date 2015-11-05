@@ -12,6 +12,7 @@
  * Lesser General Public License for more details.
  * 
  * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <string.h>
@@ -19,11 +20,12 @@
 #include <stdio.h>
 #include <pharmml/common_types.h>
 
-#define NUMCOLTYPES 3
-static char *coltypenames[] = { "undefined", "id", "time" };
+#define NUMCOLTYPES 27
+static char *coltypenames[] = {
+    "undefined", "addl", "adm", "arm", "censoring", "cmt", "covariate", "demographic", "dose", "duration", "dv", "dvid", "epoch",
+    "evid", "id", "idv", "ii", "limit", "mdv", "occasion", "rate", "reg", "replicate", "ss", "ssEndTime", "ssPeriod", "time" };
 
-#define NUMVALTYPES 4
-static pharmml_valueType valtypes[] = { PHARMML_VALUETYPE_REAL, PHARMML_VALUETYPE_INT, PHARMML_VALUETYPE_STRING, PHARMML_VALUETYPE_ID, PHARMML_VALUETYPE_BOOLEAN };
+#define NUMVALTYPES 5
 static const char *valtypenames[] = { "real", "int", "string", "id", "boolean" }; 
 static const char *valtypeelements[] = { "ct:Real", "ct:Int", "ct:String", "ct:Id", NULL }; 
 
@@ -50,10 +52,10 @@ pharmml_columnType pharmml_string_to_columnType(const char *str)
 
 const char *pharmml_valueType_to_string(pharmml_valueType valtype)
 {
-    for (int i = 0; i < NUMVALTYPES; i++) {
-        if (valtype == valtypes[i]) {
-            return valtypenames[i];
-        }
+    if (valtype < NUMVALTYPES) {
+        return valtypenames[valtype];
+    } else {
+        return NULL;
     }
 }
 
@@ -70,7 +72,7 @@ pharmml_valueType pharmml_string_to_valueType(const char *str)
 {
     for (int i = 0; i < NUMVALTYPES; i++) {
         if (strcmp(str, valtypenames[i]) == 0) {
-            return valtypes[i];
+            return i;
         }
     }
 }
