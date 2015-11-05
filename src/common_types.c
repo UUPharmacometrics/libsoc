@@ -18,6 +18,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <pharmml/common_types.h>
 
 #define NUMCOLTYPES 27
@@ -83,8 +84,10 @@ int pharmml_valueType_to_size(pharmml_valueType valtype)
         return sizeof(double);
     } else if (valtype == PHARMML_VALUETYPE_INT) {
         return sizeof(long int);
-    } else if (valtype == PHARMML_VALUETYPE_STRING) {
+    } else if (valtype == PHARMML_VALUETYPE_STRING || valtype == PHARMML_VALUETYPE_ID) {
         return sizeof(char *);
+    } else if (valtype == PHARMML_VALUETYPE_BOOLEAN) {
+        return sizeof(bool);
     }
     return sizeof(char *);   // Emergency fallback
 }

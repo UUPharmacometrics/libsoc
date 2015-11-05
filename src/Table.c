@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include <libxml/SAX.h>
 #include <libxml/tree.h>
 
@@ -387,9 +388,18 @@ so_xml so_Table_xml(so_Table *self)
                     char **ptr = (char **) self->columns[j]->column;
                     value_string = ptr[i];
                 }
-                xmlNewChild(row, NULL, BAD_CAST pharmml_valueType_to_element(self->columns[j]->valueType), BAD_CAST value_string);
-                if (self->columns[j]->valueType == PHARMML_VALUETYPE_REAL || self->columns[j]->valueType == PHARMML_VALUETYPE_INT) {
-                    free(value_string);
+                if (self->columns[j]->valueType == PHARMML_VALUETYPE_BOOLEAN) {
+                    bool *ptr = (bool *) self->columns[j]->column;
+                    if (ptr[i]) {
+                        xmlNewChild(row, NULL, BAD_CAST "ct:True", NULL);
+                    } else {
+                        xmlNewChild(row, NULL, BAD_CAST "ct:False", NULL);
+                    }
+                } else {
+                    xmlNewChild(row, NULL, BAD_CAST pharmml_valueType_to_element(self->columns[j]->valueType), BAD_CAST value_string);
+                    if (self->columns[j]->valueType == PHARMML_VALUETYPE_REAL || self->columns[j]->valueType == PHARMML_VALUETYPE_INT) {
+                        free(value_string);
+                    }
                 }
             }
         }
@@ -430,6 +440,13 @@ so_xml so_Table_xml(so_Table *self)
                 } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_STRING || self->columns[j]->valueType == PHARMML_VALUETYPE_ID) {
                     char **ptr = (char **) self->columns[j]->column;
                     value_string = ptr[i];
+                } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_BOOLEAN) {
+                    bool *ptr = (bool *) self->columns[j]->column;
+                    if (ptr[i]) {
+                        value_string = "True";
+                    } else {
+                        value_string = "False";
+                    }
                 }
 
                 fprintf(fp, "%s", value_string);
@@ -504,6 +521,18 @@ void so_Table_start_element(so_Table *table, const char *localname, int nb_attri
     } else if (table->in_row && (strcmp("String", localname) == 0) || (strcmp("Id", localname) == 0)) {
         if (!table->defer_reading) {
             table->in_string = 1;
+            table->current_column++;
+        }
+    } else if (table->in_row && strcmp("True", localname) == 0) {
+        if (!table->defer_reading) {
+            so_Column *column = table->columns[table->current_column];
+            so_Column_add_boolean(column, 1);
+            table->current_column++;
+        }
+    } else if (table->in_row && strcmp("False", localname) == 0) {
+        if (!table->defer_reading) {
+            so_Column *column = table->columns[table->current_column];
+            so_Column_add_boolean(column, 0);
             table->current_column++;
         }
     }

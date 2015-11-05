@@ -2,6 +2,7 @@
 #define _SO_PRIVATE_COLUMN_H
 
 #include <string.h>
+#include <stdbool.h>
 #include <pharmml/common_types.h>
 #include <so/private/util.h>
 
@@ -26,5 +27,6 @@ void so_Column_set_columnType(so_Column *col, pharmml_columnType columnType);
 void so_Column_add_real(so_Column *col, double real);
 void so_Column_add_int(so_Column *col, int integer);
 void so_Column_add_string(so_Column *col, char *str);
+void so_Column_add_boolean(so_Column *col, bool b);
 
 #endif

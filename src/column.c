@@ -15,6 +15,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdbool.h>
 #include <so/private/column.h>
 
 so_Column *so_Column_new()
@@ -99,5 +100,17 @@ void so_Column_add_string(so_Column *col, char *str)
     char **ptr = (char **) col->column;
     char *copy = extstrdup(str);
     ptr[col->len] = copy;
+    col->len++;
+}
+
+void so_Column_add_boolean(so_Column *col, bool b)
+{
+    col->used_memory += sizeof(bool);
+    if (col->alloced_memory < col->used_memory) {
+        col->alloced_memory += 256;
+        col->column = extrealloc(col->column, col->alloced_memory);
+    }
+    bool *ptr = (bool *) col->column;
+    ptr[col->len] = b;
     col->len++;
 }
