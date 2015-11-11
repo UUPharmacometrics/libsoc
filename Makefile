@@ -1,7 +1,7 @@
 GEN_SRCS := $(wildcard gen/*.c)
 OBJS := $(GEN_SRCS:.c=.o)
 OBJS_NODIR := $(notdir $(OBJS))
-CODE := soext.c util.c Table.c column.c common_types.c Matrix.c estring.c
+CODE := soext.c SOBlock_ext.c util.c Table.c column.c common_types.c Matrix.c estring.c
 CODEOBJS := $(CODE:.c=.o)
 
 CC := gcc
@@ -12,11 +12,14 @@ LIBS := -lxml2
 VPATH := gen
 
 libsoc.so: $(OBJS_NODIR) $(CODEOBJS)
-	$(CC) -shared -o libsoc.so $(OBJS_NODIR) soext.o util.o Table.o column.o common_types.o Matrix.o estring.o $(LIBS) -std=c99 -pedantic
+	$(CC) -shared -o libsoc.so $(OBJS_NODIR) soext.o SOBlock_ext.o util.o Table.o column.o common_types.o Matrix.o estring.o $(LIBS) -std=c99 -pedantic
 
 
 soext.o: src/soext.c include/so/soext.h 
 	$(CC) $(CFLAGS) src/soext.c
+
+SOBlock_ext.o: src/SOBlock_ext.c include/so/SOBlock_ext.h 
+	$(CC) $(CFLAGS) src/SOBlock_ext.c
 
 util.o: src/util.c include/so/private/util.h 
 	$(CC) $(CFLAGS) src/util.c
