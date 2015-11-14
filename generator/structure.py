@@ -247,17 +247,25 @@ structure = {
     },
     'SimulationBlock' : {
         'children' : [
-            { 'name' : 'SimulatedProfiles', 'type' : 'Table' },
-            { 'name' : 'IndivParameters', 'type' : 'Table' },
-            { 'name' : 'RandomEffects', 'type' : 'Table' },
-            { 'name' : 'Covariates', 'type' : 'Table' },
-            { 'name' : 'PopulationParameters', 'type' : 'Table' },
-            { 'name' : 'Dosing', 'type' : 'Table' },
+            { 'name' : 'SimulatedProfiles', 'type' : 'SimulationSubType', 'array' : True },
+            { 'name' : 'IndivParameters', 'type' : 'Table', 'array' : True },
+            { 'name' : 'RandomEffects', 'type' : 'Table', 'array' : True },
+            { 'name' : 'Covariates', 'type' : 'Table', 'array' : True },
+            { 'name' : 'PopulationParameters', 'type' : 'Table', 'array' : True },
+            { 'name' : 'Dosing', 'type' : 'Table', 'array' : True },
         ],
         'attributes' : [
             'replicate'
         ],
         'xpath' : 'SO/SOBlock/Simulation/SimulationBlock'
+    },
+    'SimulationSubType' : {
+        'extends' : 'Table',
+        'attributes' : [
+            'name',
+            'extFileNo'
+        ],
+        'xpath' : 'SimulationSubType'
     },
     'OptimalDesign' : {
         'children' : [
