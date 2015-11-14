@@ -248,10 +248,10 @@ structure = {
     'SimulationBlock' : {
         'children' : [
             { 'name' : 'SimulatedProfiles', 'type' : 'SimulationSubType', 'array' : True },
-            { 'name' : 'IndivParameters', 'type' : 'Table', 'array' : True },
-            { 'name' : 'RandomEffects', 'type' : 'Table', 'array' : True },
-            { 'name' : 'Covariates', 'type' : 'Table', 'array' : True },
-            { 'name' : 'PopulationParameters', 'type' : 'Table', 'array' : True },
+            { 'name' : 'IndivParameters', 'type' : 'SimulationSubType', 'array' : True },
+            { 'name' : 'RandomEffects', 'type' : 'SimulationSubType', 'array' : True },
+            { 'name' : 'Covariates', 'type' : 'SimulationSubType', 'array' : True },
+            { 'name' : 'PopulationParameters', 'type' : 'SimulationSubType', 'array' : True },
             { 'name' : 'Dosing', 'type' : 'Table', 'array' : True },
         ],
         'attributes' : [

@@ -9,6 +9,7 @@ class genclass:
         entry = structure[name]
         self.children = entry.get('children', None)
         self.attributes = entry.get('attributes', None)
+        self.extends = entry.get('extends', None)
         self.xpath = entry['xpath']
         self.extends = entry.get('extends', None)
 
@@ -25,6 +26,8 @@ class genclass:
             self.create_setters()
             self.create_create()
             self.create_array_add()
+            if self.extends:
+                self.create_get_base()
             self.create_xml()
             self.create_start()
             self.create_end()
@@ -43,11 +46,19 @@ class genclass:
     def create_new(self):
         f = self.c_file
         print("so_", self.name, " *so_", self.name, "_new(", sep='', end='', file=f)
+        if self.name in need_name:
+            print("char *name", end='', file=f)
         print(")", file=f)
         print("{", file=f);
         print("\tso_", self.name, " *object = extcalloc(sizeof(so_", self.name, "));", sep='', file=f)
         print("\tobject->reference_count = 1;", file=f)
         print(file=f)
+        if self.extends:
+            print("\tobject->base = so_", self.extends, "_new(", end='', sep='', file=f)
+            if self.extends in need_name:
+                print("name", sep='', end='', file=f)
+            print(");", file=f)
+            print(file=f)
         print("\treturn object;", file=f)
         print("}", file=f)
         print(file=f)
@@ -71,7 +82,9 @@ class genclass:
         if self.attributes:
             for a in self.attributes:
                 print("\t\tif (self->", a, ") free(self->", a, ");", sep='', file=f)
-        print("\t\tfree(self);", file=f);
+        if self.extends:
+            print("\t\tfree(self->base);", file=f)
+        print("\t\tfree(self);", file=f)
         print("\t}", file=f)
         print("}", file=f)
         print(file=f)
@@ -189,6 +202,14 @@ class genclass:
                     print("}", file=f)
                     print(file=f)
 
+    def create_get_base(self):
+        f = self.c_file
+        print("so_", self.extends, " *so_", self.name, "_get_base(so_", self.name, " *self)", sep='', file=f)
+        print("{", file=f)
+        print("\treturn self->base;", file=f)
+        print("}", file=f)
+        print(file=f)
+
     def create_xml(self):
         f = self.c_file
         print("so_xml so_", self.name, "_xml(so_", self.name, " *self)", sep='', file=f)
@@ -203,7 +224,11 @@ class genclass:
                 print("self->", e['name'], ' || ', sep='', end='', file=f)
             print("self->", self.children[-1]['name'], ") {", sep='', file=f)
 
-        print('\t\txml = xmlNewNode(NULL, BAD_CAST "', self.name, '");', sep='', file=f)
+        if self.extends:
+            print("\t\txml = so_", self.extends, "_xml(self->base);", sep='', file=f) 
+        else:
+            print('\t\txml = xmlNewNode(NULL, BAD_CAST "', self.name, '");', sep='', file=f)
+
         if self.attributes:
             for a in self.attributes:
                 print('\t\tif (self->', a, ")", sep='', file=f)
@@ -351,12 +376,17 @@ class genclass:
             print("#define _SO_", self.name.upper(), "_H", sep='', file=f)
             print(file=f)
 
+
+            included = []
             if self.children:
-                included = []
                 for e in self.children:
                     if e['type'] not in included:
                         included.append(e['type'])
                         print('#include <so/', e['type'], '.h>', sep='', file=f)
+
+            if self.extends and self.extends not in included:
+                included.append(self.extends)
+                print("#include <so/", self.extends, ".h>", sep='', file=f)
 
             print(file=f)
             print("/** \\struct so_", self.name, sep='', file=f)
@@ -385,6 +415,8 @@ class genclass:
 
             print("void so_", self.name, "_ref(so_", self.name, " *self);", sep='', file=f)
             print("void so_", self.name, "_unref(so_", self.name, " *self);", sep='', file=f)
+            if self.extends:
+                print("so_", self.extends, " *so_", self.name, "_get_base(so_", self.name, " *self);", sep='', file=f)
 
             if self.attributes:
                 for a in self.attributes:
@@ -466,15 +498,22 @@ class genclass:
             print(file=f)
             print('#include <so/xml.h>', file=f)
 
+            included = []
             if self.children:
-                included = []
                 for e in self.children:
                     if e['type'] not in included:
                         included.append(e['type'])
                         print('#include <so/private/', e['type'], '.h>', sep='', file=f)
 
+            if self.extends and self.extends not in included:
+                included.append(self.extends)
+                print("#include <so/private/", self.extends, ".h>", sep='', file=f)
+
             print(file=f)
             print("struct so_", self.name, " {", sep='', file=f)
+
+            if self.extends:
+                print("\tso_", self.extends, " *base;", sep='', file=f)
 
             if self.attributes:
                 for a in self.attributes:
@@ -491,6 +530,9 @@ class genclass:
                         print("\tint num_", e['name'], ";", sep='', file=f)
                 for e in self.children:
                     print("\tint in_", e['name'], ";", sep='', file=f)
+
+            if self.extends:
+                print("\tint in_base;", file=f)
             
             print("\tint reference_count;", file=f)
             print("};", file=f)
