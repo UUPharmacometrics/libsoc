@@ -283,6 +283,15 @@ class genclass:
                 print("\t\tself->in_", e['name'], " = 1;", sep='', file=f)
                 print("\t}", end='', file=f)
 
+        if self.extends:
+            if self.children:
+                print(" else {", file=f)
+                print("\t", end='', file=f)
+            print("\tso_", self.extends, "_start_element(self->base, localname, nb_attributes, attributes);", sep='', file=f)
+            if self.children:
+                print("\t}", end='', file=f)
+
+        if self.children:
             print(file=f)
 
         print("}", file=f)
@@ -313,6 +322,14 @@ class genclass:
 
             print(file=f)
 
+        if self.extends:
+            if self.children:
+                print(" else {", file=f)
+                print("\t", end='', file=f)
+            print("\tso_", self.extends, "_end_element(self->base, localname);", sep='', file=f)
+            if self.children:
+                print("\t}", end='', file=f)
+
         print("}", file=f)
         print(file=f)
 
@@ -335,6 +352,14 @@ class genclass:
                 print("\t}", end='', file=f)
 
             print(file=f)
+
+        if self.extends:
+            if self.children:
+                print(" else {", file=f)
+                print("\t", end='', file=f)
+            print("\tso_", self.extends, "_characters(self->base, ch, len);", sep='', file=f)
+            if self.children:
+                print("\t}", end='', file=f)
 
         print("}", file=f)
 
@@ -531,9 +556,6 @@ class genclass:
                 for e in self.children:
                     print("\tint in_", e['name'], ";", sep='', file=f)
 
-            if self.extends:
-                print("\tint in_base;", file=f)
-            
             print("\tint reference_count;", file=f)
             print("};", file=f)
      

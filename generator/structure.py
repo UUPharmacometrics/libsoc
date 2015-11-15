@@ -309,5 +309,27 @@ structure = {
         ],
         'xpath' : 'SO/SOBlock/OptimalDesign/OptimalDesignBlock/Design'
     },
+    'ModelDiagnostic' : {
+        'children' : [
+            { 'name' : 'DiagnosticPlotsStructuralModel', 'type' : 'DiagnosticPlotsStructuralModel' },
+            { 'name' : 'DiagnosticPlotsIndividualParams', 'type' : 'Table' },
+        ],
+        'xpath' : 'SO/SOBlock/ModelDiagnostic'
+    },
+    'DiagnosticPlotsStructuralModel' : {
+        'children' : [
+            { 'name' : 'IndivFits', 'type' : 'IndivFits' },
+            { 'name' : 'IndivPredictionVsObserv', 'type' : 'Table' },
+            { 'name' : 'VPC', 'type' : 'Table' },
+        ],
+        'xpath' : 'SO/SOBlock/ModelDiagnostic/DiagnosticPlotsStructuralModel'
+    },
+    'IndivFits' : {
+        'children' : [
+            { 'name' : 'ObservationTable', 'type' : 'Table' },
+            { 'name' : 'PredictionTable', 'type' : 'Table' },
+        ],
+        'xpath' : 'SO/SOBlock/ModelDiagnostic/DiagnosticPlotsStructuralModel/IndivFits'
+    },
 }
 
