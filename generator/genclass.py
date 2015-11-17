@@ -264,7 +264,10 @@ class genclass:
                     print("\t\t\t}", file=f)
                 else:
                     if e['type'] == "type_string":
-                        print("\t\t\txmlNodePtr ", e['name'], " = xmlNewNode(NULL, BAD_CAST \"", e['prefix'], ":", e['name'],  "\");", sep='', file=f)
+                        element_name = e['name']
+                        if e.get('prefix', False):
+                            element_name = e['prefix'] + ":" + element_name
+                        print("\t\t\txmlNodePtr ", e['name'], " = xmlNewNode(NULL, BAD_CAST \"", element_name,  "\");", sep='', file=f)
                         print("\t\t\txmlAddChild(", e['name'], ", xmlNewText(BAD_CAST self->", e['name'], "));", sep='', file=f)
                         print("\t\t\txmlAddChild(xml, ", e['name'], ");", sep='', file=f)
                     else:

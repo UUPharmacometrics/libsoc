@@ -43,8 +43,8 @@ structure = {
     },
     'File' : {
         'children' : [
-            { 'name' : 'Description', 'type' : 'estring', 'prefix' : 'ct' },
-            { 'name' : 'path', 'type' : 'estring', 'prefix' : 'ds' },
+            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
         ],
         'attributes' : [
             'oid'
@@ -102,7 +102,7 @@ structure = {
     },
     'OutputFilePath' : {
         'children' : [
-            { 'name' : 'path', 'type' : 'estring', 'prefix' : 'ds' },
+            { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
         ],
         'attributes' : [
             'oid'
@@ -111,21 +111,21 @@ structure = {
     },
     'RunTime' : {
         'children' : [
-            { 'name' : 'Description', 'type' : 'estring', 'prefix' : 'ct' },
-            { 'name' : 'Real', 'type' : 'estring', 'prefix' : 'ct' },
+            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'Real', 'type' : 'type_string', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/RunTime'
     },
     'NumberChains' : {
         'children' : [
-            { 'name' : 'Description', 'type' : 'estring', 'prefix' : 'ct' },
-            { 'name' : 'Real', 'type' : 'estring', 'prefix' : 'ct' },
+            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'Real', 'type' : 'type_string', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/NumberChains'
     },
     'NumberIterations' : {
         'children' : [
-            { 'name' : 'Real', 'type' : 'estring', 'prefix' : 'ct' },
+            { 'name' : 'Real', 'type' : 'type_string', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/NumberIterations'
     },
@@ -220,7 +220,7 @@ structure = {
     },
     'ConditionNumber' : {
         'children' : [
-            { 'name' : 'Real', 'type' : 'estring', 'prefix' : 'ct' },
+            { 'name' : 'Real', 'type' : 'type_string', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates/ConditionNumber'
     },
@@ -233,8 +233,8 @@ structure = {
     },
     'Likelihood' : {
         'children' : [
-            { 'name' : 'LogLikelihood', 'type' : 'estring' },
-            { 'name' : 'Deviance', 'type' : 'estring' },
+            { 'name' : 'LogLikelihood', 'type' : 'type_string' },
+            { 'name' : 'Deviance', 'type' : 'type_string' },
             { 'name' : 'IndividualContribtoLL', 'type' : 'Table' },
         ],
         'xpath' : 'SO/SOBlock/Estimation/Likelihood'
@@ -293,7 +293,7 @@ structure = {
     },
     'SimulatedData' : {
         'children' : [
-            { 'name' : 'path', 'type' : 'estring', 'prefix' : 'ds' }
+            { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' }
         ],
         'attributes' : [
             'oid'
@@ -302,7 +302,7 @@ structure = {
     },
     'Design' : {
         'children' : [
-            { 'name' : 'path', 'type' : 'estring', 'prefix' : 'ds' }
+            { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' }
         ],
         'attributes' : [
             'oid'
