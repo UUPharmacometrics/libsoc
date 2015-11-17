@@ -36,12 +36,10 @@ void so_SOBlock_add_rawresults_datafile(so_SOBlock *self, char *description, cha
 
     so_DataFile_set_oid(df, oid);
     if (description) {
-        so_estring *description_estring = so_DataFile_create_Description(df);
-        so_estring_set_string(description_estring, description); 
+        so_DataFile_set_Description(df, description);
     }
     if (path) {
-        so_estring *path_estring = so_DataFile_create_path(df);
-        so_estring_set_string(path_estring, path);
+        so_DataFile_set_path(df, path);
     }
 }
 
@@ -57,12 +55,10 @@ void so_SOBlock_add_rawresults_graphicsfile(so_SOBlock *self, char *description,
 
     so_GraphicsFile_set_oid(df, oid);
     if (description) {
-        so_estring *description_estring = so_GraphicsFile_create_Description(df);
-        so_estring_set_string(description_estring, description); 
+        so_GraphicsFile_set_Description(df, description);
     }
     if (path) {
-        so_estring *path_estring = so_GraphicsFile_create_path(df);
-        so_estring_set_string(path_estring, path);
+        so_GraphicsFile_set_path(df, path);
     }
 }
 
@@ -79,21 +75,16 @@ void so_SOBlock_add_message(so_SOBlock *self, char *type, char *toolname, char *
     so_Message_set_type(m, type);
 
     so_Toolname *tn = so_Message_create_Toolname(m);
-    so_estring *string;
-    string = so_Toolname_create_String(tn);
-    so_estring_set_string(string, toolname);
+    so_Toolname_set_String(tn, toolname);
 
     so_Name *n = so_Message_create_Name(m);
-    string = so_Name_create_String(n);
-    so_estring_set_string(string, name);
+    so_Name_set_String(n, name);
 
     so_Content *c = so_Message_create_Content(m);
-    string = so_Content_create_String(c);
-    so_estring_set_string(string, content);
+    so_Content_set_String(c, content);
 
     so_Severity *s = so_Message_create_Severity(m);
-    string = so_Severity_create_Int(s);
     char *severity_string = pharmml_int_to_string(severity);
-    so_estring_set_string(string, severity_string); 
+    so_Severity_set_Int(s, severity_string);
     free(severity_string);
 }

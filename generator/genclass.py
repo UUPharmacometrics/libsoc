@@ -78,7 +78,10 @@ class genclass:
                     print("\t\t}", sep='', file=f)
                     print("\t\tfree(self->", e['name'], ");", sep='', file=f)
                 else:
-                    print("\t\tso_", e['type'], "_unref(self->", e['name'], ");", sep='', file=f)
+                    if e['type'] == 'type_string':
+                        print("\t\tfree(self->", e['name'], ");", sep='', file=f)
+                    else:
+                        print("\t\tso_", e['type'], "_unref(self->", e['name'], ");", sep='', file=f)
         if self.attributes:
             for a in self.attributes:
                 print("\t\tif (self->", a, ") free(self->", a, ");", sep='', file=f)
@@ -121,18 +124,25 @@ class genclass:
         # getters for child elements
         if self.children:
             for e in self.children:
-                print("so_", e['type'], " *so_", self.name, "_get_", e['name'], "(so_", self.name,  " *self", sep='', end='', file=f)
-                if e.get('array', False):
-                    print(", int number)", file=f)
+                if e['type'] == 'type_string':
+                    print("char *so_", self.name, "_get_", e['name'], "(so_", self.name, " *self)", sep='', file=f)
+                    print("{", file=f)
+                    print("\treturn self->", e['name'], ";", sep='', file=f)
+                    print("}", file=f)
+                    print(file=f)
                 else:
-                    print(")", file=f)
-                print("{", file=f)
-                print("\treturn self->", e['name'], sep='', end='', file=f)
-                if e.get('array', False):
-                    print("[number]", end='', file=f);
-                print(";", file=f)
-                print("}", file=f)
-                print(file=f)
+                    print("so_", e['type'], " *so_", self.name, "_get_", e['name'], "(so_", self.name,  " *self", sep='', end='', file=f)
+                    if e.get('array', False):
+                        print(", int number)", file=f)
+                    else:
+                        print(")", file=f)
+                    print("{", file=f)
+                    print("\treturn self->", e['name'], sep='', end='', file=f)
+                    if e.get('array', False):
+                        print("[number]", end='', file=f);
+                    print(";", file=f)
+                    print("}", file=f)
+                    print(file=f)
 
             # get_number_of_ for arrays
             for e in self.children:
@@ -159,35 +169,44 @@ class genclass:
         if self.children:
             for e in self.children:
                 if not e.get('array', False):       # No setters for arrays
-                    print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, ", "so_", e['type'], " *value)", sep='', file=f)
-                    print("{", file=f)
-                    print("\tself->", e['name'], " = value;", sep='', file=f)
-                    print("}", file=f)
-                    print(file=f)
+                    if e['type'] == "type_string":
+                        print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, char *value)", sep='', file=f)
+                        print("{", file=f)
+                        print("\tfree(self->", e['name'], ");", sep='', file=f)
+                        print("\tself->", e['name'], " = extstrdup(value);", sep='', file=f)
+                        print("}", file=f)
+                        print(file=f)
+                    else:
+                        print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, ", "so_", e['type'], " *value)", sep='', file=f)
+                        print("{", file=f)
+                        print("\tself->", e['name'], " = value;", sep='', file=f)
+                        print("}", file=f)
+                        print(file=f)
 
     def create_create(self):
         f = self.c_file
         if self.children:
             for e in self.children:
-                is_array = e.get('array', False)
-                print("so_", e['type'], " *so_", self.name, "_create_", e['name'], "(so_", self.name, " *self)", sep='', file=f)
-                print("{", file=f)
-                print("\tso_", e['type'], " *obj = so_", e['type'], "_new(", sep='', end='', file=f)
-                if e['type'] in need_name:
-                    print('"', end='', file=f)
-                    if 'prefix' in e:
-                        print(e['prefix'], ":", sep='', end='', file=f)
-                    print(e['name'], '"', sep='', end='', file=f)
-                print(");", sep='', file=f)
-                if is_array:
-                    print("\tself->num_", e['name'], "++;", sep='', file=f)
-                    print("\tself->", e['name'], " = extrealloc(self->", e['name'], ", self->num_", e['name'], " * sizeof(so_", e['type'], " *));", sep='', file=f)
-                    print("\tself->", e['name'], "[self->num_", e['name'], " - 1] = obj;", sep='', file=f)
-                else:
-                    print("\tself->", e['name'], " = obj;", sep='', file=f)
-                print("\treturn obj;", file=f)
-                print("}", file=f)
-                print(file=f)
+                if e['type'] != "type_string":
+                    is_array = e.get('array', False)
+                    print("so_", e['type'], " *so_", self.name, "_create_", e['name'], "(so_", self.name, " *self)", sep='', file=f)
+                    print("{", file=f)
+                    print("\tso_", e['type'], " *obj = so_", e['type'], "_new(", sep='', end='', file=f)
+                    if e['type'] in need_name:
+                        print('"', end='', file=f)
+                        if 'prefix' in e:
+                            print(e['prefix'], ":", sep='', end='', file=f)
+                        print(e['name'], '"', sep='', end='', file=f)
+                    print(");", sep='', file=f)
+                    if is_array:
+                        print("\tself->num_", e['name'], "++;", sep='', file=f)
+                        print("\tself->", e['name'], " = extrealloc(self->", e['name'], ", self->num_", e['name'], " * sizeof(so_", e['type'], " *));", sep='', file=f)
+                        print("\tself->", e['name'], "[self->num_", e['name'], " - 1] = obj;", sep='', file=f)
+                    else:
+                        print("\tself->", e['name'], " = obj;", sep='', file=f)
+                    print("\treturn obj;", file=f)
+                    print("}", file=f)
+                    print(file=f)
 
     def create_array_add(self):
         f = self.c_file
@@ -244,8 +263,13 @@ class genclass:
                     print("\t\t\t\txmlAddChild(xml, ", e['name'], ");", sep='', file=f)
                     print("\t\t\t}", file=f)
                 else:
-                    print("\t\t\txmlNodePtr ", e['name'], " = so_", e['type'], "_xml(self->", e['name'], ");", sep='', file=f)
-                    print("\t\t\txmlAddChild(xml, ", e['name'], ");", sep='', file=f)
+                    if e['type'] == "type_string":
+                        print("\t\t\txmlNodePtr ", e['name'], " = xmlNewNode(NULL, BAD_CAST \"", e['prefix'], ":", e['name'],  "\");", sep='', file=f)
+                        print("\t\t\txmlAddChild(", e['name'], ", xmlNewText(BAD_CAST self->", e['name'], "));", sep='', file=f)
+                        print("\t\t\txmlAddChild(xml, ", e['name'], ");", sep='', file=f)
+                    else:
+                        print("\t\t\txmlNodePtr ", e['name'], " = so_", e['type'], "_xml(self->", e['name'], ");", sep='', file=f)
+                        print("\t\t\txmlAddChild(xml, ", e['name'], ");", sep='', file=f)
 
                 print("\t\t}", file=f)
 
@@ -261,25 +285,34 @@ class genclass:
         print("{", file=f)
 
         if self.children:
+            first = True
             for i in range(0, len(self.children)):
-                if i != 0:
+                if self.children[i]['type'] != "type_string":
+                    if not first:
+                        print(" else ", end='', file=f)
+                    else:
+                        print("\t", end='', file=f)
+                        first = False
+                    print("if (self->in_", self.children[i]['name'], ") {", sep='', file=f)
+                    is_array = self.children[i].get('array', False)
+                    if is_array:
+                        print("\t\tso_", self.children[i]['type'], "_start_element(self->", self.children[i]['name'], "[self->num_", self.children[i]['name'], " - 1], localname, nb_attributes, attributes);", sep='', file=f)
+                    else:
+                        print("\t\tso_", self.children[i]['type'], "_start_element(self->", self.children[i]['name'], ", localname, nb_attributes, attributes);", sep='', file=f)
+                    print("\t}", end='', file=f)
+
+            for e in self.children:
+                if not first:
                     print(" else ", end='', file=f)
                 else:
                     print("\t", end='', file=f)
-                print("if (self->in_", self.children[i]['name'], ") {", sep='', file=f)
-                is_array = self.children[i].get('array', False)
-                if is_array:
-                    print("\t\tso_", self.children[i]['type'], "_start_element(self->", self.children[i]['name'], "[self->num_", self.children[i]['name'], " - 1], localname, nb_attributes, attributes);", sep='', file=f)
-                else:
-                    print("\t\tso_", self.children[i]['type'], "_start_element(self->", self.children[i]['name'], ", localname, nb_attributes, attributes);", sep='', file=f)
-                print("\t}", end='', file=f)
-
-            for e in self.children:
-                print(' else if (strcmp(localname, "', e['name'], '") == 0) {', sep='', file=f)
-                print("\t\tso_", e['type'], " *", e['name'], " = so_", self.name, "_create_", e['name'], "(self);", sep='', file=f)
-                if e['type'] in self.structure:
-                    if 'attributes' in self.structure[e['type']]:
-                        print("\t\tso_", e['type'], "_init_attributes(", e['name'], ", nb_attributes, attributes);", sep='', file=f)
+                    first = False
+                print('if (strcmp(localname, "', e['name'], '") == 0) {', sep='', file=f)
+                if e['type'] != "type_string":
+                    print("\t\tso_", e['type'], " *", e['name'], " = so_", self.name, "_create_", e['name'], "(self);", sep='', file=f)
+                    if e['type'] in self.structure:
+                        if 'attributes' in self.structure[e['type']]:
+                            print("\t\tso_", e['type'], "_init_attributes(", e['name'], ", nb_attributes, attributes);", sep='', file=f)
                 print("\t\tself->in_", e['name'], " = 1;", sep='', file=f)
                 print("\t}", end='', file=f)
 
@@ -313,12 +346,13 @@ class genclass:
                 print("\t}", end='', file=f)
 
             for e in self.children:
-                print(" else if (self->in_", e['name'], ") {", sep='', file=f)
-                print("\t\tso_", e['type'], "_end_element(self->", e['name'], sep='', end='', file=f)
-                if e.get("array", False):
-                    print("[self->num_", e['name'], " - 1]", sep='', end='', file=f)
-                print(", localname);", file=f)
-                print("\t}", end='', file=f)
+                if e['type'] != "type_string":
+                    print(" else if (self->in_", e['name'], ") {", sep='', file=f)
+                    print("\t\tso_", e['type'], "_end_element(self->", e['name'], sep='', end='', file=f)
+                    if e.get("array", False):
+                        print("[self->num_", e['name'], " - 1]", sep='', end='', file=f)
+                    print(", localname);", file=f)
+                    print("\t}", end='', file=f)
 
             print(file=f)
 
@@ -345,10 +379,13 @@ class genclass:
                 else:
                     print("\t", end='', file=f)
                 print("if (self->in_", self.children[i]['name'], ") {", sep='', file=f)
-                print("\t\tso_", self.children[i]['type'], "_characters(self->", self.children[i]['name'], sep='', end='', file=f)
-                if self.children[i].get("array", False):
-                    print("[self->num_", self.children[i]['name'], " - 1]", sep='', end='', file=f)
-                print(", ch, len);", file=f)
+                if self.children[i]['type'] == "type_string":
+                    print("\t\tself->", self.children[i]['name'], " = extstrndup(ch, len);", sep='', file=f)
+                else:
+                    print("\t\tso_", self.children[i]['type'], "_characters(self->", self.children[i]['name'], sep='', end='', file=f)
+                    if self.children[i].get("array", False):
+                        print("[self->num_", self.children[i]['name'], " - 1]", sep='', end='', file=f)
+                    print(", ch, len);", file=f)
                 print("\t}", end='', file=f)
 
             print(file=f)
@@ -402,7 +439,7 @@ class genclass:
             print(file=f)
 
 
-            included = []
+            included = [ 'type_string' ]
             if self.children:
                 for e in self.children:
                     if e['type'] not in included:
@@ -474,7 +511,11 @@ class genclass:
                     print(" * \\sa so_", self.name, "_set_", e['name'], sep='', file=f)
                     print(" */", file=f)
 
-                    print("so_", e['type'], " *so_", self.name, "_get_", e['name'], "(so_", self.name, " *self", sep='', end='', file=f)
+                    if e['type'] == "type_string":
+                        return_type = "char"
+                    else:
+                        return_type = "so_" + e['type']
+                    print(return_type, " *so_", self.name, "_get_", e['name'], "(so_", self.name, " *self", sep='', end='', file=f)
                     if e.get("array", False):
                         print(", int number", end='', file=f)
                     print(");", file=f)
@@ -490,25 +531,32 @@ class genclass:
 
                 for e in self.children:
                     if not e.get('attribute', False):   # No setters for arrays
+                        if e['type'] == "type_string":
+                            man_type = "string"
+                            param_type = "char"
+                        else:
+                            man_type = "so_" + e['type']
+                            param_type = man_type
                         print("/** \\memberof so_", self.name, sep='', file=f)
                         print(" * Set the ", e['name'], " element", sep='', file=f)
                         print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
-                        print(" * \\param value - A pointer to a \\a so_", e['type'], " to set.", sep='', file=f)
+                        print(" * \\param value - A pointer to a \\a ", man_type, " to set.", sep='', file=f)
                         print(" * \\sa so_", self.name, "_get_", e['name'], sep='', file=f)
                         print(" */", file=f)
 
-                        print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, so_", e['type'], " *value);", sep='', file=f)
+                        print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, ", param_type, " *value);", sep='', file=f)
 
                 for e in self.children:
-                    print("/** \\memberof so_", self.name, sep='', file=f)
-                    print(" * Create a new ", e['name'], " element and insert it into the so_", self.name, sep='', file=f)
-                    print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
-                    print(" * \\return A pointer to the newly created structure", file=f)
-                    print(" */", file=f)
+                    if e['type'] != "type_string":
+                        print("/** \\memberof so_", self.name, sep='', file=f)
+                        print(" * Create a new ", e['name'], " element and insert it into the so_", self.name, sep='', file=f)
+                        print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
+                        print(" * \\return A pointer to the newly created structure", file=f)
+                        print(" */", file=f)
 
-                    print("so_", e['type'], " *so_", self.name, "_create_", e['name'], "(so_", self.name, " *self);", sep='', file=f)
-                    if e.get('array', False):
-                        print("void so_", self.name, "_add_", e['name'], "(so_", self.name, " *self, so_", e['type'], " *child);", sep='', file=f)
+                        print("so_", e['type'], " *so_", self.name, "_create_", e['name'], "(so_", self.name, " *self);", sep='', file=f)
+                        if e.get('array', False):
+                            print("void so_", self.name, "_add_", e['name'], "(so_", self.name, " *self, so_", e['type'], " *child);", sep='', file=f)
 
             print(file=f)
             print("#endif", file=f)
@@ -523,7 +571,7 @@ class genclass:
             print(file=f)
             print('#include <so/xml.h>', file=f)
 
-            included = []
+            included = [ 'type_string' ]
             if self.children:
                 for e in self.children:
                     if e['type'] not in included:
@@ -546,10 +594,13 @@ class genclass:
 
             if self.children:
                 for e in self.children:
-                    print("\tso_", e['type'], " *", sep='', end='', file=f)
-                    if e.get('array', False):
-                        print("*", end='', file=f)    
-                    print(e['name'], ";", sep='', file=f)
+                    if e['type'] == 'type_string':
+                        print("\tchar *", e['name'], ";", sep='', file=f)
+                    else:
+                        print("\tso_", e['type'], " *", sep='', end='', file=f)
+                        if e.get('array', False):
+                            print("*", end='', file=f)    
+                        print(e['name'], ";", sep='', file=f)
                 for e in self.children:
                     if e.get('array', False):
                         print("\tint num_", e['name'], ";", sep='', file=f)

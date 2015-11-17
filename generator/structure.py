@@ -60,8 +60,8 @@ structure = {
     },
     'DataFile' : {
         'children' : [
-            { 'name' : 'Description', 'type' : 'estring', 'prefix' : 'ct' },
-            { 'name' : 'path', 'type' : 'estring', 'prefix' : 'ds' },
+            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
         ],
         'attributes' : [
             'oid'
@@ -70,8 +70,8 @@ structure = {
     },
     'GraphicsFile' : {
         'children' : [
-            { 'name' : 'Description', 'type' : 'estring', 'prefix' : 'ct' },
-            { 'name' : 'path', 'type' : 'estring', 'prefix' : 'ds' },
+            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
         ],
         'attributes' : [
             'oid'
@@ -131,25 +131,25 @@ structure = {
     },
     'Toolname' : {
         'children' : [
-            { 'name' : 'String', 'type' : 'estring', 'prefix' : 'ct' },
+            { 'name' : 'String', 'type' : 'type_string', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/Message/Toolname'
     },
     'Name' : {
         'children' : [
-            { 'name' : 'String', 'type' : 'estring', 'prefix' : 'ct' },
+            { 'name' : 'String', 'type' : 'type_string', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/Message/Name'
     },
     'Content' : {
         'children' : [
-            { 'name' : 'String', 'type' : 'estring', 'prefix' : 'ct' },
+            { 'name' : 'String', 'type' : 'type_string', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/Message/Content'
     },
     'Severity' : {
         'children' : [
-            { 'name' : 'Int', 'type' : 'estring', 'prefix' : 'ct' },
+            { 'name' : 'Int', 'type' : 'type_string', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/Message/Severity'
     },
@@ -252,7 +252,7 @@ structure = {
             { 'name' : 'RandomEffects', 'type' : 'SimulationSubType', 'array' : True },
             { 'name' : 'Covariates', 'type' : 'SimulationSubType', 'array' : True },
             { 'name' : 'PopulationParameters', 'type' : 'SimulationSubType', 'array' : True },
-            { 'name' : 'Dosing', 'type' : 'Table', 'array' : True },
+            { 'name' : 'Dosing', 'type' : 'SimulationSubType', 'array' : True },
         ],
         'attributes' : [
             'replicate'

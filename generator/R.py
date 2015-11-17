@@ -83,7 +83,11 @@ def print_get_child(name, child):
         print(", SEXP index", end='')
     print(")")
     print("{")
-    print("\tso_", child['type'], " *child = ", common.create_get_name(name, child['name'], prefix="so"), "(R_ExternalPtrAddr(self)", sep='', end='')
+    if child['type'] == "type_string":
+        this_type = "char";
+    else:
+        this_type = child['type']
+    print("\tso_", this_type, " *child = ", common.create_get_name(name, child['name'], prefix="so"), "(R_ExternalPtrAddr(self)", sep='', end='')
     if child.get("array", False):
         print(", INTEGER_POINTER(index)[0]", end='')
     print(");")
@@ -91,6 +95,14 @@ def print_get_child(name, child):
         print("\tSEXP result = table2df(child);")
     elif child['type'] == 'estring':
         print("\tSEXP result = estring2character(child);")
+    elif child['type'] == 'type_string':
+        print("\tif (!child) {")
+        print("\t\treturn R_NilValue;")
+        print("\t}")
+        print("\tSEXP result;")
+        print("\tPROTECT(result = NEW_STRING(1));")
+        print("\tSET_STRING_ELT(result, 0, mkChar(child));")
+        print("\tUNPROTECT(1);")
     elif child['type'] == 'Matrix':
         print("\tSEXP result = matrix2Rmatrix(child);")
     else:
@@ -111,6 +123,8 @@ def print_set_child(name, child):
             prefix = child['prefix'] + ":"
         print("\tso_estring *estring = character2estring(child, \"", prefix, child['name'], "\");", sep='')
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), estring);", sep='')
+    elif child['type'] == 'type_string':
+        print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), (char *) CHAR(STRING_ELT(child, 0)));", sep='')
     elif child['type'] == 'Matrix':
         print("\tso_Matrix *matrix = Rmatrix2matrix(child, \"", child['name'], "\");", sep='')
         print("\tso_Matrix_free(so_", name, "_get_", child['name'], "(R_ExternalPtrAddr(self)));", sep='')
@@ -121,11 +135,12 @@ def print_set_child(name, child):
     print("}")
 
 def print_create_child(name, child, cls):
-    print("SEXP r_so_", name, "_create_", child, "(SEXP self)", sep='')
-    print("{")
-    print("\tso_", cls, " *child = so_", name, "_create_", child, "(R_ExternalPtrAddr(self));", sep='')
-    print("\treturn R_MakeExternalPtr(child, R_NilValue, R_NilValue);")
-    print("}")
+    if cls != 'type_string':
+        print("SEXP r_so_", name, "_create_", child, "(SEXP self)", sep='')
+        print("{")
+        print("\tso_", cls, " *child = so_", name, "_create_", child, "(R_ExternalPtrAddr(self));", sep='')
+        print("\treturn R_MakeExternalPtr(child, R_NilValue, R_NilValue);")
+        print("}")
 
 def print_includes():
     print("#include <R.h>")
@@ -185,10 +200,11 @@ def print_wrapper_functions(name, struct):
                 print("\t.Call(\"r_so_", name, "_set_", child['name'], "\", self, value)", sep='')
                 print("}")
             print()
-            print("so_", name, "_create_", child['name'], " <- function(self) {", sep='')
-            print("\t.Call(\"r_so_", name, "_create_", child['name'], "\", self, value)", sep='')
-            print("}")
-            print()
+            if child['type'] != "type_string":
+                print("so_", name, "_create_", child['name'], " <- function(self) {", sep='')
+                print("\t.Call(\"r_so_", name, "_create_", child['name'], "\", self, value)", sep='')
+                print("}")
+                print()
 
 def print_accessors(name, struct):
     # attributes
@@ -223,7 +239,7 @@ def print_accessors(name, struct):
                 print("\t\t\t\t}")
                 print("\t\t\t\treturn(a)")
                 print("\t\t\t}")
-            elif child['type'] == 'Table' or child['type'] == 'estring' or child['type'] == 'Matrix':
+            elif child['type'] == 'Table' or child['type'] == 'estring' or child['type'] == 'type_string' or child['type'] == 'Matrix':
                 print("\t\t\tso_", name, "_get_", child['name'], "(.self$.cobj)", sep='')
             else:
                 print("\t\t\tchild = so_", name, "_get_", child['name'], "(.self$.cobj)", sep='')
