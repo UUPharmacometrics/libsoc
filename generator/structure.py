@@ -149,7 +149,7 @@ structure = {
     },
     'Severity' : {
         'children' : [
-            { 'name' : 'Int', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'Int', 'type' : 'type_int', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/Message/Severity'
     },

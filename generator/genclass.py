@@ -81,7 +81,7 @@ class genclass:
                 else:
                     if e['type'] == 'type_string':
                         print("\t\tfree(self->", e['name'], ");", sep='', file=f)
-                    elif e['type'] == 'type_real':
+                    elif e['type'] == 'type_real' or e['type'] == 'type_int':
                         pass
                     else:
                         print("\t\tso_", e['type'], "_unref(self->", e['name'], ");", sep='', file=f)
@@ -127,9 +127,11 @@ class genclass:
         # getters for child elements
         if self.children:
             for e in self.children:
-                if e['type'] == 'type_string' or e['type'] == 'type_real':
+                if e['type'] == 'type_string' or e['type'] == 'type_real' or e['type'] == 'type_int':
                     if e['type'] == 'type_string':
                         return_type = "char *"
+                    elif e['type'] == 'type_int':
+                        return_type = "int *"
                     else:
                         return_type = "double *"
                     print(return_type, "so_", self.name, "_get_", e['name'], "(so_", self.name, " *self)", sep='', file=f)
@@ -190,6 +192,13 @@ class genclass:
                         print("\tself->", e['name'], " = &(self->", e['name'], "_number);", sep='', file=f)
                         print("}", file=f)
                         print(file=f)
+                    elif e['type'] == "type_int":
+                        print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, int *value)", sep='', file=f)
+                        print("{", file=f)
+                        print("\tself->", e['name'], "_number = *value;", sep='', file=f)
+                        print("\tself->", e['name'], " = &(self->", e['name'], "_number);", sep='', file=f)
+                        print("}", file=f)
+                        print(file=f)
                     else:
                         print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, ", "so_", e['type'], " *value)", sep='', file=f)
                         print("{", file=f)
@@ -201,7 +210,7 @@ class genclass:
         f = self.c_file
         if self.children:
             for e in self.children:
-                if e['type'] != "type_string" and e['type'] != "type_real":
+                if e['type'] != "type_string" and e['type'] != "type_real" and e['type'] != "type_int":
                     is_array = e.get('array', False)
                     print("so_", e['type'], " *so_", self.name, "_create_", e['name'], "(so_", self.name, " *self)", sep='', file=f)
                     print("{", file=f)
@@ -277,15 +286,19 @@ class genclass:
                     print("\t\t\t\txmlAddChild(xml, ", e['name'], ");", sep='', file=f)
                     print("\t\t\t}", file=f)
                 else:
-                    if e['type'] == "type_string" or e['type'] == "type_real":
+                    if e['type'] == "type_string" or e['type'] == "type_real" or e['type'] == "type_int":
                         element_name = e['name']
                         if e.get('prefix', False):
                             element_name = e['prefix'] + ":" + element_name
                         print("\t\t\txmlNodePtr ", e['name'], " = xmlNewNode(NULL, BAD_CAST \"", element_name,  "\");", sep='', file=f)
                         if e['type'] == "type_string":
                             print("\t\t\txmlAddChild(", e['name'], ", xmlNewText(BAD_CAST self->", e['name'], "));", sep='', file=f)
-                        else:
+                        elif e['type'] == "type_real":
                             print("\t\t\tchar *number_string = pharmml_double_to_string(self->", e['name'], "_number);", sep='', file=f)
+                            print("\t\t\txmlAddChild(", e['name'], ", xmlNewText(BAD_CAST number_string));", sep='', file=f)
+                            print("\t\t\tfree(number_string);", file=f);
+                        elif e['type'] == "type_int":
+                            print("\t\t\tchar *number_string = pharmml_int_to_string(self->", e['name'], "_number);", sep='', file=f)
                             print("\t\t\txmlAddChild(", e['name'], ", xmlNewText(BAD_CAST number_string));", sep='', file=f)
                             print("\t\t\tfree(number_string);", file=f);
                         print("\t\t\txmlAddChild(xml, ", e['name'], ");", sep='', file=f)
@@ -309,7 +322,7 @@ class genclass:
         if self.children:
             first = True
             for i in range(0, len(self.children)):
-                if self.children[i]['type'] != "type_string" and self.children[i]['type'] != "type_real":
+                if self.children[i]['type'] != "type_string" and self.children[i]['type'] != "type_real" and self.children[i]['type'] != "type_int":
                     if not first:
                         print(" else ", end='', file=f)
                     else:
@@ -330,7 +343,7 @@ class genclass:
                     print("\t", end='', file=f)
                     first = False
                 print('if (strcmp(localname, "', e['name'], '") == 0) {', sep='', file=f)
-                if e['type'] != "type_string" and e['type'] != "type_real":
+                if e['type'] != "type_string" and e['type'] != "type_real" and e['type'] != "type_int":
                     print("\t\tso_", e['type'], " *", e['name'], " = so_", self.name, "_create_", e['name'], "(self);", sep='', file=f)
                     if e['type'] in self.structure:
                         if 'attributes' in self.structure[e['type']]:
@@ -368,7 +381,7 @@ class genclass:
                 print("\t}", end='', file=f)
 
             for e in self.children:
-                if e['type'] != "type_string" and e['type'] != "type_real":
+                if e['type'] != "type_string" and e['type'] != "type_real" and e['type'] != "type_int":
                     print(" else if (self->in_", e['name'], ") {", sep='', file=f)
                     print("\t\tso_", e['type'], "_end_element(self->", e['name'], sep='', end='', file=f)
                     if e.get("array", False):
@@ -408,6 +421,11 @@ class genclass:
                     print("\t\tself->", self.children[i]['name'], "_number = pharmml_string_to_double(double_string);", sep='', file=f)
                     print("\t\tself->", self.children[i]['name'], " = &(self->", self.children[i]['name'], "_number);", sep='', file=f)
                     print("\t\tfree(double_string);", file=f)
+                elif self.children[i]['type'] == "type_int":
+                    print("\t\tchar *int_string = extstrndup(ch, len);", file=f)
+                    print("\t\tself->", self.children[i]['name'], "_number = pharmml_string_to_int(int_string);", sep='', file=f)
+                    print("\t\tself->", self.children[i]['name'], " = &(self->", self.children[i]['name'], "_number);", sep='', file=f)
+                    print("\t\tfree(int_string);", file=f)
                 else:
                     print("\t\tso_", self.children[i]['type'], "_characters(self->", self.children[i]['name'], sep='', end='', file=f)
                     if self.children[i].get("array", False):
@@ -465,7 +483,7 @@ class genclass:
             print("#define _SO_", self.name.upper(), "_H", sep='', file=f)
             print(file=f)
 
-            included = [ 'type_string', 'type_real' ]
+            included = [ 'type_string', 'type_real', 'type_int' ]
             if self.children:
                 for e in self.children:
                     if e['type'] not in included:
@@ -535,7 +553,7 @@ class genclass:
                         print(" * \\param number - An index to the specific element", file=f)
                     if e['type'] == "type_string":
                         print(" * \\return A pointer to the", e['name'], "string", file=f)
-                    elif e['type'] == "type_real":
+                    elif e['type'] == "type_real" or e['type'] == "type_int":
                         print(" * \\return A pointer to the value of", e['name'], "or NULL if no value is present.", file=f)
                     else:
                         print(" * \\return A pointer to the structure representing the", e['name'], "element", file=f)
@@ -546,6 +564,8 @@ class genclass:
                         return_type = "char *"
                     elif e['type'] == "type_real":
                         return_type = "double *"
+                    elif e['type'] == "type_int":
+                        return_type = "int *"
                     else:
                         return_type = "so_" + e['type'] + " *"
                     print(return_type, "so_", self.name, "_get_", e['name'], "(so_", self.name, " *self", sep='', end='', file=f)
@@ -569,13 +589,15 @@ class genclass:
                             param_type = "char *"
                         elif e['type'] == "type_real":
                             param_type = "double *"
+                        elif e['type'] == "type_int":
+                            param_type = "int *"
                         else:
                             man_type = "so_" + e['type']
                             param_type = man_type + " *"
                         print("/** \\memberof so_", self.name, sep='', file=f)
                         print(" * Set the ", e['name'], " element", sep='', file=f)
                         print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
-                        if e['type'] == "type_real":
+                        if e['type'] == "type_real" or e['type'] == "type_int":
                             print(" * \\param value - A pointer to the value to set or NULL to not include this element.", sep='', file=f)
                         else:
                             print(" * \\param value - A pointer to a \\a ", man_type, " to set.", sep='', file=f)
@@ -585,7 +607,7 @@ class genclass:
                         print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, ", param_type, "value);", sep='', file=f)
 
                 for e in self.children:
-                    if e['type'] != "type_string" and e['type'] != "type_real":
+                    if e['type'] != "type_string" and e['type'] != "type_real" and e['type'] != "type_int":
                         print("/** \\memberof so_", self.name, sep='', file=f)
                         print(" * Create a new ", e['name'], " element and insert it into the so_", self.name, sep='', file=f)
                         print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
@@ -609,7 +631,7 @@ class genclass:
             print(file=f)
             print('#include <so/xml.h>', file=f)
 
-            included = [ 'type_string', 'type_real' ]
+            included = [ 'type_string', 'type_real', 'type_int' ]
             if self.children:
                 for e in self.children:
                     if e['type'] not in included:
@@ -637,6 +659,9 @@ class genclass:
                     elif e['type'] == 'type_real':
                         print("\tdouble *", e['name'], ";", sep='', file=f)
                         print("\tdouble ", e['name'], "_number;", sep='', file=f)
+                    elif e['type'] == 'type_int':
+                        print("\tint *", e['name'], ";", sep='', file=f)
+                        print("\tint ", e['name'], "_number;", sep='', file=f)
                     else:
                         print("\tso_", e['type'], " *", sep='', end='', file=f)
                         if e.get('array', False):
