@@ -112,20 +112,20 @@ structure = {
     'RunTime' : {
         'children' : [
             { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
-            { 'name' : 'Real', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'Real', 'type' : 'type_real', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/RunTime'
     },
     'NumberChains' : {
         'children' : [
             { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
-            { 'name' : 'Real', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'Real', 'type' : 'type_real', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/NumberChains'
     },
     'NumberIterations' : {
         'children' : [
-            { 'name' : 'Real', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'Real', 'type' : 'type_real', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/NumberIterations'
     },
@@ -220,7 +220,7 @@ structure = {
     },
     'ConditionNumber' : {
         'children' : [
-            { 'name' : 'Real', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'Real', 'type' : 'type_real', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates/ConditionNumber'
     },
@@ -233,8 +233,8 @@ structure = {
     },
     'Likelihood' : {
         'children' : [
-            { 'name' : 'LogLikelihood', 'type' : 'type_string' },
-            { 'name' : 'Deviance', 'type' : 'type_string' },
+            { 'name' : 'LogLikelihood', 'type' : 'type_real' },
+            { 'name' : 'Deviance', 'type' : 'type_real' },
             { 'name' : 'IndividualContribtoLL', 'type' : 'Table' },
         ],
         'xpath' : 'SO/SOBlock/Estimation/Likelihood'
