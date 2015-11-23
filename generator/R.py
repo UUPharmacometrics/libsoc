@@ -268,7 +268,7 @@ def print_accessors(name, struct):
             else:
                 print("\t\t\tchild = so_", name, "_get_", child['name'], "(.self$.cobj)", sep='')
                 print("\t\t\tif (!isnull(child)) {")
-                print("\t\t\t\tso_", child['name'], "$new(cobj=child)", sep='')
+                print("\t\t\t\tso_", child['type'], "$new(cobj=child)", sep='')
                 print("\t\t\t}")
 
             print("\t\t} else {")
@@ -279,7 +279,7 @@ def print_accessors(name, struct):
                 pass
             else:
                 print("\t\t\tso_", name, "_set_", child['name'], "(.self$.cobj, value$.cobj)", sep='')
-                print("\t\t\tso_", child['name'], "_ref(value$.cobj)", sep='')
+                print("\t\t\tso_", child['type'], "_ref(value$.cobj)", sep='')
 
             print("\t\t}")
             print("\t}")
