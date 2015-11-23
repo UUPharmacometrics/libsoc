@@ -158,6 +158,7 @@ structure = {
         'children' : [
             { 'name' : 'PopulationEstimates', 'type' : 'PopulationEstimates' },
             { 'name' : 'PrecisionPopulationEstimates', 'type' : 'PrecisionPopulationEstimates' },
+            { 'name' : 'IndividualEstimates', 'type' : 'IndividualEstimates' },
             { 'name' : 'Residuals', 'type' : 'Residuals' },
             { 'name' : 'Predictions', 'type' : 'Table' },
             { 'name' : 'Likelihood', 'type' : 'Likelihood' },
@@ -195,18 +196,13 @@ structure = {
         'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates'
     },
     'Bayesian_PPE' : {
+        'element_name' : 'Bayesian',
         'children' : [
             { 'name' : 'StandardDeviationPosterior', 'type' : 'Table' },
-            #{ 'name' : 'PosteriorDistribution', 'type' : 'PosteriorDistribution' },
             { 'name' : 'PercentilesCI', 'type' : 'Table' },
         ],
         'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates/Bayesian'
     },
-    #'PosteriorDistribution' : {
-    #    'children' : [
-    #        { 'name' : '
-    #    ],
-    #},
     'MLE' : {
         'children' : [
             { 'name' : 'FIM', 'type' : 'Matrix' },
@@ -224,6 +220,33 @@ structure = {
             { 'name' : 'Real', 'type' : 'type_real', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates/ConditionNumber'
+    },
+    'IndividualEstimates' : {
+        'children' : [
+            { 'name' : 'Estimates', 'type' : 'Estimates' },
+            { 'name' : 'RandomEffects', 'type' : 'RandomEffects_IE' },
+            { 'name' : 'EtaShrinkage', 'type' : 'Table' },
+        ],
+        'xpath' : 'SO/SOBlock/Estimation/IndividualEstimates'
+    },
+    'Estimates' : {
+        'children' : [
+            { 'name' : 'Mean', 'type' : 'Table' },
+            { 'name' : 'Median', 'type' : 'Table' },
+            { 'name' : 'Mode', 'type' : 'Table' },
+            { 'name' : 'Samples', 'type' : 'Table' },
+        ],
+        'xpath' : 'SO/SOBlock/Estimation/IndividualEstimates/Estimates'
+    },
+    'RandomEffects_IE' : {
+        'element_name' : 'RandomEffects',
+        'children' : [
+            { 'name' : 'EffectMean', 'type' : 'Table' },
+            { 'name' : 'EffectMedian', 'type' : 'Table' },
+            { 'name' : 'EffectMode', 'type' : 'Table' },
+            { 'name' : 'Samples', 'type' : 'Table' },
+        ],
+        'xpath' : 'SO/SOBlock/Estimation/IndividualEstimates/RandomEffects'
     },
     'Residuals' : {
         'children' : [

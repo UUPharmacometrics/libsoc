@@ -12,6 +12,7 @@ class genclass:
         self.extends = entry.get('extends', None)
         self.xpath = entry['xpath']
         self.extends = entry.get('extends', None)
+        self.element_name = entry.get('element_name', None)
 
     def create_code(self):
         with open(self.name + ".c", "w") as f:
@@ -269,7 +270,11 @@ class genclass:
         if self.extends:
             print("\t\txml = so_", self.extends, "_xml(self->base);", sep='', file=f) 
         else:
-            print('\t\txml = xmlNewNode(NULL, BAD_CAST "', self.name, '");', sep='', file=f)
+            if self.element_name:
+                name = self.element_name
+            else:
+                name = self.name
+            print('\t\txml = xmlNewNode(NULL, BAD_CAST "', name, '");', sep='', file=f)
 
         if self.attributes:
             for a in self.attributes:
