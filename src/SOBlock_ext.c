@@ -84,7 +84,5 @@ void so_SOBlock_add_message(so_SOBlock *self, char *type, char *toolname, char *
     so_Content_set_String(c, content);
 
     so_Severity *s = so_Message_create_Severity(m);
-    char *severity_string = pharmml_int_to_string(severity);
-    so_Severity_set_Int(s, severity_string);
-    free(severity_string);
+    so_Severity_set_Int(s, &severity);
 }

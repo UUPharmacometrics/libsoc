@@ -65,7 +65,7 @@ def print_get_number_of(name, child, cls):
     print("{")
     print("\tint number = so_", name, "_get_number_of_", child, "(R_ExternalPtrAddr(self));", sep='')
     print("\tSEXP r_int = PROTECT(NEW_INTEGER(1));")
-    print("\tINTEGER_POINTER(r_int)[0] = number;")
+    print("\tINTEGER(r_int)[0] = number;")
     print("\tUNPROTECT(1);")
     print("\treturn r_int;")
     print("}")
@@ -84,12 +84,16 @@ def print_get_child(name, child):
     print(")")
     print("{")
     if child['type'] == "type_string":
-        this_type = "char";
+        this_type = "char"
+    elif child['type'] == "type_real":
+        this_type = "double"
+    elif child['type'] == "type_int":
+        this_type = "int"
     else:
-        this_type = child['type']
-    print("\tso_", this_type, " *child = ", common.create_get_name(name, child['name'], prefix="so"), "(R_ExternalPtrAddr(self)", sep='', end='')
+        this_type = "so_" + child['type']
+    print("\t", this_type, " *child = ", common.create_get_name(name, child['name'], prefix="so"), "(R_ExternalPtrAddr(self)", sep='', end='')
     if child.get("array", False):
-        print(", INTEGER_POINTER(index)[0]", end='')
+        print(", INTEGER(index)[0]", end='')
     print(");")
     if child['type'] == 'Table':
         print("\tSEXP result = table2df(child);")
@@ -102,6 +106,22 @@ def print_get_child(name, child):
         print("\tSEXP result;")
         print("\tPROTECT(result = NEW_STRING(1));")
         print("\tSET_STRING_ELT(result, 0, mkChar(child));")
+        print("\tUNPROTECT(1);")
+    elif child['type'] == 'type_real':
+        print("\tif (!child) {")
+        print("\t\treturn R_NilValue;")
+        print("\t}")
+        print("\tSEXP result;")
+        print("\tPROTECT(result = NEW_NUMERIC(1));")
+        print("\tREAL(result)[0] = *child;")
+        print("\tUNPROTECT(1);")
+    elif child['type'] == 'type_int':
+        print("\tif (!child) {")
+        print("\t\treturn R_NilValue;")
+        print("\t}")
+        print("\tSEXP result;")
+        print("\tPROTECT(result = NEW_INTEGER(1));")
+        print("\tINTEGER(result)[0] = *child;")
         print("\tUNPROTECT(1);")
     elif child['type'] == 'Matrix':
         print("\tSEXP result = matrix2Rmatrix(child);")
@@ -125,6 +145,10 @@ def print_set_child(name, child):
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), estring);", sep='')
     elif child['type'] == 'type_string':
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), (char *) CHAR(STRING_ELT(child, 0)));", sep='')
+    elif child['type'] == 'type_real':
+        print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), REAL(child));", sep='')
+    elif child['type'] == 'type_int':
+        print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), INTEGER(child));", sep='')
     elif child['type'] == 'Matrix':
         print("\tso_Matrix *matrix = Rmatrix2matrix(child, \"", child['name'], "\");", sep='')
         print("\tso_Matrix_free(so_", name, "_get_", child['name'], "(R_ExternalPtrAddr(self)));", sep='')
@@ -135,7 +159,7 @@ def print_set_child(name, child):
     print("}")
 
 def print_create_child(name, child, cls):
-    if cls != 'type_string':
+    if cls != 'type_string' and cls != 'type_real' and cls != 'type_int':
         print("SEXP r_so_", name, "_create_", child, "(SEXP self)", sep='')
         print("{")
         print("\tso_", cls, " *child = so_", name, "_create_", child, "(R_ExternalPtrAddr(self));", sep='')
@@ -200,7 +224,7 @@ def print_wrapper_functions(name, struct):
                 print("\t.Call(\"r_so_", name, "_set_", child['name'], "\", self, value)", sep='')
                 print("}")
             print()
-            if child['type'] != "type_string":
+            if child['type'] != "type_string" and child['type'] != "type_real" and child['type'] != "type_int":
                 print("so_", name, "_create_", child['name'], " <- function(self) {", sep='')
                 print("\t.Call(\"r_so_", name, "_create_", child['name'], "\", self, value)", sep='')
                 print("}")
@@ -239,7 +263,7 @@ def print_accessors(name, struct):
                 print("\t\t\t\t}")
                 print("\t\t\t\treturn(a)")
                 print("\t\t\t}")
-            elif child['type'] == 'Table' or child['type'] == 'estring' or child['type'] == 'type_string' or child['type'] == 'Matrix':
+            elif child['type'] == 'Table' or child['type'] == 'estring' or child['type'] == 'type_string' or child['type'] == 'type_real' or child['type'] == 'type_int' or child['type'] == 'Matrix':
                 print("\t\t\tso_", name, "_get_", child['name'], "(.self$.cobj)", sep='')
             else:
                 print("\t\t\tchild = so_", name, "_get_", child['name'], "(.self$.cobj)", sep='')
@@ -249,7 +273,7 @@ def print_accessors(name, struct):
 
             print("\t\t} else {")
 
-            if child['type'] == 'Table' or child['type'] == 'estring' or child['type'] == 'Matrix':
+            if child['type'] == 'Table' or child['type'] == 'estring' or child['type'] == 'Matrix' or child['type'] == 'type_string' or child['type'] == 'type_real' or child['type'] == 'type_int':
                 print("\t\t\tso_", name, "_set_", child['name'], "(.self$.cobj, value)", sep='')
             elif child.get('array', False):
                 pass

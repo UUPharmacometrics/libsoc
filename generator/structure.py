@@ -28,6 +28,7 @@ structure = {
             { 'name' : 'TaskInformation', 'type' : 'TaskInformation' },
             { 'name' : 'Estimation', 'type' : 'Estimation' },
             { 'name' : 'Simulation', 'type' : 'Simulation' },
+            { 'name' : 'ModelDiagnostic', 'type' : 'ModelDiagnostic' },
             { 'name' : 'OptimalDesign', 'type' : 'OptimalDesign' },
         ],
         'attributes' : [
