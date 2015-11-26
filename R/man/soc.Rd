@@ -1,12 +1,12 @@
-\name{reverse}
-\alias{reverse}
+\name{so_Bootstrap}
+\alias{so_Bootstrap}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Reverse an integer vector}
+\title{so_Bootstrap title}
 \description{
-    A function that reverses an integer vector.
+    Class for SO/SOBlock/Estimation/PopulationParameters/Bootstrap
 }
 \usage{
-reverse(x)
+so_Bootstrap
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,11 +18,11 @@ reverse(x)
     The input vector reversed.
 }
 \author{
-    Bjorn Winckler
+    Rikard Nordgren
 }
 
 \examples{
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{reverse}
+\keyword{so_Bootstrap}
