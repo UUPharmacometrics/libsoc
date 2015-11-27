@@ -19,11 +19,13 @@ include/so/private/*
 !include/so/private/util.h
 
 soc_*.tar.gz
+soc.Rcheck/*
 R/R/gen-*
 R/src/gen-*
 R/src/static-*
 R/src/include/*
 R/NAMESPACE
+
 
 doxygen_sqlite3.db
 html/*

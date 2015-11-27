@@ -9,7 +9,6 @@ class genclass:
         entry = structure[name]
         self.children = entry.get('children', None)
         self.attributes = entry.get('attributes', None)
-        self.extends = entry.get('extends', None)
         self.xpath = entry['xpath']
         self.extends = entry.get('extends', None)
         self.element_name = entry.get('element_name', None)
@@ -28,7 +27,7 @@ class genclass:
             self.create_create()
             self.create_array_add()
             if self.extends:
-                self.create_get_base()
+                self.create_get_set_base()
             self.create_xml()
             self.create_start()
             self.create_end()
@@ -203,6 +202,7 @@ class genclass:
                     else:
                         print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, ", "so_", e['type'], " *value)", sep='', file=f)
                         print("{", file=f)
+                        print("\tso_", e['type'], "_unref(self->", e['name'], ");", sep='', file=f)
                         print("\tself->", e['name'], " = value;", sep='', file=f)
                         print("}", file=f)
                         print(file=f)
@@ -245,11 +245,19 @@ class genclass:
                     print("}", file=f)
                     print(file=f)
 
-    def create_get_base(self):
+    def create_get_set_base(self):
         f = self.c_file
         print("so_", self.extends, " *so_", self.name, "_get_base(so_", self.name, " *self)", sep='', file=f)
         print("{", file=f)
         print("\treturn self->base;", file=f)
+        print("}", file=f)
+        print(file=f)
+        print("void so_", self.name, "_set_base(so_", self.name, " *self, so_", self.extends, " *value)", sep='', file=f)
+        print("{", file=f)
+        print("\tchar *name = extstrdup(self->base->name);", file=f)
+        print("\tso_", self.extends, "_unref(value);", sep='', file=f)
+        print("\tself->base = value;", file=f) 
+        print("\tself->base->name = name;", sep='', file=f)
         print("}", file=f)
         print(file=f)
 
@@ -528,6 +536,7 @@ class genclass:
             print("void so_", self.name, "_unref(so_", self.name, " *self);", sep='', file=f)
             if self.extends:
                 print("so_", self.extends, " *so_", self.name, "_get_base(so_", self.name, " *self);", sep='', file=f)
+                print("void so_", self.name, "_set_base(so_", self.name, " *self, so_", self.extends, " *value);", sep='', file=f)
 
             if self.attributes:
                 for a in self.attributes:

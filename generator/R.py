@@ -135,7 +135,6 @@ def print_set_child(name, child):
     print("{")
     if child['type'] == "Table":
         print("\tso_Table *table = df2table(child, \"", child['name'], "\");", sep='')
-        print("\tso_Table_free(so_", name, "_get_", child['name'], "(R_ExternalPtrAddr(self)));", sep='')
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), table);", sep='')
     elif child['type'] == "estring":
         prefix = ''
@@ -151,7 +150,6 @@ def print_set_child(name, child):
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), INTEGER(child));", sep='')
     elif child['type'] == 'Matrix':
         print("\tso_Matrix *matrix = Rmatrix2matrix(child, \"", child['name'], "\");", sep='')
-        print("\tso_Matrix_free(so_", name, "_get_", child['name'], "(R_ExternalPtrAddr(self)));", sep='')
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), matrix);", sep='')
     else:
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), R_ExternalPtrAddr(child));", sep='')
@@ -200,6 +198,16 @@ def print_wrapper_functions(name, struct):
         print("}")
         print()
 
+    if 'extends' in struct:
+        print("so_", name, "_get_base <- function(self) {", sep='')
+        print("\t.Call(\"r_so_", name, "_get_base\", self)", sep='')
+        print("}")
+        print()
+        print("so_", name, "_set_base <- function(self, value) {", sep='')
+        print("\t.Call(\"r_so_", name, "_set_base\", self, value)", sep='')
+        print("}")
+        print()
+
     if 'children' in struct:
         for child in struct['children']:
             print("so_", name, "_get_", child['name'], " <- function(self", sep='', end='')
@@ -244,6 +252,22 @@ def print_accessors(name, struct):
         print("\t}")
         print("}")
         print()
+
+    # base
+    if 'extends' in struct:
+        print("base_acc <- function(value)", sep='')
+        print("{")
+        print("\tif (!isnull(.self$.cobj)) {")
+        print("\t\tif (missing(value)) {")
+        print("\t\t\tso_", name, "_get_base(.self$.cobj)", sep='')
+        print("\t\t} else {")
+        print("\t\t\tso_", name, "_set_base(.self$.cobj, value)", sep='')
+        print("\t\t\tso_", struct['extends'], "_ref(value$.cobj)", sep='')
+        print("\t\t}")
+        print("\t}")
+        print("}")
+        print()
+
 
     # children
     if 'children' in struct:
@@ -294,6 +318,8 @@ def print_classes(name, struct):
     if 'children' in struct:
         for child in struct['children']:
             print("\t\t", child['name'], " = ", child['name'], "_acc,", sep='')
+    if 'extends' in struct:
+        print("\t\tbase = base_acc,")
     print("\t\t.cobj = \"externalptr\"")
     print("\t),")
     print("\tmethods=list(")
@@ -338,6 +364,10 @@ for name in structure:
         print_ref_unref(name)
         print()
 
+        if 'extends' in structure[name]:
+            child = { 'name' : 'base', 'type' : structure[name]['extends'] }
+            print_get_child(name, child)
+            print_set_child(name, child)
         if 'children' in structure[name]:
             for child in structure[name]['children']:
                 print_get_child(name, child)
