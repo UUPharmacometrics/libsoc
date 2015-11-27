@@ -78,6 +78,10 @@ so_Table *df2table(SEXP df, char *table_name)
                 buffer[j] = extstrdup(CHAR(STRING_ELT(VECTOR_ELT(df, i), j)));
             }
             so_Table_new_column_no_copy(table, (char *) current_col_name, column_type, value_type, buffer);
+        } else if (isInteger(VECTOR_ELT(df, i))) {
+            value_type = PHARMML_VALUETYPE_INT;
+            data = (void *) INTEGER_POINTER(VECTOR_ELT(df, i));
+            so_Table_new_column(table, (char *) current_col_name, column_type, value_type, data);
         }
     }
 
@@ -132,6 +136,13 @@ SEXP table2df(so_Table *table)
             double *col1 = (double *) so_Table_get_column_from_number(table, j);
             PROTECT(col = NEW_NUMERIC(numrows));
             double *ptr = NUMERIC_POINTER(col);
+            for (int i = 0; i < numrows; i++) {
+                *ptr++ = col1[i];
+            }
+        } else if (vt == PHARMML_VALUETYPE_INT) {
+            int *col1 = (int *) so_Table_get_column_from_number(table, j);
+            PROTECT(col = NEW_INTEGER(numrows));
+            int *ptr = INTEGER_POINTER(col);
             for (int i = 0; i < numrows; i++) {
                 *ptr++ = col1[i];
             }
