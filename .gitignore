@@ -25,7 +25,8 @@ R/src/gen-*
 R/src/static-*
 R/src/include/*
 R/NAMESPACE
-
+R/man/*
+!R/man/soc-package.Rd
 
 doxygen_sqlite3.db
 html/*

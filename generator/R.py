@@ -347,6 +347,34 @@ def print_classes(name, struct):
     ns = open("../NAMESPACE", "a")
     print("export(so_", name, ")", sep='', file=ns)
 
+def print_documentation(name, struct):
+    print("\\name{so_", name, "}", sep='')
+    print("\\alias{so_", name, "}", sep='')
+    print("\\title{so_", name, " reference class}", sep='')     # Special for "abstract" class (extends)
+    print("\\description{")
+    print("\tReference Class for the ", struct['xpath'], " element of a PharmML-SO data structure", sep='') 
+    print("}")
+    print("\\section{Methods}{")
+    print("so_", name, "$new() - Create a new empty so_", name, " object", sep='')
+    print("}")
+    if 'children' in struct:
+        print("\\section{Fields}{")
+        for child in struct['children']:
+            print("$", child['name'], " - ", sep='', end='')
+            if child['type'] == 'Table':
+                print("A data.frame\\cr")
+            elif child['type'] == 'Matrix':
+                print("A matrix\\cr")
+            elif child['type'] == 'type_string':
+                print("A character string\\cr")
+            elif child['type'] == 'type_real':
+                print("A numeric\\cr")
+            elif child['type'] == 'type_int':
+                print("An integer\\cr")
+            else:
+                print("A \link{so_", child['type'], "} object\\cr", sep='')
+        print("}")
+    print("\\keyword{so_", name, "}", sep='')
 
 # Generate C part of binding
 os.chdir("../R/src")
@@ -404,3 +432,10 @@ for name in structure:
         print_wrapper_functions(name, structure[name])
         print_accessors(name, structure[name])
         print_classes(name, structure[name])
+
+# Print the class documentation
+os.chdir("../man")
+for name in structure:
+    with open(name + ".Rd", "w") as f:
+        sys.stdout = f
+        print_documentation(name, structure[name])
