@@ -6,6 +6,23 @@ import sys
 import common
 from structure import structure
 
+def get_R_type(so_type):
+    if child['type'] == 'Table':
+        is_type = 'data.frame'
+    elif child['type'] == 'estring':
+        is_type = 'character'
+    elif child['type'] == 'Matrix':
+        is_type = 'matrix'
+    elif child['type'] == 'type_string':
+        is_type = 'character'
+    elif child['type'] == 'type_real':
+        is_type = 'numeric'
+    elif child['type'] == 'type_int':
+        is_type = 'integer'
+    else:
+        is_type = so_type
+    return so_type
+
 def print_new(name):
     print("SEXP r_so_", name, "_new()", sep='')
     print("{")
@@ -247,6 +264,11 @@ def print_accessors(name, struct):
         print("\t\tif (missing(value)) {")
         print("\t\t\tso_", name, "_get_", attr, "(.self$.cobj)", sep='')
         print("\t\t} else {")
+
+        print("\tif (!is.character(value)) {")
+        print("\t\tstop(\"value of the '", attr, "' attribute must be a character string\")", sep='')
+        print("\t}")
+
         print("\t\t\tso_", name, "_set_", attr, "(.self$.cobj, value)", sep='')
         print("\t\t}")
         print("\t}")
@@ -261,6 +283,9 @@ def print_accessors(name, struct):
         print("\t\tif (missing(value)) {")
         print("\t\t\tso_", name, "_get_base(.self$.cobj)", sep='')
         print("\t\t} else {")
+        print("\t\t\tif (!is(value, \"", struct['extends'], "\")) {", sep='')
+        print("\t\t\t\tstop(\"base object must be a '", struct['extends'], "' object\")", sep='')
+        print("\t\t\t}")
         print("\t\t\tso_", name, "_set_base(.self$.cobj, value)", sep='')
         print("\t\t\tso_", struct['extends'], "_ref(value$.cobj)", sep='')
         print("\t\t}")
@@ -297,11 +322,18 @@ def print_accessors(name, struct):
 
             print("\t\t} else {")
 
+            R_type = get_R_type(child['type'])
             if child['type'] == 'Table' or child['type'] == 'estring' or child['type'] == 'Matrix' or child['type'] == 'type_string' or child['type'] == 'type_real' or child['type'] == 'type_int':
+                print("\t\t\tif (!is(value, \"", R_type,"\")) {", sep='')
+                print("\t\t\t\tstop(\"object must be of type '", R_type, "'\")", sep='')
+                print("\t\t\t}")
                 print("\t\t\tso_", name, "_set_", child['name'], "(.self$.cobj, value)", sep='')
             elif child.get('array', False):
                 pass
             else:
+                print("\t\t\tif (!is(value, \"", R_type,"\")) {", sep='')
+                print("\t\t\t\tstop(\"object must be of type '", R_type, "'\")", sep='')
+                print("\t\t\t}")
                 print("\t\t\tso_", name, "_set_", child['name'], "(.self$.cobj, value$.cobj)", sep='')
                 print("\t\t\tso_", child['type'], "_ref(value$.cobj)", sep='')
 
@@ -357,22 +389,26 @@ def print_documentation(name, struct):
     print("\\section{Methods}{")
     print("so_", name, "$new() - Create a new empty so_", name, " object", sep='')
     print("}")
-    if 'children' in struct:
+    if 'children' in struct or 'attributes' in struct:
         print("\\section{Fields}{")
-        for child in struct['children']:
-            print("$", child['name'], " - ", sep='', end='')
-            if child['type'] == 'Table':
-                print("A data.frame\\cr")
-            elif child['type'] == 'Matrix':
-                print("A matrix\\cr")
-            elif child['type'] == 'type_string':
-                print("A character string\\cr")
-            elif child['type'] == 'type_real':
-                print("A numeric\\cr")
-            elif child['type'] == 'type_int':
-                print("An integer\\cr")
-            else:
-                print("A \link{so_", child['type'], "} object\\cr", sep='')
+        if 'children' in struct:
+            for child in struct['children']:
+                print("$", child['name'], " - ", sep='', end='')
+                if child['type'] == 'Table':
+                    print("A data.frame\\cr")
+                elif child['type'] == 'Matrix':
+                    print("A matrix\\cr")
+                elif child['type'] == 'type_string':
+                    print("A character string\\cr")
+                elif child['type'] == 'type_real':
+                    print("A numeric\\cr")
+                elif child['type'] == 'type_int':
+                    print("An integer\\cr")
+                else:
+                    print("A \link{so_", child['type'], "} object\\cr", sep='')
+        if 'attributes' in struct:
+            for attr in struct['attributes']:
+                print("$", attr, " - A character string attribute\\cr", sep='')
         print("}")
     print("\\keyword{so_", name, "}", sep='')
 
