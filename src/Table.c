@@ -4,7 +4,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 3 of the License, or (at your option) any later version.
  * 
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,14 +33,20 @@
 
 /** \memberof so_Table
  * Create a new empty so_Table structure.
- * \return A pointer to the newly created struct
+ * \return A pointer to the newly created struct or NULL if memory allocation failed
  * \sa so_Table_free
  */
 so_Table *so_Table_new(char *name)
 {
-    so_Table *table = extcalloc(sizeof(so_Table));
-    table->name = extstrdup(name);
-    table->reference_count = 1;
+    so_Table *table = calloc(sizeof(so_Table), 1);
+    if (table) {
+        table->name = xstrdup(name);
+        table->reference_count = 1;
+        if (!table->name) {
+            free(table);
+            table = NULL;
+        }
+    }
 
     return table;
 }

@@ -4,7 +4,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 3 of the License, or (at your option) any later version.
  * 
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -65,6 +65,18 @@ char *extstrdup(const char *str)
 
     return p;
 }
+
+char *xstrdup(const char *str)
+{
+    size_t len = 1 + strlen(str);
+    char *p = malloc(len);
+    if (p) {
+        memcpy(p, str, len);
+    }
+
+    return p;
+}
+
 
 char *extstrndup(const char *str, size_t n)
 {

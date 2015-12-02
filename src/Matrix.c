@@ -4,7 +4,7 @@
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * version 3 of the License, or (at your option) any later version.
  * 
  * his library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,14 +29,20 @@
 
 /** \memberof so_Matrix
  * Create a new empty so_Matrix structure.
- * \return A pointer to the newly created struct
+ * \return A pointer to the newly created struct or NULL if memory allocation failed
  * \sa so_Matrix_free
  */
 so_Matrix *so_Matrix_new(char *name)
 {
-    so_Matrix *matrix = extcalloc(sizeof(so_Matrix));
-    matrix->name = extstrdup(name);
-    matrix->reference_count = 1;
+    so_Matrix *matrix = calloc(sizeof(so_Matrix), 1);
+    if (matrix) {
+        matrix->name = xstrdup(name);
+        matrix->reference_count = 1;
+        if (!matrix->name) {
+            free(matrix);
+            matrix = NULL;
+        } 
+    }
     
     return matrix;
 }
