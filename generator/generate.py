@@ -28,8 +28,11 @@ from genclass import genclass
 if len(sys.argv) > 1 and sys.argv[1] == "clean":
     shutil.rmtree("../gen", True)
     for name in structure:
-        os.remove("../include/so/" + name + ".h")
-        os.remove("../include/so/private/" + name + ".h")
+        try:
+            os.remove("../include/so/" + name + ".h")
+            os.remove("../include/so/private/" + name + ".h")
+        except:
+            pass
     sys.exit()
     
 
