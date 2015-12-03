@@ -11,6 +11,7 @@ include/so/*
 !include/so/soext.h
 !include/so/Table.h
 !include/so/xml.h
+!include/so/SOBlock_ext.h
 include/so/private/*
 !include/so/private/column.h
 !include/so/private/estring.h
