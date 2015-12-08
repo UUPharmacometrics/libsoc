@@ -25,21 +25,21 @@ import common
 from structure import structure
 
 def get_R_type(so_type):
-    if child['type'] == 'Table':
+    if so_type == 'Table':
         is_type = 'data.frame'
-    elif child['type'] == 'estring':
+    elif so_type == 'estring':
         is_type = 'character'
-    elif child['type'] == 'Matrix':
+    elif so_type == 'Matrix':
         is_type = 'matrix'
-    elif child['type'] == 'type_string':
+    elif so_type == 'type_string':
         is_type = 'character'
-    elif child['type'] == 'type_real':
+    elif so_type == 'type_real':
         is_type = 'numeric'
-    elif child['type'] == 'type_int':
+    elif so_type == 'type_int':
         is_type = 'integer'
     else:
-        is_type = so_type
-    return so_type
+        is_type = 'so_' + so_type
+    return is_type
 
 def print_new(name):
     print("SEXP r_so_", name, "_new()", sep='')
@@ -207,7 +207,12 @@ def print_includes():
 
 def print_wrapper_functions(name, struct):
     print("so_", name, "_new <- function() {", sep='')
-    print("\t.Call(\"r_so_", name, "_new\")", sep='')
+    print("\tobj = .Call(\"r_so_", name, "_new\")", sep='')
+    print("\tif (isnull(obj)) {")
+    print("\t\terror(\"Failed to create so_", name, "\")", sep='')
+    print("\t} else {")
+    print("\t\treturn(obj)")
+    print("\t}")
     print("}")
     print()
     print("so_", name, "_free <- function(self) {", sep='')
@@ -283,9 +288,7 @@ def print_accessors(name, struct):
         print("\t\t\tso_", name, "_get_", attr, "(.self$.cobj)", sep='')
         print("\t\t} else {")
 
-        print("\tif (!is.character(value)) {")
-        print("\t\tstop(\"value of the '", attr, "' attribute must be a character string\")", sep='')
-        print("\t}")
+        print("\tstopifnot(is.character(value), length(value) == 1)")
 
         print("\t\t\tso_", name, "_set_", attr, "(.self$.cobj, value)", sep='')
         print("\t\t}")
