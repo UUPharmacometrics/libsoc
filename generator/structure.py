@@ -20,7 +20,7 @@
 
 # List of classes that need name as input to _new
 need_name = [
-    'Table', 'Matrix', 'estring'
+    'Table', 'Matrix'
 ]
 
 structure = {

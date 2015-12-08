@@ -27,8 +27,6 @@ from structure import structure
 def get_R_type(so_type):
     if so_type == 'Table':
         is_type = 'data.frame'
-    elif so_type == 'estring':
-        is_type = 'character'
     elif so_type == 'Matrix':
         is_type = 'matrix'
     elif so_type == 'type_string':
@@ -132,8 +130,6 @@ def print_get_child(name, child):
     print(");")
     if child['type'] == 'Table':
         print("\tSEXP result = table2df(child);")
-    elif child['type'] == 'estring':
-        print("\tSEXP result = estring2character(child);")
     elif child['type'] == 'type_string':
         print("\tif (!child) {")
         print("\t\treturn R_NilValue;")
@@ -171,12 +167,6 @@ def print_set_child(name, child):
     if child['type'] == "Table":
         print("\tso_Table *table = df2table(child, \"", child['name'], "\");", sep='')
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), table);", sep='')
-    elif child['type'] == "estring":
-        prefix = ''
-        if child.get('prefix', False):
-            prefix = child['prefix'] + ":"
-        print("\tso_estring *estring = character2estring(child, \"", prefix, child['name'], "\");", sep='')
-        print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), estring);", sep='')
     elif child['type'] == 'type_string':
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), (char *) CHAR(STRING_ELT(child, 0)));", sep='')
     elif child['type'] == 'type_real':
@@ -333,7 +323,7 @@ def print_accessors(name, struct):
                 print("\t\t\t\t}")
                 print("\t\t\t\treturn(a)")
                 print("\t\t\t}")
-            elif child['type'] == 'Table' or child['type'] == 'estring' or child['type'] == 'type_string' or child['type'] == 'type_real' or child['type'] == 'type_int' or child['type'] == 'Matrix':
+            elif child['type'] == 'Table' or child['type'] == 'type_string' or child['type'] == 'type_real' or child['type'] == 'type_int' or child['type'] == 'Matrix':
                 print("\t\t\tso_", name, "_get_", child['name'], "(.self$.cobj)", sep='')
             else:
                 print("\t\t\tchild = so_", name, "_get_", child['name'], "(.self$.cobj)", sep='')
@@ -344,7 +334,7 @@ def print_accessors(name, struct):
             print("\t\t} else {")
 
             R_type = get_R_type(child['type'])
-            if child['type'] == 'Table' or child['type'] == 'estring' or child['type'] == 'Matrix' or child['type'] == 'type_string' or child['type'] == 'type_real' or child['type'] == 'type_int':
+            if child['type'] == 'Table' or child['type'] == 'Matrix' or child['type'] == 'type_string' or child['type'] == 'type_real' or child['type'] == 'type_int':
                 print("\t\t\tif (!is(value, \"", R_type,"\")) {", sep='')
                 print("\t\t\t\tstop(\"object must be of type '", R_type, "'\")", sep='')
                 print("\t\t\t}")
