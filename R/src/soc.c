@@ -235,27 +235,3 @@ SEXP matrix2Rmatrix(so_Matrix *matrix)
 
     return R_matrix;
 }
-
-SEXP estring2character(so_estring *estring)
-{
-    if (!estring) {
-        return R_NilValue;
-    }
-
-    char *c_string = so_estring_get_string(estring);
-
-    SEXP string;
-    PROTECT(string = NEW_STRING(1)); 
-    SET_STRING_ELT(string, 0, mkChar(c_string));
-    UNPROTECT(1);
-
-    return string;
-}
-
-so_estring *character2estring(SEXP string, char *name)
-{
-    so_estring *estring = so_estring_new(name);
-    so_estring_set_string(estring, (char *) CHAR(STRING_ELT(string, 0)));
-
-    return estring;
-}

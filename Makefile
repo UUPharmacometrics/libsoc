@@ -1,7 +1,7 @@
 GEN_SRCS := $(wildcard gen/*.c)
 OBJS := $(GEN_SRCS:.c=.o)
 OBJS_NODIR := $(notdir $(OBJS))
-CODE := soext.c SOBlock_ext.c util.c Table.c column.c common_types.c Matrix.c estring.c
+CODE := soext.c SOBlock_ext.c util.c Table.c column.c common_types.c Matrix.c
 CODEOBJS := $(CODE:.c=.o)
 
 CC := gcc
@@ -12,7 +12,7 @@ LIBS := -lxml2
 VPATH := gen
 
 libsoc.so: $(OBJS_NODIR) $(CODEOBJS)
-	$(CC) -shared -o libsoc.so $(OBJS_NODIR) soext.o SOBlock_ext.o util.o Table.o column.o common_types.o Matrix.o estring.o $(LIBS) -std=c99 -pedantic
+	$(CC) -shared -o libsoc.so $(OBJS_NODIR) soext.o SOBlock_ext.o util.o Table.o column.o common_types.o Matrix.o $(LIBS) -std=c99 -pedantic
 
 
 soext.o: src/soext.c include/so/soext.h 
@@ -35,9 +35,6 @@ common_types.o: src/common_types.c include/pharmml/common_types.h
 
 Matrix.o: src/Matrix.c include/so/Matrix.h include/so/private/Matrix.h 
 	$(CC) $(CFLAGS) src/Matrix.c
-
-estring.o: src/estring.c include/so/estring.h include/so/private/estring.h 
-	$(CC) $(CFLAGS) src/estring.c
 
 gen/%.o: gen/%.c include/so/%.h include/so/private/%.h
 	$(CC) $(CFLAGS) $<
