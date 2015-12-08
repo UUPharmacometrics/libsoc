@@ -30,7 +30,7 @@
 /** \memberof so_Matrix
  * Create a new empty so_Matrix structure.
  * \return A pointer to the newly created struct or NULL if memory allocation failed
- * \sa so_Matrix_free
+ * \sa so_Matrix_copy, so_Matrix_free
  */
 so_Matrix *so_Matrix_new(char *name)
 {
@@ -45,6 +45,28 @@ so_Matrix *so_Matrix_new(char *name)
     }
     
     return matrix;
+}
+
+/** \memberof so_Matrix
+ * Create a copy of a so_Matrix structure. 
+ * \return A pointer to the Matrix copy or NULL if memory allocation failed
+ * \sa so_Matrix_new
+ */
+so_Matrix *so_Matrix_copy(so_Matrix *source)
+{
+    so_Matrix *dest = so_Matrix_new(source->name);
+    if (dest) {
+        so_Matrix_set_size(dest, source->numrows, source->numcols);
+        memcpy(dest->data, source->data, source->numrows * source->numcols * sizeof(double));
+        for (int i = 0; i < source->numrows; i++) {
+           dest->rownames[i] = extstrdup(source->rownames[i]); 
+        }
+        for (int i = 0; i < source->numcols; i++) {
+            dest->colnames[i] = extstrdup(source->colnames[i]);
+        }
+    }
+
+    return dest;
 }
 
 /** \memberof so_Matrix

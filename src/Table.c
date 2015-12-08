@@ -34,7 +34,7 @@
 /** \memberof so_Table
  * Create a new empty so_Table structure.
  * \return A pointer to the newly created struct or NULL if memory allocation failed
- * \sa so_Table_free
+ * \sa so_Table_copy, so_Table_free
  */
 so_Table *so_Table_new(char *name)
 {
@@ -52,6 +52,28 @@ so_Table *so_Table_new(char *name)
 }
 
 /** \memberof so_Table
+ * Create a copy of a so_Table structure. 
+ * \return A pointer to the Table copy or NULL if memory allocation failed
+ * \sa so_Table_new
+ */
+so_Table *so_Table_copy(so_Table *source)
+{
+    so_Table *dest = so_Table_new(source->name);
+    dest->numrows = source->numrows;
+    if (dest) {
+        for (int i = 0; i < source->numcols; i++) {
+            so_Table_new_column(dest,
+                source->columns[i]->columnId,
+                source->columns[i]->columnType,
+                source->columns[i]->valueType,
+                source->columns[i]->column);
+        } 
+    }
+
+    return dest;
+}
+
+/** \memberof so_Table
  * Free all memory associated with an so_Table structure
  * without checking the reference count
  * \param self - a pointer to the structure to free
@@ -63,6 +85,8 @@ void so_Table_free(so_Table *self)
         for (int i = 0; i < self->numcols; i++) {
             so_Column_free(self->columns[i]);
         }
+        free(self->oid);
+        free(self->path);
         free(self->name);
         free(self);
     }

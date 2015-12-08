@@ -20,12 +20,10 @@
 
 #include <string.h>
 
-/** \struct so_Matrix
-	 \brief A structure representing an element containing a ct:Matrix
-*/
 typedef struct so_Matrix so_Matrix;
 
 so_Matrix *so_Matrix_new(char *name);
+so_Matrix *so_Matrix_copy(so_Matrix *source);
 void so_Matrix_free(so_Matrix *self);
 void so_Matrix_ref(so_Matrix *self);
 void so_Matrix_unref(so_Matrix *self);
