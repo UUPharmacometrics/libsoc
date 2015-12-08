@@ -69,15 +69,21 @@ class genclass:
             print("char *name", end='', file=f)
         print(")", file=f)
         print("{", file=f);
-        print("\tso_", self.name, " *object = extcalloc(sizeof(so_", self.name, "));", sep='', file=f)
-        print("\tobject->reference_count = 1;", file=f)
-        print(file=f)
+        print("\tso_", self.name, " *object = calloc(sizeof(so_", self.name, "), 1);", sep='', file=f)
+        print("\tif (object) {", file=f)
+        print("\t\tobject->reference_count = 1;", file=f)
         if self.extends:
-            print("\tobject->base = so_", self.extends, "_new(", end='', sep='', file=f)
+            print("\t\tobject->base = so_", self.extends, "_new(", end='', sep='', file=f)
             if self.extends in need_name:
                 print("name", sep='', end='', file=f)
             print(");", file=f)
-            print(file=f)
+            print("\t\tif (!object->base) {", file=f)
+            print("\t\t\tfree(object);", file=f)
+            print("\t\t\tobject = NULL;", file=f)
+            print("\t\t}", file=f)
+
+        print("\t}", file=f)
+        print(file=f)
         print("\treturn object;", file=f)
         print("}", file=f)
         print(file=f)
@@ -241,9 +247,17 @@ class genclass:
                         print(e['name'], '"', sep='', end='', file=f)
                     print(");", sep='', file=f)
                     if is_array:
-                        print("\tself->num_", e['name'], "++;", sep='', file=f)
-                        print("\tself->", e['name'], " = extrealloc(self->", e['name'], ", self->num_", e['name'], " * sizeof(so_", e['type'], " *));", sep='', file=f)
-                        print("\tself->", e['name'], "[self->num_", e['name'], " - 1] = obj;", sep='', file=f)
+                        print("\tif (obj) {", file=f)
+                        print("\t\tso_", e['type'], " **newblock = extrealloc(self->", e['name'], ", (self->num_", e['name'], " + 1) * sizeof(so_", e['type'], " *));", sep='', file=f)
+                        print("\t\tif (newblock) {", file=f)
+                        print("\t\t\tself->", e['name'], " = newblock;", sep='', file=f)
+                        print("\t\t\tself->", e['name'], "[self->num_", e['name'], "] = obj;", sep='', file=f)
+                        print("\t\t\tself->num_", e['name'], "++;", sep='', file=f)
+                        print("\t\t} else {", file=f)
+                        print("\t\t\tso_", e['type'], "_free(obj);", sep='', file=f)
+                        print("\t\t\tobj = NULL;", file=f)
+                        print("\t\t}", file=f)
+                        print("\t}", file=f)
                     else:
                         print("\tself->", e['name'], " = obj;", sep='', file=f)
                     print("\treturn obj;", file=f)
@@ -536,7 +550,7 @@ class genclass:
             # function prototypes
             print("/** \\memberof so_", self.name, sep='', file=f)
             print(" * Create a new empty so_", self.name, " structure.", sep='', file=f)
-            print(" * \\return A pointer to the newly created struct", file=f)
+            print(" * \\return A pointer to the newly created struct or NULL if memory allocation failed", file=f)
             print(" * \\sa so_", self.name, "_free", sep='', file=f)
             print(" */", file=f)
             
@@ -643,7 +657,7 @@ class genclass:
                         print("/** \\memberof so_", self.name, sep='', file=f)
                         print(" * Create a new ", e['name'], " element and insert it into the so_", self.name, sep='', file=f)
                         print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
-                        print(" * \\return A pointer to the newly created structure", file=f)
+                        print(" * \\return A pointer to the newly created structure or NULL if memory allocation failed", file=f)
                         print(" */", file=f)
 
                         print("so_", e['type'], " *so_", self.name, "_create_", e['name'], "(so_", self.name, " *self);", sep='', file=f)
