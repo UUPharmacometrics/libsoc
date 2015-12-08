@@ -38,6 +38,7 @@ class genclass:
             self.c_file = f
             self.create_includes()
             self.create_new()
+            self.create_copy()
             self.create_free()
             self.create_ref_unref()
             self.create_getters()
@@ -85,6 +86,44 @@ class genclass:
         print("\t}", file=f)
         print(file=f)
         print("\treturn object;", file=f)
+        print("}", file=f)
+        print(file=f)
+
+    def create_copy(self):
+
+        def copy_type(so_type, name, array=False):
+            if so_type == 'type_string':
+                result = "extstrdup(self->" + name + ");"
+            elif so_type == 'type_real' or so_type == 'type_int':
+                result = "self->" + name + ";"
+            else:
+                result = "so_" + so_type + "_copy(self->" + name
+                if array:
+                    result += "[i]"
+                result += ");"
+            return result
+
+        f = self.c_file
+        print("so_", self.name, " *so_", self.name, "_copy(so_", self.name, " *self)", sep='', file=f)
+        print("{", file=f)
+        print("\tso_", self.name, " *dest = so_", self.name, "_new(", end='', sep='', file=f)
+        if self.name in need_name:
+            print("self->name", file=f) 
+        print(");", file=f)
+        if self.extends:
+            print("\tdest->base = so_", self.extends, "_copy(self->base);", sep='', file=f)
+        if self.attributes:
+            for attr in self.attributes:
+                print("\tdest->", attr, " = extstrdup(self->", attr, ");", sep='', file=f)
+        if self.children:
+            for e in self.children:
+                if e.get('array', False):
+                    print("\tdest->", e['name'], " = extmalloc(self->num_", e['name'], " * sizeof(so_", e['type'], " *));", sep='', file=f)
+                    print("\tfor (int i = 0; i < self->num_", e['name'], "; i++) {", sep='', file=f)
+                    print("\t\tdest->", e['name'], "[i] = ", copy_type(e['type'], e['name'], array=True), sep='', file=f)
+                    print("\t}", file=f)
+                else:
+                    print("\tdest->", e['name'], " = ", copy_type(e['type'], e['name']), sep='', file=f)
         print("}", file=f)
         print(file=f)
 
@@ -551,10 +590,18 @@ class genclass:
             print("/** \\memberof so_", self.name, sep='', file=f)
             print(" * Create a new empty so_", self.name, " structure.", sep='', file=f)
             print(" * \\return A pointer to the newly created struct or NULL if memory allocation failed", file=f)
-            print(" * \\sa so_", self.name, "_free", sep='', file=f)
+            print(" * \\sa so_", self.name, "_copy, so_", self.name, "_free", sep='', file=f)
             print(" */", file=f)
             
             print("so_", self.name, " *so_", self.name, "_new();", sep='', file=f)
+
+            print("/** \\memberof so_", self.name, sep='', file=f)
+            print(" * Create a copy of a so_", self.name, " structure.", sep='', file=f)
+            print(" * \\return A pointer to the newly created struct or NULL if memory allocation failed", file=f)
+            print(" * \\sa so_", self.name, "_new", sep='', file=f)
+            print(" */", file=f)
+
+            print("so_", self.name, " *so_", self.name, "_copy(so_", self.name, " *self);", sep='', file=f)
 
             print("/** \\memberof so_", self.name, sep='', file=f)
             print(" * Free all memory associated with a so_", self.name, " structure and its children.", sep='', file=f)
