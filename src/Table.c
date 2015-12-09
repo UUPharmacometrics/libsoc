@@ -59,8 +59,8 @@ so_Table *so_Table_new(char *name)
 so_Table *so_Table_copy(so_Table *source)
 {
     so_Table *dest = so_Table_new(source->name);
-    dest->numrows = source->numrows;
     if (dest) {
+        dest->numrows = source->numrows;
         for (int i = 0; i < source->numcols; i++) {
             so_Table_new_column(dest,
                 source->columns[i]->columnId,

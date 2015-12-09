@@ -120,10 +120,14 @@ class genclass:
                 if e.get('array', False):
                     print("\tdest->", e['name'], " = extmalloc(self->num_", e['name'], " * sizeof(so_", e['type'], " *));", sep='', file=f)
                     print("\tfor (int i = 0; i < self->num_", e['name'], "; i++) {", sep='', file=f)
+                    # Should not need check for NULL here
                     print("\t\tdest->", e['name'], "[i] = ", copy_type(e['type'], e['name'], array=True), sep='', file=f)
                     print("\t}", file=f)
                 else:
-                    print("\tdest->", e['name'], " = ", copy_type(e['type'], e['name']), sep='', file=f)
+                    print("\tif (self->", e['name'], ") {", sep='', file=f)
+                    print("\t\tdest->", e['name'], " = ", copy_type(e['type'], e['name']), sep='', file=f)
+                    print("\t}", file=f)
+        print("\treturn dest;", file=f)
         print("}", file=f)
         print(file=f)
 
