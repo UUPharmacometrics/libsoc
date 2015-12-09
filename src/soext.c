@@ -116,6 +116,8 @@ void so_SO_write(so_SO *self, char *filename, int pretty)
     xmlDocSetRootElement(doc, root);
 
     xmlSaveFormatFileEnc(filename, doc, "UTF-8", pretty);
+
+    xmlFreeDoc(doc);
 }
 
 /** \memberof so_SO
