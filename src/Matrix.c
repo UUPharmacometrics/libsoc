@@ -15,6 +15,7 @@
  * License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdbool.h>
 #include <libxml/SAX.h>
 #include <libxml/tree.h>
 
@@ -56,13 +57,32 @@ so_Matrix *so_Matrix_copy(so_Matrix *source)
 {
     so_Matrix *dest = so_Matrix_new(source->name);
     if (dest) {
-        so_Matrix_set_size(dest, source->numrows, source->numcols);
-        memcpy(dest->data, source->data, source->numrows * source->numcols * sizeof(double));
-        for (int i = 0; i < source->numrows; i++) {
-           dest->rownames[i] = extstrdup(source->rownames[i]); 
+        bool fail = false;
+        if (so_Matrix_set_size(dest, source->numrows, source->numcols) != 0) {
+            memcpy(dest->data, source->data, source->numrows * source->numcols * sizeof(double));
+            for (int i = 0; i < source->numrows; i++) {
+                dest->rownames[i] = xstrdup(source->rownames[i]); 
+                if (!dest->rownames[i]) {
+                    fail = true;
+                    break;
+                }
+            }
+            if (!fail) {
+                for (int i = 0; i < source->numcols; i++) {
+                    dest->colnames[i] = xstrdup(source->colnames[i]);
+                    if (!dest->colnames[i]) {
+                        fail = true;
+                        break;
+                    }
+                }
+            }
+        } else {
+            fail = true;
         }
-        for (int i = 0; i < source->numcols; i++) {
-            dest->colnames[i] = extstrdup(source->colnames[i]);
+
+        if (fail) {
+            so_Matrix_free(dest);
+            dest = NULL;
         }
     }
 
@@ -165,6 +185,9 @@ int so_Matrix_set_size(so_Matrix *self, int numrows, int numcols)
         free(self->data);
         free(self->colnames);
         free(self->rownames);
+        self->data = NULL;
+        self->colnames = NULL;
+        self->rownames = NULL;
         return 1;
     }
 }
