@@ -192,10 +192,13 @@ so_Matrix *Rmatrix2matrix(SEXP R_matrix, char *matrix_name)
     so_Matrix_set_size(matrix, numrows, numcols);
 
     for (int i = 0; i < numrows; i++) {
-        so_Matrix_set_RowNames(matrix, i, (char *) CHAR(STRING_ELT(rownames, i)));
+        if (so_Matrix_set_RowNames(matrix, i, (char *) CHAR(STRING_ELT(rownames, i))) != 0) {
+            error("Error in so_Matrix_set_RowNames");
+        }
     }
     for (int i = 0; i < numcols; i++) {
-        so_Matrix_set_ColumnNames(matrix, i, (char *) CHAR(STRING_ELT(colnames, i)));
+        if (so_Matrix_set_ColumnNames(matrix, i, (char *) CHAR(STRING_ELT(colnames, i))) != 0) {
+            error("Error in so_Matrix_set_ColumnNames");
     }
 
     memcpy(so_Matrix_get_data(matrix), REAL(R_matrix), numrows * numcols * sizeof(double)); 

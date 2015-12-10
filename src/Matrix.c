@@ -188,14 +188,20 @@ char *so_Matrix_get_ColumnNames(so_Matrix *self, int index)
  * \param self - pointer to an so_Matrix
  * \param index - index of the row
  * \param RowName - the name of the row
+ * \result - 0 for success
  * \sa so_Matrix_set_ColumnNames
  */
-void so_Matrix_set_RowNames(so_Matrix *self, int index, char *RowName)
+int so_Matrix_set_RowNames(so_Matrix *self, int index, char *RowName)
 {
     if (self->rownames[index]) {
         free(self->rownames[index]);
     }
-    self->rownames[index] = extstrdup(RowName);
+    char *new_name = xstrdup(RowName); 
+    if (!new_name) {
+        return 1;
+    }
+    self->rownames[index] = new_name;
+    return 0;
 }
 
 /** \memberof so_Matrix
@@ -203,14 +209,20 @@ void so_Matrix_set_RowNames(so_Matrix *self, int index, char *RowName)
  * \param self - pointer to an so_Matrix
  * \param index - index of the column
  * \param ColumnName - the name of the column
+ * \result - 0 for success
  * \sa so_Matrix_set_RowNames
  */
-void so_Matrix_set_ColumnNames(so_Matrix *self, int index, char *ColumnName)
+int so_Matrix_set_ColumnNames(so_Matrix *self, int index, char *ColumnName)
 {
     if (self->colnames[index]) {
         free(self->colnames[index]);
     }
-    self->colnames[index] = extstrdup(ColumnName);
+    char *new_name = xstrdup(ColumnName);
+    if (!new_name) {
+        return 1;
+    }
+    self->colnames[index] = new_name;
+    return 0;
 }
 
 /** \memberof so_Matrix
