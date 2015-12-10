@@ -149,14 +149,24 @@ int so_Matrix_get_number_of_rows(so_Matrix *self)
  * \param self - pointer to an so_Matrix
  * \param numrows - the number of rows to set
  * \param numcols - the number of columns to set
+ * \return - 0 for success
  */
-void so_Matrix_set_size(so_Matrix *self, int numrows, int numcols)
+int so_Matrix_set_size(so_Matrix *self, int numrows, int numcols)
 {
-    self->data = extcalloc(numcols * numrows * sizeof(double));
-    self->colnames = extcalloc(numcols * sizeof(char *));
-    self->rownames = extcalloc(numrows * sizeof(char *));
-    self->numrows = numrows;
-    self->numcols = numcols;
+    self->data = calloc(numcols * numrows * sizeof(double), 1);
+    self->colnames = calloc(numcols * sizeof(char *), 1);
+    self->rownames = calloc(numrows * sizeof(char *), 1);
+
+    if (self->data && self->colnames && self->rownames) {
+        self->numrows = numrows;
+        self->numcols = numcols;
+        return 0;
+    } else {
+        free(self->data);
+        free(self->colnames);
+        free(self->rownames);
+        return 1;
+    }
 }
 
 /** \memberof so_Matrix

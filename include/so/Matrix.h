@@ -29,7 +29,7 @@ void so_Matrix_ref(so_Matrix *self);
 void so_Matrix_unref(so_Matrix *self);
 int so_Matrix_get_number_of_columns(so_Matrix *self);
 int so_Matrix_get_number_of_rows(so_Matrix *self);
-void so_Matrix_set_size(so_Matrix *self, int numrows, int numcols);
+int so_Matrix_set_size(so_Matrix *self, int numrows, int numcols);
 char *so_Matrix_get_RowNames(so_Matrix *self, int index);
 char *so_Matrix_get_ColumnNames(so_Matrix *self, int index);
 int so_Matrix_set_RowNames(so_Matrix *self, int index, char *RowName);
