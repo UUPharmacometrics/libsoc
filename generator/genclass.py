@@ -234,10 +234,16 @@ class genclass:
         # setters for attributes
         if self.attributes:
             for a in self.attributes:
-                print("void so_", self.name, "_set_", a, "(so_", self.name, " *self, char *value)", sep='', file=f)
+                print("int so_", self.name, "_set_", a, "(so_", self.name, " *self, char *value)", sep='', file=f)
                 print("{", file=f)
-                print("\tfree(self->", a, ");", sep='', file=f)
-                print("\tself->", a, " = extstrdup(value);", sep='', file=f)
+                print("\tchar *new_value = xstrdup(value);", file=f)
+                print("\tif (new_value) {", file=f)
+                print("\t\tfree(self->", a, ");", sep='', file=f)
+                print("\t\tself->", a, " = new_value;", sep='', file=f)
+                print("\t\treturn 0;", file=f)
+                print("\t} else {", file=f)
+                print("\t\treturn 1;", file=f)
+                print("\t}", file=f)
                 print("}", file=f)
                 print(file=f)
 
@@ -636,10 +642,11 @@ class genclass:
                     print(" * Set the value of the ", a, " attribute", sep='', file=f)
                     print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
                     print(" * \\param value - A pointer to the attribute string", file=f)
+                    print(" * \\return 0 for success", file=f)
                     print(" * \\sa so_", self.name, "_get_", a, sep='', file=f)
                     print(" */", file=f)
 
-                    print("void so_", self.name, "_set_", a, "(so_", self.name, " *self, char *value);", sep='', file=f)
+                    print("int so_", self.name, "_set_", a, "(so_", self.name, " *self, char *value);", sep='', file=f)
 
             if self.children:
                 for e in self.children:
