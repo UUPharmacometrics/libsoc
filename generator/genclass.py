@@ -252,10 +252,16 @@ class genclass:
             for e in self.children:
                 if not e.get('array', False):       # No setters for arrays
                     if e['type'] == "type_string":
-                        print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, char *value)", sep='', file=f)
+                        print("int so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, char *value)", sep='', file=f)
                         print("{", file=f)
-                        print("\tfree(self->", e['name'], ");", sep='', file=f)
-                        print("\tself->", e['name'], " = extstrdup(value);", sep='', file=f)
+                        print("\tchar *new_value = xstrdup(value);", file=f)
+                        print("\tif (new_value) {", file=f)
+                        print("\t\tfree(self->", e['name'], ");", sep='', file=f)
+                        print("\t\tself->", e['name'], " = new_value;", sep='', file=f)
+                        print("\t\treturn 0;", file=f)
+                        print("\t} else {", file=f)
+                        print("\t\treturn 1;", file=f)
+                        print("\t}", file=f)
                         print("}", file=f)
                         print(file=f)
                     elif e['type'] == "type_real":
@@ -688,9 +694,11 @@ class genclass:
 
                 for e in self.children:
                     if not e.get('attribute', False):   # No setters for arrays
+                        return_type = "void"
                         if e['type'] == "type_string":
                             man_type = "string"
                             param_type = "char *"
+                            return_type = "int"
                         elif e['type'] == "type_real":
                             param_type = "double *"
                         elif e['type'] == "type_int":
@@ -705,10 +713,12 @@ class genclass:
                             print(" * \\param value - A pointer to the value to set or NULL to not include this element.", sep='', file=f)
                         else:
                             print(" * \\param value - A pointer to a \\a ", man_type, " to set.", sep='', file=f)
+                        if return_type == "int":
+                            print(" * \\return 0 for success", file=f)
                         print(" * \\sa so_", self.name, "_get_", e['name'], sep='', file=f)
                         print(" */", file=f)
 
-                        print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, ", param_type, "value);", sep='', file=f)
+                        print(return_type, " so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, ", param_type, "value);", sep='', file=f)
 
                 for e in self.children:
                     if e['type'] != "type_string" and e['type'] != "type_real" and e['type'] != "type_int":

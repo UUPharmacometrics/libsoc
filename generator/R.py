@@ -178,7 +178,10 @@ def print_set_child(name, child):
         print("\tso_Table *table = df2table(child, \"", child['name'], "\");", sep='')
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), table);", sep='')
     elif child['type'] == 'type_string':
-        print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), (char *) CHAR(STRING_ELT(child, 0)));", sep='')
+        print("\tint fail = so_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), (char *) CHAR(STRING_ELT(child, 0)));", sep='')
+        print("\tif (fail) {")
+        print("\t\terror(\"so_", name, "_set_", child['name'], " failed", sep='')
+        print("\t}")
     elif child['type'] == 'type_real':
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), REAL(child));", sep='')
     elif child['type'] == 'type_int':
