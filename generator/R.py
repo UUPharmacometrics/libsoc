@@ -43,6 +43,9 @@ def print_new(name):
     print("SEXP r_so_", name, "_new()", sep='')
     print("{")
     print("\tso_", name, " *obj = so_", name, "_new();", sep='')
+    print("\tif (!obj) {")
+    print("\t\terror(\"Failed to create so_", name, " object\")", sep='')
+    print("\t}")
     print("\treturn R_MakeExternalPtr(obj, R_NilValue, R_NilValue);")
     print("}")
 
@@ -50,6 +53,9 @@ def print_copy(name):
     print("SEXP r_so_", name, "_copy(SEXP self)", sep='')
     print("{")
     print("\tso_", name, " *obj = so_", name, "_copy(R_ExternalPtrAddr(self));", sep='')
+    print("\tif (!obj) {")
+    print("\t\terror(\"Failed to copy so_", name, " object\")", sep='')
+    print("\t}")
     print("\treturn R_MakeExternalPtr(obj, R_NilValue, R_NilValue);")
     print("}")
 
@@ -211,11 +217,6 @@ def print_includes():
 def print_wrapper_functions(name, struct):
     print("so_", name, "_new <- function() {", sep='')
     print("\tobj = .Call(\"r_so_", name, "_new\")", sep='')
-    print("\tif (isnull(obj)) {")
-    print("\t\terror(\"Failed to create so_", name, "\")", sep='')
-    print("\t} else {")
-    print("\t\treturn(obj)")
-    print("\t}")
     print("}")
     print()
     print("so_", name, "_copy <- function(self) {", sep='')

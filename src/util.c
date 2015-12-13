@@ -32,19 +32,6 @@ void *extmalloc(size_t size)
     return memory;
 }
 
-void *extcalloc(size_t size)
-{
-    void *memory = calloc(size, 1);
-
-    if (memory == NULL) {
-        printf("Out of memory, aborting.");
-        abort();
-    }
-
-    return memory;
-}
-
-
 void *extrealloc(void *memory, size_t size)
 {
     void *new = realloc(memory, size);
@@ -65,18 +52,6 @@ char *extstrdup(const char *str)
 
     return p;
 }
-
-char *xstrdup(const char *str)
-{
-    size_t len = 1 + strlen(str);
-    char *p = malloc(len);
-    if (p) {
-        memcpy(p, str, len);
-    }
-
-    return p;
-}
-
 
 char *extstrndup(const char *str, size_t n)
 {

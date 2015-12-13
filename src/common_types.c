@@ -117,3 +117,40 @@ char *pharmml_int_to_string(int x)
     snprintf(buffer, needed, "%d", x);
     return buffer;
 }
+
+char *pharmml_strdup(const char *str)
+{
+    size_t len = 1 + strlen(str);
+    char *p = malloc(len);
+    if (p) {
+        memcpy(p, str, len);
+    }
+
+    return p;
+}
+
+int pharmml_copy_string_array(char **source, char **dest, int length)
+{
+    int fail = 0;
+
+    for (int i = 0; i < length; i++) {
+        dest[i] = pharmml_strdup(source[i]);
+        if (!dest[i]) {
+            for (int j = 0; j < i; j++) {
+                free(dest[j]);
+            }
+            fail = 1;
+            break;
+        }
+    }
+
+    return fail;
+}
+
+void pharmml_free_string_array(char **array, int length)
+{
+    for (int i = 0; i < length; i++) {
+        free(array[i]);
+    }
+    free(array);
+}

@@ -63,6 +63,10 @@ so_Table *df2table(SEXP df, char *table_name)
 {
     so_Table *table = so_Table_new(table_name);
 
+    if (!table) {
+        error("Failed to create so_Table object");
+    }
+
     int numcols = length(df); 
 
     int numrows = length(VECTOR_ELT(df, 0));
@@ -181,6 +185,10 @@ SEXP table2df(so_Table *table)
 so_Matrix *Rmatrix2matrix(SEXP R_matrix, char *matrix_name)
 {
     so_Matrix *matrix = so_Matrix_new(matrix_name);
+
+    if (!matrix) {
+        error("Failed to create so_Matrix object");
+    }
 
     SEXP dimnames = getAttrib(R_matrix, R_DimNamesSymbol);
     SEXP rownames = VECTOR_ELT(dimnames, 0);

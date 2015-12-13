@@ -20,7 +20,7 @@
 
 so_Column *so_Column_new()
 {
-    so_Column *col = extcalloc(sizeof(so_Column));
+    so_Column *col = calloc(sizeof(so_Column), 1);
 
     return col;
 }

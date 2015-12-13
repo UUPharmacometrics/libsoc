@@ -40,7 +40,7 @@ so_Table *so_Table_new(char *name)
 {
     so_Table *table = calloc(sizeof(so_Table), 1);
     if (table) {
-        table->name = xstrdup(name);
+        table->name = pharmml_strdup(name);
         table->reference_count = 1;
         if (!table->name) {
             free(table);
@@ -62,11 +62,15 @@ so_Table *so_Table_copy(so_Table *source)
     if (dest) {
         dest->numrows = source->numrows;
         for (int i = 0; i < source->numcols; i++) {
-            so_Table_new_column(dest,
+            int fail = so_Table_new_column(dest,
                 source->columns[i]->columnId,
                 source->columns[i]->columnType,
                 source->columns[i]->valueType,
                 source->columns[i]->column);
+            if (fail) {
+                so_Table_free(dest);
+                return NULL;
+            }
         } 
     }
 
@@ -292,31 +296,48 @@ void *so_Table_get_column_from_name(so_Table *self, char *name)
  * \param columnType - type of column
  * \param valueType - valueType of column
  * \param data - array of column data
+ * \return 0 for success
  * \sa so_Table_new_column_no_copy
  */
-void so_Table_new_column(so_Table *self, char *columnId, pharmml_columnType columnType, pharmml_valueType valueType, void *data)
+int so_Table_new_column(so_Table *self, char *columnId, pharmml_columnType columnType, pharmml_valueType valueType, void *data)
 {
     int element_size = pharmml_valueType_to_size(valueType);
 
-    void *buffer = extmalloc(element_size * self->numrows);
+    void *buffer = malloc(element_size * self->numrows);
     if (valueType != PHARMML_VALUETYPE_STRING) {
         memcpy(buffer, data, element_size * self->numrows);
     } else {
-        char **string_buffer = (char **) buffer;
-        char **source = (char **) data;
-        for (int i = 0; i < self->numrows; i++) {
-            string_buffer[i] = extstrdup(source[i]);
+        int fail = pharmml_copy_string_array((char **) data, (char **) buffer, self->numrows);
+        if (fail) {
+            free(buffer);
+            return fail;
         }
     }
 
     so_Column *column = so_Column_new();
+    if (!column) {
+        if (valueType == PHARMML_VALUETYPE_STRING) {
+            pharmml_free_string_array(buffer, self->numrows);
+        }
+        return 1;
+    }
+
     so_Column_set_valueType(column, valueType);
     so_Column_set_columnType(column, columnType);
     so_Column_set_columnId(column, columnId);
     column->column = buffer;
+
+    so_Column **column_array = realloc(self->columns, (self->numcols + 1) * sizeof(so_Column *)); 
+    if (!column_array) {
+        so_Column_free(column);
+        return 1;
+    }
+
+    self->columns = column_array;
+    self->columns[self->numcols] = column;
     self->numcols++;
-    self->columns = extrealloc(self->columns, self->numcols * sizeof(so_Column *));
-    self->columns[self->numcols - 1] = column;
+
+    return 0;
 }
 
 /** \memberof so_Table

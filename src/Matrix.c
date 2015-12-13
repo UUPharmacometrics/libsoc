@@ -37,7 +37,7 @@ so_Matrix *so_Matrix_new(char *name)
 {
     so_Matrix *matrix = calloc(sizeof(so_Matrix), 1);
     if (matrix) {
-        matrix->name = xstrdup(name);
+        matrix->name = pharmml_strdup(name);
         matrix->reference_count = 1;
         if (!matrix->name) {
             free(matrix);
@@ -61,7 +61,7 @@ so_Matrix *so_Matrix_copy(so_Matrix *source)
         if (so_Matrix_set_size(dest, source->numrows, source->numcols) != 0) {
             memcpy(dest->data, source->data, source->numrows * source->numcols * sizeof(double));
             for (int i = 0; i < source->numrows; i++) {
-                dest->rownames[i] = xstrdup(source->rownames[i]); 
+                dest->rownames[i] = pharmml_strdup(source->rownames[i]); 
                 if (!dest->rownames[i]) {
                     fail = true;
                     break;
@@ -69,7 +69,7 @@ so_Matrix *so_Matrix_copy(so_Matrix *source)
             }
             if (!fail) {
                 for (int i = 0; i < source->numcols; i++) {
-                    dest->colnames[i] = xstrdup(source->colnames[i]);
+                    dest->colnames[i] = pharmml_strdup(source->colnames[i]);
                     if (!dest->colnames[i]) {
                         fail = true;
                         break;
@@ -229,7 +229,7 @@ int so_Matrix_set_RowNames(so_Matrix *self, int index, char *RowName)
     if (self->rownames[index]) {
         free(self->rownames[index]);
     }
-    char *new_name = xstrdup(RowName); 
+    char *new_name = pharmml_strdup(RowName); 
     if (!new_name) {
         return 1;
     }
@@ -250,7 +250,7 @@ int so_Matrix_set_ColumnNames(so_Matrix *self, int index, char *ColumnName)
     if (self->colnames[index]) {
         free(self->colnames[index]);
     }
-    char *new_name = xstrdup(ColumnName);
+    char *new_name = pharmml_strdup(ColumnName);
     if (!new_name) {
         return 1;
     }
