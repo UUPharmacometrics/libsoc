@@ -29,7 +29,8 @@ structure = {
             { 'name' : 'PharmMLRef', 'type' : 'PharmMLRef' },
             { 'name' : 'SOBlock', 'type' : 'SOBlock', 'array' : True },
         ],
-        'xpath' : 'SO'
+        'xpath' : 'SO',
+        'fields' : [ 'int error;' ]
     },
     'PharmMLRef' : {
         'attributes' : [

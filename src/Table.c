@@ -518,7 +518,7 @@ so_xml so_Table_xml(so_Table *self)
     return xml;
 }
 
-void so_Table_start_element(so_Table *table, const char *localname, int nb_attributes, const char **attributes)
+int so_Table_start_element(so_Table *table, const char *localname, int nb_attributes, const char **attributes)
 {
     if (strcmp("Definition", localname) == 0) {
         table->in_definition = 1;
@@ -526,6 +526,9 @@ void so_Table_start_element(so_Table *table, const char *localname, int nb_attri
         table->in_table = 1;
     } else if (table->in_definition && strcmp("Column", localname) == 0) {
         so_Column *col = so_Column_new();
+        if (!col) {
+            return 1;
+        }
         unsigned int index = 0;
         for (int indexAttribute = 0; indexAttribute < nb_attributes; ++indexAttribute, index += 5) {
             const char *localname = attributes[index];
@@ -537,7 +540,11 @@ void so_Table_start_element(so_Table *table, const char *localname, int nb_attri
             if (strcmp(localname, "columnId") == 0) {
                 char end_char = *valueEnd;
                 *valueEnd = '\0';
-                so_Column_set_columnId(col, valueBegin);
+                int fail = so_Column_set_columnId(col, valueBegin);
+                if (fail) {
+                    so_Column_free(col);
+                    return fail;
+                }
                 *valueEnd = end_char;
             } else if (strcmp(localname, "columnType") == 0) {
                 char end_char = *valueEnd;
@@ -552,9 +559,14 @@ void so_Table_start_element(so_Table *table, const char *localname, int nb_attri
             }
         }
 
+        so_Column **new_columns = realloc(table->columns, (table->numcols + 1) * sizeof(so_Column *));
+        if (!new_columns) {
+            so_Column_free(col);
+            return 1;
+        }
+        table->columns = new_columns;
+        table->columns[table->numcols] = col;
         table->numcols++;
-        table->columns = extrealloc(table->columns, table->numcols * sizeof(so_Column *));
-        table->columns[table->numcols - 1] = col;
     } else if (table->in_table && strcmp("Row", localname) == 0) {
         table->numrows++;
         table->current_column = 0;
@@ -577,13 +589,19 @@ void so_Table_start_element(so_Table *table, const char *localname, int nb_attri
     } else if (table->in_row && strcmp("True", localname) == 0) {
         if (!table->defer_reading) {
             so_Column *column = table->columns[table->current_column];
-            so_Column_add_boolean(column, 1);
+            int fail = so_Column_add_boolean(column, 1);
+            if (fail) {
+                return 1;
+            }
             table->current_column++;
         }
     } else if (table->in_row && strcmp("False", localname) == 0) {
         if (!table->defer_reading) {
             so_Column *column = table->columns[table->current_column];
-            so_Column_add_boolean(column, 0);
+            int fail = so_Column_add_boolean(column, 0);
+            if (fail) {
+                return 1;
+            }
             table->current_column++;
         }
     }

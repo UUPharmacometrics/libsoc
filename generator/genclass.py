@@ -30,6 +30,7 @@ class genclass:
         self.xpath = entry['xpath']
         self.extends = entry.get('extends', None)
         self.element_name = entry.get('element_name', None)
+        self.fields = entry.get('fields', None)
 
     def create_code(self):
         with open(self.name + ".c", "w") as f:
@@ -442,7 +443,7 @@ class genclass:
 
     def create_start(self):
         f = self.c_file
-        print("void so_", self.name, "_start_element(so_", self.name, " *self, const char *localname, int nb_attributes, const char **attributes)", sep='', file=f)
+        print("int so_", self.name, "_start_element(so_", self.name, " *self, const char *localname, int nb_attributes, const char **attributes)", sep='', file=f)
         print("{", file=f)
 
         if self.children:
@@ -457,9 +458,12 @@ class genclass:
                     print("if (self->in_", self.children[i]['name'], ") {", sep='', file=f)
                     is_array = self.children[i].get('array', False)
                     if is_array:
-                        print("\t\tso_", self.children[i]['type'], "_start_element(self->", self.children[i]['name'], "[self->num_", self.children[i]['name'], " - 1], localname, nb_attributes, attributes);", sep='', file=f)
+                        print("\t\tint fail = so_", self.children[i]['type'], "_start_element(self->", self.children[i]['name'], "[self->num_", self.children[i]['name'], " - 1], localname, nb_attributes, attributes);", sep='', file=f)
                     else:
-                        print("\t\tso_", self.children[i]['type'], "_start_element(self->", self.children[i]['name'], ", localname, nb_attributes, attributes);", sep='', file=f)
+                        print("\t\tint fail = so_", self.children[i]['type'], "_start_element(self->", self.children[i]['name'], ", localname, nb_attributes, attributes);", sep='', file=f)
+                    print("\t\tif (fail) {", sep='', file=f)
+                    print("\t\t\treturn fail;", file=f)
+                    print("\t\t}", sep='', file=f)
                     print("\t}", end='', file=f)
 
             for e in self.children:
@@ -471,6 +475,9 @@ class genclass:
                 print('if (strcmp(localname, "', e['name'], '") == 0) {', sep='', file=f)
                 if e['type'] != "type_string" and e['type'] != "type_real" and e['type'] != "type_int":
                     print("\t\tso_", e['type'], " *", e['name'], " = so_", self.name, "_create_", e['name'], "(self);", sep='', file=f)
+                    print("\t\tif (!", e['name'], ") {", sep='', file=f)
+                    print("\t\t\treturn 1;", file=f)
+                    print("\t\t}", file=f)
                     if e['type'] in self.structure:
                         if 'attributes' in self.structure[e['type']]:
                             print("\t\tso_", e['type'], "_init_attributes(", e['name'], ", nb_attributes, attributes);", sep='', file=f)
@@ -481,13 +488,18 @@ class genclass:
             if self.children:
                 print(" else {", file=f)
                 print("\t", end='', file=f)
-            print("\tso_", self.extends, "_start_element(self->base, localname, nb_attributes, attributes);", sep='', file=f)
+            print("\tint fail = so_", self.extends, "_start_element(self->base, localname, nb_attributes, attributes);", sep='', file=f)
+            print("\tif (fail) {", file=f)
+            print("\t\treturn fail;", file=f)
+            print("\t}", file=f)
+
             if self.children:
                 print("\t}", end='', file=f)
 
         if self.children:
             print(file=f)
 
+        print("\treturn 0;", file=f)
         print("}", file=f)
         print(file=f)
 
@@ -814,10 +826,13 @@ class genclass:
                     print("\tint in_", e['name'], ";", sep='', file=f)
 
             print("\tint reference_count;", file=f)
+            if self.fields:
+                for e in self.fields:
+                    print("\t", e, sep='', file=f)
             print("};", file=f)
      
             print(file=f)
-            print("void so_", self.name, "_start_element(so_", self.name, " *self, const char *localname, int nb_attributes, const char **attributes);", sep='', file=f)
+            print("int so_", self.name, "_start_element(so_", self.name, " *self, const char *localname, int nb_attributes, const char **attributes);", sep='', file=f)
             print("void so_", self.name, "_end_element(so_", self.name, " *self, const char *localname);", sep='', file=f)
             print("void so_", self.name, "_characters(so_", self.name, " *self, const char *ch, int len);", sep='', file=f)
             print("so_xml so_", self.name, "_xml(so_", self.name, " *self);", sep='', file=f)

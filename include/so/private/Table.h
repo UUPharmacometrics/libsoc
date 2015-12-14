@@ -43,7 +43,7 @@ struct so_Table {
 };
 
 so_xml so_Table_xml(so_Table *self);
-void so_Table_start_element(so_Table *table, const char *localname, int nb_attributes, const char **attributes);
+int so_Table_start_element(so_Table *table, const char *localname, int nb_attributes, const char **attributes);
 void so_Table_end_element(so_Table *table, const char *localname);
 void so_Table_characters(so_Table *table, const char *ch, int len);
 

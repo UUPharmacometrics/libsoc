@@ -39,7 +39,7 @@ struct so_Matrix {
 };
 
 so_xml so_Matrix_xml(so_Matrix *self);
-void so_Matrix_start_element(so_Matrix *self, const char *localname, int nb_attributes, const char **attributes);
+int so_Matrix_start_element(so_Matrix *self, const char *localname, int nb_attributes, const char **attributes);
 void so_Matrix_end_element(so_Matrix *self, const char *localname);
 void so_Matrix_characters(so_Matrix *self, const char *ch, int len);
 

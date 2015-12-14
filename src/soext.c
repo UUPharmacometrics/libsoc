@@ -36,7 +36,8 @@ void so_SO_on_start_element(void *ctx, const xmlChar *localname, const xmlChar *
 {
     char *name = (char *) localname;
     so_SO *so = (so_SO *) ctx;
-    so_SO_start_element(so, name, nb_attributes, (const char **) attributes);
+    int fail = so_SO_start_element(so, name, nb_attributes, (const char **) attributes);
+    so->error = fail;
 }
 
 void so_SO_on_end_element(void *ctx, const xmlChar *localname, const xmlChar *prefix, const xmlChar *URI)
@@ -87,6 +88,12 @@ so_SO *so_SO_read(char *filename)
         so_SO_free(so);
         xmlError *error = xmlGetLastError();
         last_error = error->message;
+        return NULL;
+    }
+
+    if (so->error) {
+        so_SO_free(so);
+        last_error = "Memory allocation error";
         return NULL;
     }
 }

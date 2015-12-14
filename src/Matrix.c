@@ -297,7 +297,7 @@ so_xml so_Matrix_xml(so_Matrix *self)
     return xml;
 }
 
-void so_Matrix_start_element(so_Matrix *self, const char *localname, int nb_attributes, const char **attributes)
+int so_Matrix_start_element(so_Matrix *self, const char *localname, int nb_attributes, const char **attributes)
 {
     if (strcmp("Matrix", localname) == 0) {
         self->in_matrix = 1;
@@ -312,6 +312,7 @@ void so_Matrix_start_element(so_Matrix *self, const char *localname, int nb_attr
     } else if (strcmp("Real", localname) == 0) {
         self->in_real = 1;
     }
+    return 0;
 }
 
 void so_Matrix_end_element(so_Matrix *self, const char *localname)
