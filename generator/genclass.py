@@ -330,7 +330,7 @@ class genclass:
                     print(");", sep='', file=f)
                     print("\tif (obj) {", file=f)
                     if is_array:
-                        print("\t\tso_", e['type'], " **newblock = extrealloc(self->", e['name'], ", (self->num_", e['name'], " + 1) * sizeof(so_", e['type'], " *));", sep='', file=f)
+                        print("\t\tso_", e['type'], " **newblock = realloc(self->", e['name'], ", (self->num_", e['name'], " + 1) * sizeof(so_", e['type'], " *));", sep='', file=f)
                         print("\t\tif (newblock) {", file=f)
                         print("\t\t\tself->", e['name'], " = newblock;", sep='', file=f)
                         print("\t\t\tself->", e['name'], "[self->num_", e['name'], "] = obj;", sep='', file=f)
