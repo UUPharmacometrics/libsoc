@@ -351,11 +351,16 @@ class genclass:
         if self.children:
             for e in self.children:
                 if e.get('array', False):
-                    print("void so_", self.name, "_add_", e['name'], "(so_", self.name, " *self, so_", e['type'], " *child)", sep='', file=f)
+                    print("int so_", self.name, "_add_", e['name'], "(so_", self.name, " *self, so_", e['type'], " *child)", sep='', file=f)
                     print("{", file=f)
+                    print("\tso_", e['type'], " **new_array = realloc(self->", e['name'], ", (self->num_", e['name'], " + 1) * sizeof(so_", e['type'], " *));", sep='', file=f)
+                    print("\tif (!new_array) {", file=f)
+                    print("\t\treturn 1;", file=f)
+                    print("\t}", file=f)
+                    print("\tself->", e['name'], " = new_array;", sep='', file=f)
+                    print("\tself->", e['name'], "[self->num_", e['name'], "] = child;", sep='', file=f)
                     print("\tself->num_", e['name'], "++;", sep='', file=f)
-                    print("\tself->", e['name'], " = extrealloc(self->", e['name'], ", self->num_", e['name'], " * sizeof(so_", e['type'], " *));", sep='', file=f)
-                    print("\tself->", e['name'], "[self->num_", e['name'], " - 1] = child;", sep='', file=f)
+                    print("\treturn 0;", file=f)
                     print("}", file=f)
                     print(file=f)
 
@@ -495,7 +500,11 @@ class genclass:
                             print("\t\t\treturn 1;", file=f)
                             print("\t\t}", file=f)
                             if e.get('array', False):
-                                print("\t\tso_", self.name, "_add_", e['name'], "(self, ", e['name'], ");", sep='', file=f)
+                                print("\t\tfail = so_", self.name, "_add_", e['name'], "(self, ", e['name'], ");", sep='', file=f)
+                                print("\t\tif (fail) {", file=f)
+                                print("\t\t\tso_", e['type'], "_free(", e['name'], ");", sep='', file=f)
+                                print("\t\t\treturn 1;", file=f)
+                                print("\t\t}", file=f)
                             else:
                                 print("\t\tso_", self.name, "_set_", e['name'], "(self, ", e['name'], ");", sep='', file=f)
                 print("\t\tself->in_", e['name'], " = 1;", sep='', file=f)
@@ -791,7 +800,7 @@ class genclass:
 
                         print("so_", e['type'], " *so_", self.name, "_create_", e['name'], "(so_", self.name, " *self);", sep='', file=f)
                         if e.get('array', False):
-                            print("void so_", self.name, "_add_", e['name'], "(so_", self.name, " *self, so_", e['type'], " *child);", sep='', file=f)
+                            print("int so_", self.name, "_add_", e['name'], "(so_", self.name, " *self, so_", e['type'], " *child);", sep='', file=f)
 
             print(file=f)
             print("#endif", file=f)

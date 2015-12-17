@@ -122,7 +122,10 @@ def print_get_number_of(name, child, cls):
 def print_add_child(name, child, cls):
     print("SEXP r_so_", name, "_add_", child, "(SEXP self, SEXP child)", sep='')
     print("{")
-    print("\tso_", name, "_add_", child, "(R_ExternalPtrAddr(self), R_ExternalPtrAddr(child));", sep='')
+    print("\tint fail = so_", name, "_add_", child, "(R_ExternalPtrAddr(self), R_ExternalPtrAddr(child));", sep='')
+    print("\tif (fail) {")
+    print("\t\terror(\"Failed to add ", child, " to ", name, "\");", sep='') 
+    print("\t}")
     print("\treturn(R_NilValue);")
     print("}")
 
