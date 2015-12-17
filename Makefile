@@ -4,10 +4,10 @@ OBJS_NODIR := $(notdir $(OBJS))
 CODE := soext.c SOBlock_ext.c util.c Table.c column.c common_types.c Matrix.c
 CODEOBJS := $(CODE:.c=.o)
 
-#CC := gcc
-#CFLAGS := -std=c99 -pedantic -c -g -fpic -I. -Iinclude `xml2-config --cflags`
-CFLAGS := -std=c99 -pedantic -c -g -fpic -I. -Iinclude
-CC := x86_64-w64-mingw32-gcc
+CC := gcc
+CFLAGS := -std=c99 -pedantic -c -g -fpic -I. -Iinclude `xml2-config --cflags`
+#CFLAGS := -std=c99 -pedantic -c -g -fpic -I. -Iinclude
+#CC := x86_64-w64-mingw32-gcc
 LIBS := -lxml2 
 
 VPATH := gen

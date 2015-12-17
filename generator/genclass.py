@@ -474,13 +474,30 @@ class genclass:
                     first = False
                 print('if (strcmp(localname, "', e['name'], '") == 0) {', sep='', file=f)
                 if e['type'] != "type_string" and e['type'] != "type_real" and e['type'] != "type_int":
-                    print("\t\tso_", e['type'], " *", e['name'], " = so_", self.name, "_create_", e['name'], "(self);", sep='', file=f)
+                    if e['type'] in self.structure and 'attributes' in self.structure[e['type']]:
+                        print("\t\tso_", e['type'], " *", e['name'], " = so_", e['type'], "_new(", end='', sep='', file=f)
+                        if e['type'] in need_name:  # FIXME this should be put into a function
+                            print('"', end='', file=f)
+                            if 'prefix' in e:
+                                print(e['prefix'], ":", sep='', end='', file=f)
+                            print(e['name'], '"', sep='', end='', file=f)
+                        print(");", sep='', file=f)
+                    else:
+                        print("\t\tso_", e['type'], " *", e['name'], " = so_", self.name, "_create_", e['name'], "(self);", sep='', file=f)
                     print("\t\tif (!", e['name'], ") {", sep='', file=f)
                     print("\t\t\treturn 1;", file=f)
                     print("\t\t}", file=f)
                     if e['type'] in self.structure:
                         if 'attributes' in self.structure[e['type']]:
-                            print("\t\tso_", e['type'], "_init_attributes(", e['name'], ", nb_attributes, attributes);", sep='', file=f)
+                            print("\t\tint fail = so_", e['type'], "_init_attributes(", e['name'], ", nb_attributes, attributes);", sep='', file=f)
+                            print("\t\tif (fail) {", file=f)
+                            print("\t\t\tso_", e['type'], "_free(", e['name'], ");", sep='', file=f)
+                            print("\t\t\treturn 1;", file=f)
+                            print("\t\t}", file=f)
+                            if e.get('array', False):
+                                print("\t\tso_", self.name, "_add_", e['name'], "(self, ", e['name'], ");", sep='', file=f)
+                            else:
+                                print("\t\tso_", self.name, "_set_", e['name'], "(self, ", e['name'], ");", sep='', file=f)
                 print("\t\tself->in_", e['name'], " = 1;", sep='', file=f)
                 print("\t}", end='', file=f)
 
@@ -589,7 +606,7 @@ class genclass:
         f = self.c_file
         if self.attributes:
             print(file=f)
-            print("void so_", self.name, "_init_attributes(so_", self.name, " *self, int nb_attributes, const char **attributes)", sep='', file=f)
+            print("int so_", self.name, "_init_attributes(so_", self.name, " *self, int nb_attributes, const char **attributes)", sep='', file=f)
             print("{", file=f)
             print("\tunsigned int index = 0;", file=f)
             print("\tfor (int i = 0; i < nb_attributes; i++, index += 5) {", file=f)
@@ -609,10 +626,14 @@ class genclass:
                     print('\t\t} else if', end='', file=f)
 
                 print(' (strcmp(localname, "', a, '") == 0) {', sep='', file=f)
-                print("\t\t\tself->", a, " = extstrndup(valueBegin, valueEnd - valueBegin);", sep='', file=f)
+                print("\t\t\tself->", a, " = pharmml_strndup(valueBegin, valueEnd - valueBegin);", sep='', file=f)
+                print("\t\t\tif (!self->", a, ") {", sep='', file=f)
+                print("\t\t\t\treturn 1;", file=f)
+                print("\t\t\t}", file=f)
 
             print("\t\t}", file=f)
             print("\t}", file=f)
+            print("\treturn 0;", file=f)
             print("}", file=f)
 
     def create_headers(self):
@@ -839,7 +860,7 @@ class genclass:
             print("int so_", self.name, "_characters(so_", self.name, " *self, const char *ch, int len);", sep='', file=f)
             print("so_xml so_", self.name, "_xml(so_", self.name, " *self);", sep='', file=f)
             if self.attributes:
-                print("void so_", self.name, "_init_attributes(so_", self.name, " *self, int nb_attributes, const char **attributes);", sep='', file=f)
+                print("int so_", self.name, "_init_attributes(so_", self.name, " *self, int nb_attributes, const char **attributes);", sep='', file=f)
             print(file=f)
             print("#endif", file=f)
         os.chdir("..")
