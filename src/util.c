@@ -52,12 +52,3 @@ char *extstrdup(const char *str)
 
     return p;
 }
-
-char *extstrndup(const char *str, size_t n)
-{
-    char *p = extmalloc(n + 1);
-    memcpy(p, str, n);
-    p[n] = '\0';
-
-    return p;
-}
