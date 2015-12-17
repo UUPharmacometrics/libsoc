@@ -328,8 +328,8 @@ class genclass:
                             print(e['prefix'], ":", sep='', end='', file=f)
                         print(e['name'], '"', sep='', end='', file=f)
                     print(");", sep='', file=f)
+                    print("\tif (obj) {", file=f)
                     if is_array:
-                        print("\tif (obj) {", file=f)
                         print("\t\tso_", e['type'], " **newblock = extrealloc(self->", e['name'], ", (self->num_", e['name'], " + 1) * sizeof(so_", e['type'], " *));", sep='', file=f)
                         print("\t\tif (newblock) {", file=f)
                         print("\t\t\tself->", e['name'], " = newblock;", sep='', file=f)
@@ -339,9 +339,9 @@ class genclass:
                         print("\t\t\tso_", e['type'], "_free(obj);", sep='', file=f)
                         print("\t\t\tobj = NULL;", file=f)
                         print("\t\t}", file=f)
-                        print("\t}", file=f)
                     else:
-                        print("\tself->", e['name'], " = obj;", sep='', file=f)
+                        print("\t\tself->", e['name'], " = obj;", sep='', file=f)
+                    print("\t}", file=f)
                     print("\treturn obj;", file=f)
                     print("}", file=f)
                     print(file=f)
