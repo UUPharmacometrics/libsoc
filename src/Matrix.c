@@ -335,29 +335,44 @@ void so_Matrix_end_element(so_Matrix *self, const char *localname)
     }
 }
 
-void so_Matrix_characters(so_Matrix *self, const char *ch, int len)
+int so_Matrix_characters(so_Matrix *self, const char *ch, int len)
 {
-    char *str = (char *) ch;
-    char saved = str[len];
-
     if (self->in_rownames && self->in_string) {
+        char *row_name = pharmml_strndup(ch, len);
+        if (!row_name) {
+            return 1;
+        }
+        char **new_rownames = realloc(self->rownames, (self->numrows + 1) * sizeof(char *));
+        if (!new_rownames) {
+            free(row_name);
+            return 1;
+        }
+        self->rownames = new_rownames;
+        self->rownames[self->numrows] = row_name;
         self->numrows++;
-        self->rownames = extrealloc(self->rownames, self->numrows * (sizeof(char *)));
-        str[len] = '\0';
-        char *row_name = extstrdup(str);
-        self->rownames[self->numrows - 1] = row_name;
-        str[len] = saved;
     } else if (self->in_columnnames && self->in_string) {
+        char *col_name = pharmml_strndup(ch, len);
+        if (!col_name) {
+            return 1;
+        }
+        char **new_colnames = realloc(self->colnames, (self->numcols + 1) * sizeof(char *));
+        if (!new_colnames) {
+            free(col_name);
+            return 1;
+        }
+        self->colnames = new_colnames;
+        self->colnames[self->numcols] = col_name;
         self->numcols++;
-        self->colnames = extrealloc(self->colnames, self->numcols * (sizeof(char *)));
-        str[len] = '\0';
-        char *col_name = extstrdup(str);
-        self->colnames[self->numcols - 1] = col_name;
-        str[len] = saved;
     } else if (self->in_matrixrow && self->in_real) {
         if (self->data == NULL) {
-            self->data = extmalloc(self->numcols * self->numrows * sizeof(double));
+            void *new_data = malloc(self->numcols * self->numrows * sizeof(double));
+            if (!new_data) {
+               return 1;
+            }
+            self->data = new_data; 
         }
+        char *str = (char *) ch;
+        char saved = str[len];
         str[len] = '\0';
         double num = pharmml_string_to_double(str);
         self->data[self->current_row * self->numcols + self->current_col] = num; 

@@ -44,7 +44,7 @@ def print_new(name):
     print("{")
     print("\tso_", name, " *obj = so_", name, "_new();", sep='')
     print("\tif (!obj) {")
-    print("\t\terror(\"Failed to create so_", name, " object\")", sep='')
+    print("\t\terror(\"Failed to create so_", name, " object\");", sep='')
     print("\t}")
     print("\treturn R_MakeExternalPtr(obj, R_NilValue, R_NilValue);")
     print("}")
@@ -54,7 +54,7 @@ def print_copy(name):
     print("{")
     print("\tso_", name, " *obj = so_", name, "_copy(R_ExternalPtrAddr(self));", sep='')
     print("\tif (!obj) {")
-    print("\t\terror(\"Failed to copy so_", name, " object\")", sep='')
+    print("\t\terror(\"Failed to copy so_", name, " object\");", sep='')
     print("\t}")
     print("\treturn R_MakeExternalPtr(obj, R_NilValue, R_NilValue);")
     print("}")
@@ -186,7 +186,7 @@ def print_set_child(name, child):
     elif child['type'] == 'type_string':
         print("\tint fail = so_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), (char *) CHAR(STRING_ELT(child, 0)));", sep='')
         print("\tif (fail) {")
-        print("\t\terror(\"so_", name, "_set_", child['name'], " failed", sep='')
+        print("\t\terror(\"so_", name, "_set_", child['name'], " failed\");", sep='')
         print("\t}")
     elif child['type'] == 'type_real':
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), REAL(child));", sep='')

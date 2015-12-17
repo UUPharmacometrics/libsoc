@@ -36,8 +36,7 @@ void so_SO_on_start_element(void *ctx, const xmlChar *localname, const xmlChar *
 {
     char *name = (char *) localname;
     so_SO *so = (so_SO *) ctx;
-    int fail = so_SO_start_element(so, name, nb_attributes, (const char **) attributes);
-    so->error = fail;
+    so->error = so_SO_start_element(so, name, nb_attributes, (const char **) attributes);
 }
 
 void so_SO_on_end_element(void *ctx, const xmlChar *localname, const xmlChar *prefix, const xmlChar *URI)
@@ -50,7 +49,7 @@ void so_SO_on_end_element(void *ctx, const xmlChar *localname, const xmlChar *pr
 void so_SO_on_characters(void *ctx, const xmlChar *ch, int len)
 {
     so_SO *so = (so_SO *) ctx;
-    so_SO_characters(so, (const char *) ch, len);
+    so->error = so_SO_characters(so, (const char *) ch, len);
 }
 
 void error_func(void *ctx, const char *msg, ...)

@@ -624,7 +624,7 @@ void so_Table_end_element(so_Table *table, const char *localname)
     }
 }
 
-void so_Table_characters(so_Table *table, const char *ch, int len)
+int so_Table_characters(so_Table *table, const char *ch, int len)
 {
     so_Column *column;
 
@@ -636,17 +636,21 @@ void so_Table_characters(so_Table *table, const char *ch, int len)
         str[len] = '\0';
     }
 
+    int fail;
+
     if (table->in_real) {
         double real = pharmml_string_to_double(str);
-        so_Column_add_real(column, real);
+        fail = so_Column_add_real(column, real);
     } else if (table->in_int) {
         int integer = pharmml_string_to_int(str);
-        so_Column_add_int(column, integer);
+        fail = so_Column_add_int(column, integer);
     } else if (table->in_string) {
-        so_Column_add_string(column, str);
+        fail = so_Column_add_string(column, str);
     }
 
     if (table->in_real || table->in_int || table->in_string) {
         str[len] = saved;
     }
+
+    return fail;
 }

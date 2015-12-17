@@ -542,7 +542,7 @@ class genclass:
 
     def create_characters(self):
         f = self.c_file
-        print("void so_", self.name, "_characters(so_", self.name, " *self, const char *ch, int len)", sep='', file=f)
+        print("int so_", self.name, "_characters(so_", self.name, " *self, const char *ch, int len)", sep='', file=f)
         print("{", file=f)
 
         if self.children:
@@ -553,22 +553,22 @@ class genclass:
                     print("\t", end='', file=f)
                 print("if (self->in_", self.children[i]['name'], ") {", sep='', file=f)
                 if self.children[i]['type'] == "type_string":
-                    print("\t\tself->", self.children[i]['name'], " = extstrndup(ch, len);", sep='', file=f)
+                    print("\t\tself->", self.children[i]['name'], " = pharmml_strndup(ch, len);", sep='', file=f)
+                    print("\t\tif (!self->", self.children[i]['name'], ") {", sep='', file=f)
+                    print("\t\t\treturn 1;", file=f)
+                    print("\t\t}", file=f)
                 elif self.children[i]['type'] == "type_real":
-                    print("\t\tchar *double_string = extstrndup(ch, len);", file=f)
-                    print("\t\tself->", self.children[i]['name'], "_number = pharmml_string_to_double(double_string);", sep='', file=f)
+                    print("\t\tself->", self.children[i]['name'], "_number = pharmml_string_to_double(ch);", sep='', file=f)
                     print("\t\tself->", self.children[i]['name'], " = &(self->", self.children[i]['name'], "_number);", sep='', file=f)
-                    print("\t\tfree(double_string);", file=f)
                 elif self.children[i]['type'] == "type_int":
-                    print("\t\tchar *int_string = extstrndup(ch, len);", file=f)
-                    print("\t\tself->", self.children[i]['name'], "_number = pharmml_string_to_int(int_string);", sep='', file=f)
+                    print("\t\tself->", self.children[i]['name'], "_number = pharmml_string_to_int(ch);", sep='', file=f)
                     print("\t\tself->", self.children[i]['name'], " = &(self->", self.children[i]['name'], "_number);", sep='', file=f)
-                    print("\t\tfree(int_string);", file=f)
                 else:
-                    print("\t\tso_", self.children[i]['type'], "_characters(self->", self.children[i]['name'], sep='', end='', file=f)
+                    print("\t\tint fail = so_", self.children[i]['type'], "_characters(self->", self.children[i]['name'], sep='', end='', file=f)
                     if self.children[i].get("array", False):
                         print("[self->num_", self.children[i]['name'], " - 1]", sep='', end='', file=f)
                     print(", ch, len);", file=f)
+                    print("\t\tif (fail) return 1;", file=f)
                 print("\t}", end='', file=f)
 
             print(file=f)
@@ -577,10 +577,12 @@ class genclass:
             if self.children:
                 print(" else {", file=f)
                 print("\t", end='', file=f)
-            print("\tso_", self.extends, "_characters(self->base, ch, len);", sep='', file=f)
+            print("\tint fail = so_", self.extends, "_characters(self->base, ch, len);", sep='', file=f)
+            print("\tif (fail) return 1;", file=f)
             if self.children:
                 print("\t}", end='', file=f)
 
+        print("\treturn 0;", file=f)
         print("}", file=f)
 
     def create_init_attributes(self):
@@ -834,7 +836,7 @@ class genclass:
             print(file=f)
             print("int so_", self.name, "_start_element(so_", self.name, " *self, const char *localname, int nb_attributes, const char **attributes);", sep='', file=f)
             print("void so_", self.name, "_end_element(so_", self.name, " *self, const char *localname);", sep='', file=f)
-            print("void so_", self.name, "_characters(so_", self.name, " *self, const char *ch, int len);", sep='', file=f)
+            print("int so_", self.name, "_characters(so_", self.name, " *self, const char *ch, int len);", sep='', file=f)
             print("so_xml so_", self.name, "_xml(so_", self.name, " *self);", sep='', file=f)
             if self.attributes:
                 print("void so_", self.name, "_init_attributes(so_", self.name, " *self, int nb_attributes, const char **attributes);", sep='', file=f)

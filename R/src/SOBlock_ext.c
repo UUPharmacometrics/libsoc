@@ -41,6 +41,8 @@ SEXP R_so_SOBlock_add_rawresults_datafile(SEXP self, SEXP description, SEXP path
     char *c_oid = (char *) CHAR(STRING_ELT(oid, 0));
 
     so_SOBlock_add_rawresults_datafile(c_SOBlock, c_description, c_path, c_oid);
+
+    return R_NilValue;
 }
 
 SEXP R_so_SOBlock_add_rawresults_graphicsfile(SEXP self, SEXP description, SEXP path, SEXP oid)
@@ -51,4 +53,6 @@ SEXP R_so_SOBlock_add_rawresults_graphicsfile(SEXP self, SEXP description, SEXP 
     char *c_oid = (char *) CHAR(STRING_ELT(oid, 0));
 
     so_SOBlock_add_rawresults_graphicsfile(c_SOBlock, c_description, c_path, c_oid);
+
+    return R_NilValue;
 }

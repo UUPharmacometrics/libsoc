@@ -72,41 +72,66 @@ void so_Column_set_valueType(so_Column *col, pharmml_valueType valueType)
 }
 
 
-void so_Column_add_real(so_Column *col, double real)
+int so_Column_add_real(so_Column *col, double real)
 {
-    col->used_memory += sizeof(double);
-    if (col->alloced_memory < col->used_memory) {
-        col->alloced_memory += 256;
-        col->column = extrealloc(col->column, col->alloced_memory); 
+    int new_used_memory = col->used_memory + sizeof(double);
+    if (col->alloced_memory < new_used_memory) {
+        int new_alloced_memory = col->alloced_memory + 256;
+        void *new_column = realloc(col->column, new_alloced_memory);
+        if (!new_column) {
+            return 1;
+        }
+        col->alloced_memory = new_alloced_memory;
+        col->column = new_column;
     }
+    col->used_memory = new_used_memory;
     double *ptr = (double *) col->column;
     ptr[col->len] = real;
     col->len++;
+    return 0;
 }
 
-void so_Column_add_int(so_Column *col, int integer)
+int so_Column_add_int(so_Column *col, int integer)
 {
-    col->used_memory += sizeof(int);
-    if (col->alloced_memory < col->used_memory) {
-        col->alloced_memory += 256;
-        col->column = extrealloc(col->column, col->alloced_memory);
+    int new_used_memory = col->used_memory + sizeof(int);
+    if (col->alloced_memory < new_used_memory) {
+        int new_alloced_memory = col->alloced_memory + 256;
+        void *new_column = realloc(col->column, new_alloced_memory);
+        if (!new_column) {
+            return 1;
+        }
+        col->alloced_memory = new_alloced_memory;
+        col->column = new_column;
     }
+    col->used_memory = new_used_memory;
     int *ptr = (int *) col->column;
     ptr[col->len] = integer;
     col->len++;
+    return 0;
 }
 
-void so_Column_add_string(so_Column *col, char *str)
+int so_Column_add_string(so_Column *col, char *str)
 {
-    col->used_memory += sizeof(char *);
-    if (col->alloced_memory < col->used_memory) {
-        col->alloced_memory += 256;
-        col->column = extrealloc(col->column, col->alloced_memory);
+    char *copy = pharmml_strdup(str);
+    if (!copy) {
+        return 1;
     }
+    int new_used_memory = col->used_memory + sizeof(char *);
+    if (col->alloced_memory < new_used_memory) {
+        int new_alloced_memory = col->alloced_memory + 256;
+        void *new_column = realloc(col->column, new_alloced_memory);
+        if (!new_column) {
+            free(copy);
+            return 1;
+        }
+        col->alloced_memory = new_alloced_memory;
+        col->column = new_column;
+    }
+    col->used_memory = new_used_memory;
     char **ptr = (char **) col->column;
-    char *copy = extstrdup(str);
     ptr[col->len] = copy;
     col->len++;
+    return 0;
 }
 
 int so_Column_add_boolean(so_Column *col, bool b)
@@ -125,4 +150,5 @@ int so_Column_add_boolean(so_Column *col, bool b)
     bool *ptr = (bool *) col->column;
     ptr[col->len] = b;
     col->len++;
+    return 0;
 }

@@ -129,6 +129,17 @@ char *pharmml_strdup(const char *str)
     return p;
 }
 
+char *pharmml_strndup(const char *str, size_t n)
+{
+    char *p = malloc(n + 1);
+    if (p) {
+        memcpy(p, str, n);
+        p[n] = '\0';
+    }
+
+    return p;
+}
+
 int pharmml_copy_string_array(char **source, char **dest, int length)
 {
     int fail = 0;
