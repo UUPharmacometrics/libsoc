@@ -1,6 +1,6 @@
-Package: soc
-Version: 0.1
-Date: 2015-09-28
+Package: libsoc
+Version: 0.2
+Date: 2015-12-18
 Title: A package to handle PharmML standardized output (SO) xml files
 Author: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
 Maintainer: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
@@ -10,4 +10,3 @@ Description: A package to handle PharmML standardized output (SO) xml files.
     SO files can be created, read, manipulated and written through a
     data binding from the XML structure to a tree structure of R objects.
 License: LGPL-3
-RoxygenNote: 5.0.0

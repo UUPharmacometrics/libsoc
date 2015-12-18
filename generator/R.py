@@ -494,7 +494,7 @@ for name in structure:
 os.chdir("../R")
 
 with open("../NAMESPACE", "w") as ns:
-    print("useDynLib(soc)", file=ns)
+    print("useDynLib(libsoc)", file=ns)
     print("export(so_SO_read)", file=ns)
 
 for name in structure:
