@@ -21,7 +21,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <pharmml/common_types.h>
-#include <so/private/util.h>
 
 
 typedef struct {

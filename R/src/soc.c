@@ -18,7 +18,6 @@
 #include <R.h>
 #include <Rdefines.h>
 #include <so.h>
-#include <so/private/util.h>
 #include "soc.h"
 
 SEXP r_so_SO_read(SEXP name)
@@ -96,7 +95,7 @@ so_Table *df2table(SEXP df, char *table_name)
             value_type = PHARMML_VALUETYPE_STRING;
             char **buffer = malloc(numrows * sizeof(char *));
             for (int j = 0; j < numrows; j++) {
-                buffer[j] = extstrdup(CHAR(STRING_ELT(VECTOR_ELT(df, i), j)));
+                buffer[j] = pharmml_strdup(CHAR(STRING_ELT(VECTOR_ELT(df, i), j)));
             }
             so_Table_new_column_no_copy(table, (char *) current_col_name, column_type, value_type, buffer);
         } else if (isInteger(VECTOR_ELT(df, i))) {

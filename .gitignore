@@ -17,7 +17,6 @@ include/so/private/*
 !include/so/private/estring.h
 !include/so/private/Matrix.h
 !include/so/private/Table.h
-!include/so/private/util.h
 
 soc_*.tar.gz
 soc.Rcheck/*

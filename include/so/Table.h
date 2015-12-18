@@ -49,8 +49,8 @@ void so_Table_no_external_file(so_Table *self);
 pharmml_delimiter so_Table_get_external_file_delimiter(so_Table *self);
 void so_Table_set_external_file_delimiter(so_Table *self, pharmml_delimiter delimiter);
 char *so_Table_get_external_file_oid(so_Table *self);
-void so_Table_set_external_file_oid(so_Table *self, char *oid);
+int so_Table_set_external_file_oid(so_Table *self, char *oid);
 char *so_Table_get_external_file_path(so_Table *self);
-void so_Table_set_external_file_path(so_Table *self, char *path);
+int so_Table_set_external_file_path(so_Table *self, char *path);
 
 #endif

@@ -22,7 +22,6 @@
 #include <so.h>
 #include <so/private/SO.h>
 #include <so/private/SOBlock.h>
-#include <so/private/util.h>
 
 void so_SOBlock_add_rawresults_datafile(so_SOBlock *self, char *description, char *path, char *oid)
 {

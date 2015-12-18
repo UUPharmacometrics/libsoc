@@ -22,7 +22,6 @@
 #include <so.h>
 #include <so/private/SO.h>
 #include <so/private/SOBlock.h>
-#include <so/private/util.h>
 
 static char *last_error;
 

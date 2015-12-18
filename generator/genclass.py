@@ -61,7 +61,6 @@ class genclass:
         print("#include <pharmml/common_types.h>", file=f)
         print('#include <so/', self.name, '.h>', sep='', file=f)
         print('#include <so/private/', self.name, '.h>', sep='', file=f)
-        print('#include <so/private/util.h>', file=f)
         print(file=f)
 
     def create_new(self):
@@ -371,12 +370,16 @@ class genclass:
         print("\treturn self->base;", file=f)
         print("}", file=f)
         print(file=f)
-        print("void so_", self.name, "_set_base(so_", self.name, " *self, so_", self.extends, " *value)", sep='', file=f)
+        print("int so_", self.name, "_set_base(so_", self.name, " *self, so_", self.extends, " *value)", sep='', file=f)
         print("{", file=f)
-        print("\tchar *name = extstrdup(self->base->name);", file=f)
+        print("\tchar *name = pharmml_strdup(self->base->name);", file=f)
+        print("\tif (!name) {", file=f)
+        print("\t\treturn 1;", file=f)
+        print("\t}", file=f)
         print("\tso_", self.extends, "_unref(value);", sep='', file=f)
         print("\tself->base = value;", file=f) 
         print("\tself->base->name = name;", sep='', file=f)
+        print("\treturn 0;", file=f)
         print("}", file=f)
         print(file=f)
 
@@ -701,7 +704,7 @@ class genclass:
             print("void so_", self.name, "_unref(so_", self.name, " *self);", sep='', file=f)
             if self.extends:
                 print("so_", self.extends, " *so_", self.name, "_get_base(so_", self.name, " *self);", sep='', file=f)
-                print("void so_", self.name, "_set_base(so_", self.name, " *self, so_", self.extends, " *value);", sep='', file=f)
+                print("int so_", self.name, "_set_base(so_", self.name, " *self, so_", self.extends, " *value);", sep='', file=f)
 
             if self.attributes:
                 for a in self.attributes:

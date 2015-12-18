@@ -21,7 +21,6 @@
 
 #include <so/Matrix.h>
 #include <so/private/Matrix.h>
-#include <so/private/util.h>
 #include <pharmml/common_types.h>
 
 /** \struct so_Matrix

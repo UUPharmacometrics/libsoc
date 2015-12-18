@@ -23,7 +23,6 @@
 
 #include <so/Table.h>
 #include <so/private/Table.h>
-#include <so/private/util.h>
 #include <pharmml/common_types.h>
 #include <so/private/column.h>
 
@@ -403,9 +402,15 @@ char *so_Table_get_external_file_oid(so_Table *self)
     return self->oid;
 }
 
-void so_Table_set_external_file_oid(so_Table *self, char *oid)
+int so_Table_set_external_file_oid(so_Table *self, char *oid)
 {
-    self->oid = extstrdup(oid);
+    char *new_oid = pharmml_strdup(oid);
+    if (new_oid) {
+        self->oid = new_oid;
+        return 0;
+    } else {
+        return 1;
+    }
 }
 
 char *so_Table_get_external_file_path(so_Table *self)
@@ -413,9 +418,15 @@ char *so_Table_get_external_file_path(so_Table *self)
     return self->path;
 }
 
-void so_Table_set_external_file_path(so_Table *self, char *path)
+int so_Table_set_external_file_path(so_Table *self, char *path)
 {
-    self->path = extstrdup(path);
+    char *new_path = pharmml_strdup(path);
+    if (new_path) {
+        self->path = new_path;
+        return 0;
+    } else {
+        return 1;
+    }
 }
 
 so_xml so_Table_xml(so_Table *self)
