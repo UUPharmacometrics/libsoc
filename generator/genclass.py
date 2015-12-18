@@ -94,7 +94,7 @@ class genclass:
 
         def copy_type(so_type, name, array=False):
             if so_type == 'type_string':
-                result = "extstrdup(self->" + name + ");"
+                result = "pharmml_strdup(self->" + name + ");"
             elif so_type == 'type_real' or so_type == 'type_int':
                 result = "self->" + name + ";"
             else:

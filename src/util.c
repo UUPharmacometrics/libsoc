@@ -32,18 +32,6 @@ void *extmalloc(size_t size)
     return memory;
 }
 
-void *extrealloc(void *memory, size_t size)
-{
-    void *new = realloc(memory, size);
-
-    if (new == NULL) {
-        printf("Out of memory, aborting.");
-        abort();
-    }
-
-    return new;
-}
-
 char *extstrdup(const char *str)
 {
     size_t len = 1 + strlen(str);

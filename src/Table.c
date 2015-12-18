@@ -347,18 +347,31 @@ int so_Table_new_column(so_Table *self, char *columnId, pharmml_columnType colum
  * \param columnType - type of column
  * \param valueType - valueType of column
  * \param data - array of column data
+ * \return 0 for success
  * \sa so_Table_new_column
  */
-void so_Table_new_column_no_copy(so_Table *self, char *columnId, pharmml_columnType columnType, pharmml_valueType valueType, void *data)
+int so_Table_new_column_no_copy(so_Table *self, char *columnId, pharmml_columnType columnType, pharmml_valueType valueType, void *data)
 {
     so_Column *column = so_Column_new();
+    if (!column) {
+        return 1;
+    }
     so_Column_set_valueType(column, valueType);
     so_Column_set_columnType(column, columnType);
-    so_Column_set_columnId(column, columnId);
+    if (so_Column_set_columnId(column, columnId)) {
+        so_Column_free(column);
+        return 1;
+    }
     column->column = data;
+    so_Column **new_columns = realloc(self->columns, (self->numcols + 1) * sizeof(so_Column *));
+    if (!new_columns) {
+        so_Column_free(column);
+        return 1;
+    }
+    self->columns = new_columns;
+    self->columns[self->numcols] = column;
     self->numcols++;
-    self->columns = extrealloc(self->columns, self->numcols * sizeof(so_Column *));
-    self->columns[self->numcols - 1] = column;
+    return 0;
 }
 
 void so_Table_use_external_file(so_Table *self)

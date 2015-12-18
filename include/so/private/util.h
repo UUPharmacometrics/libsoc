@@ -21,7 +21,6 @@
 #include <stdlib.h>
 
 void *extmalloc(size_t size);
-void *extrealloc(void *memory, size_t size);
 char *extstrdup(const char *str);
 
 #endif
