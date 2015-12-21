@@ -1,2 +1,2 @@
-PKG_LIBS=-L"C:\devel\libxml2-32" -L"C:\devel\libxml2\lib" -lxml2
-PKG_CFLAGS=-Iinclude -I"C:\devel\libxml2\include" -I"C:\devel\libxml2\include\libxml2"
+PKG_LIBS=-lxml2
+PKG_CFLAGS=-Iwininclude -Iinclude

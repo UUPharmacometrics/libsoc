@@ -27,6 +27,8 @@ R/src/include/*
 R/NAMESPACE
 R/man/*
 !R/man/soc-package.Rd
+R/libs/*
+R/src/wininclude/*
 
 R-windep/
 
