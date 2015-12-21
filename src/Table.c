@@ -556,8 +556,6 @@ int so_Table_start_element(so_Table *table, const char *localname, int nb_attrib
         unsigned int index = 0;
         for (int indexAttribute = 0; indexAttribute < nb_attributes; ++indexAttribute, index += 5) {
             const char *localname = attributes[index];
-            const char *prefix = attributes[index + 1];
-            const char *nsURI = attributes[index + 2];
             char *valueBegin = (char *) attributes[index + 3];
             char *valueEnd = (char *) attributes[index + 4];
 
@@ -605,7 +603,7 @@ int so_Table_start_element(so_Table *table, const char *localname, int nb_attrib
             table->in_int = 1;
             table->current_column++;
         }
-    } else if (table->in_row && (strcmp("String", localname) == 0) || (strcmp("Id", localname) == 0)) {
+    } else if ((table->in_row && (strcmp("String", localname) == 0)) || (strcmp("Id", localname) == 0)) {
         if (!table->defer_reading) {
             table->in_string = 1;
             table->current_column++;
@@ -629,6 +627,8 @@ int so_Table_start_element(so_Table *table, const char *localname, int nb_attrib
             table->current_column++;
         }
     }
+
+    return 0;
 }
 
 void so_Table_end_element(so_Table *table, const char *localname)

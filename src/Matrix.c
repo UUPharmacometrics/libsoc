@@ -377,4 +377,6 @@ int so_Matrix_characters(so_Matrix *self, const char *ch, int len)
         self->data[self->current_row * self->numcols + self->current_col] = num; 
         str[len] = saved;
     }
+
+    return 0;
 }

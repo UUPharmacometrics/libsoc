@@ -623,8 +623,6 @@ class genclass:
             print("\tunsigned int index = 0;", file=f)
             print("\tfor (int i = 0; i < nb_attributes; i++, index += 5) {", file=f)
             print("\t\tconst char *localname = attributes[index];", file=f)
-            print("\t\tconst char *prefix = attributes[index + 1];", file=f)
-            print("\t\tconst char *nsURI = attributes[index + 2];", file=f)
             print("\t\tconst char *valueBegin = attributes[index + 3];", file=f)
             print("\t\tconst char *valueEnd = attributes[index + 4];", file=f)
             print(file=f)
