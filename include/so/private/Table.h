@@ -32,6 +32,7 @@ struct so_Table {
     int defer_reading;
     int in_definition;
     int in_table;
+    int in_externalfile;
     int in_row;
     int in_real;
     int in_int;

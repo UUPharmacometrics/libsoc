@@ -378,6 +378,15 @@ void so_Table_set_ExternalFile(so_Table *self, so_ExternalFile *value)
     self->ExternalFile = value;
 }
 
+so_ExternalFile *so_Table_create_ExternalFile(so_Table *self)
+{
+	so_ExternalFile *obj = so_ExternalFile_new();
+	if (obj) {
+		self->ExternalFile = obj;
+	}
+	return obj;
+}
+
 so_xml so_Table_xml(so_Table *self, char *element_name)
 {
     xmlNodePtr xml = xmlNewNode(NULL, BAD_CAST element_name);
@@ -483,10 +492,21 @@ so_xml so_Table_xml(so_Table *self, char *element_name)
 
 int so_Table_start_element(so_Table *table, const char *localname, int nb_attributes, const char **attributes)
 {
-    if (strcmp("Definition", localname) == 0) {
+    if (table->in_externalfile) {
+        int fail = so_ExternalFile_start_element(table->ExternalFile, localname, nb_attributes, attributes);
+        if (fail) {
+            return fail;
+        }
+    } else if (strcmp("Definition", localname) == 0) {
         table->in_definition = 1;
     } else if (strcmp("Table", localname) == 0) {
         table->in_table = 1;
+    } else if (strcmp("ExternalFile", localname) == 0) {
+		so_ExternalFile *ExternalFile = so_Table_create_ExternalFile(table);
+		if (!ExternalFile) {
+			return 1;
+		}
+        table->in_externalfile = 1;
     } else if (table->in_definition && strcmp("Column", localname) == 0) {
         so_Column *col = so_Column_new();
         if (!col) {
@@ -572,7 +592,11 @@ int so_Table_start_element(so_Table *table, const char *localname, int nb_attrib
 
 void so_Table_end_element(so_Table *table, const char *localname)
 {
-    if (strcmp("Definition", localname) == 0) {
+    if (strcmp(localname, "ExternalFile") == 0 && table->in_externalfile) {
+       table->in_externalfile = 0; 
+    } else if (table->in_externalfile) {
+        so_ExternalFile_end_element(table->ExternalFile, localname);
+    } else if (strcmp("Definition", localname) == 0) {
         table->in_definition = 0;
     } else if (strcmp("Table", localname) == 0) {
         table->in_table = 0;
@@ -589,6 +613,11 @@ void so_Table_end_element(so_Table *table, const char *localname)
 
 int so_Table_characters(so_Table *table, const char *ch, int len)
 {
+    if (table->in_externalfile) {
+		int fail = so_ExternalFile_characters(table->ExternalFile, ch, len);
+		if (fail) return 1;
+    }
+
     so_Column *column;
 
     char *str = (char *) ch;
@@ -599,7 +628,7 @@ int so_Table_characters(so_Table *table, const char *ch, int len)
         str[len] = '\0';
     }
 
-    int fail;
+    int fail = 0;
 
     if (table->in_real) {
         double real = pharmml_string_to_double(str);
