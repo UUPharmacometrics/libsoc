@@ -21,13 +21,11 @@
 #include <so/Table.h>
 #include <so/xml.h>
 #include <so/private/column.h>
+#include <so/ExternalFile.h>
 
 struct so_Table {
     so_Column **columns;
-    char *oid;
-    char *path;
-    pharmml_delimiter delimiter; 
-    int use_external_file;
+    so_ExternalFile *ExternalFile;
     int numcols;
     int numrows;
     int current_column;

@@ -25,6 +25,8 @@
 #include <so/private/Table.h>
 #include <pharmml/common_types.h>
 #include <so/private/column.h>
+#include <so/ExternalFile.h>
+#include <so/private/ExternalFile.h>
 
 /** \struct so_Table
 	 \brief A structure representing a table
@@ -83,8 +85,6 @@ void so_Table_free(so_Table *self)
         for (int i = 0; i < self->numcols; i++) {
             so_Column_free(self->columns[i]);
         }
-        free(self->oid);
-        free(self->path);
         free(self);
     }
 }
@@ -367,60 +367,15 @@ int so_Table_new_column_no_copy(so_Table *self, char *columnId, pharmml_columnTy
     return 0;
 }
 
-void so_Table_use_external_file(so_Table *self)
+so_ExternalFile *so_Table_get_ExternalFile(so_Table *self)
 {
-    self->use_external_file = 1;
+    return self->ExternalFile;
 }
 
-void so_Table_no_external_file(so_Table *self)
+void so_Table_set_ExternalFile(so_Table *self, so_ExternalFile *value)
 {
-    self->use_external_file = 0;
-    free(self->oid);
-    self->oid = NULL;
-    free(self->path);
-    self->path = NULL;
-}
-
-pharmml_delimiter so_Table_get_external_file_delimiter(so_Table *self)
-{
-    return self->delimiter;
-}
-
-void so_Table_set_external_file_delimiter(so_Table *self, pharmml_delimiter delimiter)
-{
-    self->delimiter = delimiter;
-}
-
-char *so_Table_get_external_file_oid(so_Table *self)
-{
-    return self->oid;
-}
-
-int so_Table_set_external_file_oid(so_Table *self, char *oid)
-{
-    char *new_oid = pharmml_strdup(oid);
-    if (new_oid) {
-        self->oid = new_oid;
-        return 0;
-    } else {
-        return 1;
-    }
-}
-
-char *so_Table_get_external_file_path(so_Table *self)
-{
-    return self->path;
-}
-
-int so_Table_set_external_file_path(so_Table *self, char *path)
-{
-    char *new_path = pharmml_strdup(path);
-    if (new_path) {
-        self->path = new_path;
-        return 0;
-    } else {
-        return 1;
-    }
+    so_ExternalFile_unref(self->ExternalFile);
+    self->ExternalFile = value;
 }
 
 so_xml so_Table_xml(so_Table *self, char *element_name)
@@ -440,7 +395,7 @@ so_xml so_Table_xml(so_Table *self, char *element_name)
         xmlNewProp(col, BAD_CAST "columnNum", BAD_CAST temp_colnum);
     }
 
-    if (!self->use_external_file) {
+    if (!self->ExternalFile) {
         xmlNodePtr tab = xmlNewChild(xml, NULL, BAD_CAST "ds:Table", NULL);
         for (int i = 0; i < self->numrows; i++) {
             xmlNodePtr row = xmlNewChild(tab, NULL, BAD_CAST "ds:Row", NULL);
@@ -472,29 +427,20 @@ so_xml so_Table_xml(so_Table *self, char *element_name)
             }
         }
     } else {
-        xmlNodePtr ext = xmlNewChild(xml, NULL, BAD_CAST "ds:ExternalFile", NULL);
-        xmlNewProp(ext, BAD_CAST "oid", BAD_CAST self->oid);
-       
-        xmlNewChild(ext, NULL, BAD_CAST "ds:path", BAD_CAST self->path);
-        xmlNewChild(ext, NULL, BAD_CAST "ds:format", BAD_CAST "CSV");
-        char *delimiter;
+        xmlNodePtr ext = so_ExternalFile_xml(self->ExternalFile, "ds:ExternalFile");
+        xmlAddChild(xml, ext);
+
         char *delimiter_string;
-        if (self->delimiter == PHARMML_DELIMITER_COMMA) {
-            delimiter = "COMMA";
+        if (strcmp(self->ExternalFile->delimiter, "COMMA") == 0) {
             delimiter_string = ",";
-        } else if (self->delimiter == PHARMML_DELIMITER_SPACE) {
-            delimiter = "SPACE";
+        } else if (strcmp(self->ExternalFile->delimiter, "SPACE") == 0) {
             delimiter_string = " ";
-        } else if (self->delimiter == PHARMML_DELIMITER_TAB) {
-            delimiter = "TAB";
+        } else if (strcmp(self->ExternalFile->delimiter, "TAB")  == 0) {
             delimiter_string = "\t";
-        } else if (self->delimiter == PHARMML_DELIMITER_SEMICOLON) {
-            delimiter = "SEMICOLON";
+        } else if (strcmp(self->ExternalFile->delimiter, "SEMICOLON") == 0) {
             delimiter_string = ";";
         }
-        xmlNewChild(ext, NULL, BAD_CAST "ds:delimiter", BAD_CAST delimiter);
-
-        FILE *fp = fopen(self->path, "w");
+        FILE *fp = fopen(self->ExternalFile->path, "w");
 
         for (int i = 0; i < self->numrows; i++) {
             for (int j = 0; j < self->numcols; j++) {
