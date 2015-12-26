@@ -39,9 +39,9 @@ so_Table *so_Table_new(char *name)
 {
     so_Table *table = calloc(sizeof(so_Table), 1);
     if (table) {
-        table->name = pharmml_strdup(name);
+        table->element_name = pharmml_strdup(name);
         table->reference_count = 1;
-        if (!table->name) {
+        if (!table->element_name) {
             free(table);
             table = NULL;
         }
@@ -57,7 +57,7 @@ so_Table *so_Table_new(char *name)
  */
 so_Table *so_Table_copy(so_Table *source)
 {
-    so_Table *dest = so_Table_new(source->name);
+    so_Table *dest = so_Table_new(source->element_name);
     if (dest) {
         dest->numrows = source->numrows;
         for (int i = 0; i < source->numcols; i++) {
@@ -90,7 +90,7 @@ void so_Table_free(so_Table *self)
         }
         free(self->oid);
         free(self->path);
-        free(self->name);
+        free(self->element_name);
         free(self);
     }
 }
@@ -431,7 +431,7 @@ int so_Table_set_external_file_path(so_Table *self, char *path)
 
 so_xml so_Table_xml(so_Table *self)
 {
-    xmlNodePtr xml = xmlNewNode(NULL, BAD_CAST self->name);
+    xmlNodePtr xml = xmlNewNode(NULL, BAD_CAST self->element_name);
 
     xmlNodePtr def = xmlNewChild(xml, NULL, BAD_CAST "ds:Definition", NULL);
 
@@ -448,7 +448,6 @@ so_xml so_Table_xml(so_Table *self)
 
     if (!self->use_external_file) {
         xmlNodePtr tab = xmlNewChild(xml, NULL, BAD_CAST "ds:Table", NULL);
-
         for (int i = 0; i < self->numrows; i++) {
             xmlNodePtr row = xmlNewChild(tab, NULL, BAD_CAST "ds:Row", NULL);
             for (int j = 0; j < self->numcols; j++) {

@@ -20,7 +20,7 @@
 
 # List of classes that need name as input to _new
 need_name = [
-    'Table', 'Matrix'
+    'Table', 'Matrix', 'ExternalFile'
 ]
 
 structure = {
@@ -55,51 +55,51 @@ structure = {
     },
     'ToolSettings' : {
         'children' : [
-            { 'name' : 'File', 'type' : 'File', 'array' : True },
+            { 'name' : 'File', 'type' : 'ExternalFile', 'array' : True },
         ],
         'xpath' : 'SO/SOBlock/ToolSettings'
     },
-    'File' : {
-        'children' : [
-            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
-            { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
-        ],
-        'attributes' : [
-            'oid'
-        ],
-        'xpath' : 'SO/SOBlock/ToolSettings/File'
-    },
+    #'File' : {
+    #    'children' : [
+    #        { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+    #        { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
+    #    ],
+    #    'attributes' : [
+    #        'oid'
+    #    ],
+    #    'xpath' : 'SO/SOBlock/ToolSettings/File'
+    #},
     'RawResults' : {
         'children' : [
-            { 'name' : 'DataFile', 'type' : 'DataFile', 'array' : True },
-            { 'name' : 'GraphicsFile', 'type' : 'GraphicsFile', 'array' : True },
+            { 'name' : 'DataFile', 'type' : 'ExternalFile', 'array' : True },
+            { 'name' : 'GraphicsFile', 'type' : 'ExternalFile', 'array' : True },
         ],
         'xpath' : 'SO/SOBlock/RawResults'
     },
-    'DataFile' : {
-        'children' : [
-            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
-            { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
-        ],
-        'attributes' : [
-            'oid'
-        ],
-        'xpath' : 'SO/SOBlock/RawResults/DataFile'
-    },
-    'GraphicsFile' : {
-        'children' : [
-            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
-            { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
-        ],
-        'attributes' : [
-            'oid'
-        ],
-        'xpath' : 'SO/SOBlock/RawResults/GraphicsFile'
-    },
+    #'DataFile' : {
+    #    'children' : [
+    #        { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+    #        { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
+    #    ],
+    #    'attributes' : [
+    #        'oid'
+    #    ],
+    #    'xpath' : 'SO/SOBlock/RawResults/DataFile'
+    #},
+    #'GraphicsFile' : {
+    #    'children' : [
+    #        { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+    #        { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
+    #    ],
+    #    'attributes' : [
+    #        'oid'
+    #    ],
+    #    'xpath' : 'SO/SOBlock/RawResults/GraphicsFile'
+    #},
     'TaskInformation' : {
         'children' : [
             { 'name' : 'Message', 'type' : 'Message', 'array' : True },
-            { 'name' : 'OutputFilePath', 'type' : 'OutputFilePath', 'array' : True },
+            { 'name' : 'OutputFilePath', 'type' : 'ExternalFile', 'array' : True },
             { 'name' : 'RunTime', 'type' : 'RunTime' },
             { 'name' : 'NumberChains', 'type' : 'NumberChains' },
             { 'name' : 'NumberIterations', 'type' : 'NumberIterations' },
@@ -118,15 +118,15 @@ structure = {
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/Message'
     },
-    'OutputFilePath' : {
-        'children' : [
-            { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
-        ],
-        'attributes' : [
-            'oid'
-        ],
-        'xpath' : 'SO/SOBlock/TaskInformation/OutputFilePath'
-    },
+    #'OutputFilePath' : {
+    #    'children' : [
+    #        { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
+    #    ],
+    #    'attributes' : [
+    #        'oid'
+    #    ],
+    #    'xpath' : 'SO/SOBlock/TaskInformation/OutputFilePath'
+    #},
     'RunTime' : {
         'children' : [
             { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
@@ -294,6 +294,7 @@ structure = {
             { 'name' : 'Covariates', 'type' : 'SimulationSubType', 'array' : True },
             { 'name' : 'PopulationParameters', 'type' : 'SimulationSubType', 'array' : True },
             { 'name' : 'Dosing', 'type' : 'SimulationSubType', 'array' : True },
+            { 'name' : 'RawResultsFile', 'type' : 'ExternalFile' },
         ],
         'attributes' : [
             'replicate'
@@ -307,6 +308,27 @@ structure = {
             'extFileNo'
         ],
         'xpath' : 'SimulationSubType'
+    },
+    'ExternalFile' : {
+        'named' : True,
+        'children' : [
+            { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
+            { 'name' : 'format', 'type' : 'type_string', 'prefix' : 'ds' },
+            { 'name' : 'delimiter', 'type' : 'type_string', 'prefix' : 'ds' },
+            { 'name' : 'MissingData', 'type' : 'MissingData', 'array' : True, 'prefix' : 'ds' }, 
+            { 'name' : 'Description' , 'type' : 'type_string', 'prefix' : 'ct' },
+        ],
+        'attributes' : [
+            'oid'
+        ],
+        'xpath' : 'ExternalFile'
+    },
+    'MissingData' : {
+        'attributes' : {
+            'dataCode',
+            'missingDataType'
+        },
+        'xpath' : 'MissingData'
     },
     'OptimalDesign' : {
         'children' : [
@@ -324,32 +346,32 @@ structure = {
             { 'name' : 'ParameterPrecision', 'type' : 'Table' },
             { 'name' : 'Criteria', 'type' : 'Table' },
             { 'name' : 'Tests', 'type' : 'Table' },
-            { 'name' : 'SimulatedData', 'type' : 'SimulatedData' },
-            { 'name' : 'Design', 'type' : 'Design' },
+            { 'name' : 'SimulatedData', 'type' : 'ExternalFile' },
+            { 'name' : 'Design', 'type' : 'ExternalFile' },
         ],
         'attributes' : [
             'blockNumber'
         ],
         'xpath' : 'SO/SOBlock/OptimalDesign/OptimalDesignBlock'
     },
-    'SimulatedData' : {
-        'children' : [
-            { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' }
-        ],
-        'attributes' : [
-            'oid'
-        ],
-        'xpath' : 'SO/SOBlock/OptimalDesign/OptimalDesignBlock/SimulatedData'
-    },
-    'Design' : {
-        'children' : [
-            { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' }
-        ],
-        'attributes' : [
-            'oid'
-        ],
-        'xpath' : 'SO/SOBlock/OptimalDesign/OptimalDesignBlock/Design'
-    },
+    #'SimulatedData' : {
+    #    'children' : [
+    #        { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' }
+    #    ],
+    #    'attributes' : [
+    #        'oid'
+    #    ],
+    #    'xpath' : 'SO/SOBlock/OptimalDesign/OptimalDesignBlock/SimulatedData'
+    #},
+    #'Design' : {
+    #    'children' : [
+    #        { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' }
+    #    ],
+    #    'attributes' : [
+    #        'oid'
+    #    ],
+    #    'xpath' : 'SO/SOBlock/OptimalDesign/OptimalDesignBlock/Design'
+    #},
     'ModelDiagnostic' : {
         'children' : [
             { 'name' : 'DiagnosticPlotsStructuralModel', 'type' : 'DiagnosticPlotsStructuralModel' },

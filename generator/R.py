@@ -407,7 +407,7 @@ def print_classes(name, struct):
                 print(",")
                 print("\t\tadd_", child['name'], " = function(value) {", sep='')
                 print("\t\t\tso_", name, "_add_", child['name'], "(.self$.cobj, value$.cobj)", sep='')
-                print("\t\t\tinvisible(so_", child['name'], "_ref(value$.cobj))", sep='')
+                print("\t\t\tinvisible(so_", child['type'], "_ref(value$.cobj))", sep='')
                 print("\t\t}", end='')
     print()
     print("\t)")

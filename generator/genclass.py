@@ -29,6 +29,7 @@ class genclass:
         self.attributes = entry.get('attributes', None)
         self.xpath = entry['xpath']
         self.extends = entry.get('extends', None)
+        self.named = entry.get('named', None)
         self.element_name = entry.get('element_name', None)
         self.fields = entry.get('fields', None)
 
@@ -82,7 +83,12 @@ class genclass:
             print("\t\t\tfree(object);", file=f)
             print("\t\t\tobject = NULL;", file=f)
             print("\t\t}", file=f)
-
+        elif self.named:
+            print("\t\tobject->element_name = pharmml_strdup(name);", file=f)
+            print("\t\tif (!object->element_name) {", file=f)
+            print("\t\t\tfree(object);", file=f)
+            print("\t\t\tobject = NULL;", file=f)
+            print("\t\t}", file=f)
         print("\t}", file=f)
         print(file=f)
         print("\treturn object;", file=f)
@@ -108,7 +114,10 @@ class genclass:
         print("{", file=f)
         print("\tso_", self.name, " *dest = so_", self.name, "_new(", end='', sep='', file=f)
         if self.name in need_name:
-            print("self->name", end='', file=f) 
+            if self.named:
+                print("self->element_name", end='', file=f) 
+            else:
+                print("self->base->element_name", end='', file=f)
         print(");", file=f)
         print("\tif (dest) {", file=f)
         if self.extends:
@@ -372,13 +381,13 @@ class genclass:
         print(file=f)
         print("int so_", self.name, "_set_base(so_", self.name, " *self, so_", self.extends, " *value)", sep='', file=f)
         print("{", file=f)
-        print("\tchar *name = pharmml_strdup(self->base->name);", file=f)
+        print("\tchar *name = pharmml_strdup(self->base->element_name);", file=f)
         print("\tif (!name) {", file=f)
         print("\t\treturn 1;", file=f)
         print("\t}", file=f)
         print("\tso_", self.extends, "_unref(value);", sep='', file=f)
         print("\tself->base = value;", file=f) 
-        print("\tself->base->name = name;", sep='', file=f)
+        print("\tself->base->element_name = name;", sep='', file=f)
         print("\treturn 0;", file=f)
         print("}", file=f)
         print(file=f)
@@ -404,7 +413,10 @@ class genclass:
                 name = self.element_name
             else:
                 name = self.name
-            print('\t\txml = xmlNewNode(NULL, BAD_CAST "', name, '");', sep='', file=f)
+            if self.named:
+                print('\t\txml = xmlNewNode(NULL, BAD_CAST self->element_name);', file=f)
+            else:
+                print('\t\txml = xmlNewNode(NULL, BAD_CAST "', name, '");', sep='', file=f)
 
         if self.attributes:
             for a in self.attributes:
@@ -832,6 +844,9 @@ class genclass:
 
             if self.extends:
                 print("\tso_", self.extends, " *base;", sep='', file=f)
+
+            if self.named:
+                print("\tchar *element_name;", file=f)
 
             if self.attributes:
                 for a in self.attributes:

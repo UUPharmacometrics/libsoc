@@ -77,7 +77,7 @@ pharmml_valueType pharmml_string_to_valueType(const char *str)
         }
     }
 
-    return 0;
+    return PHARMML_VALUETYPE_ERROR;
 }
 
 int pharmml_valueType_to_size(pharmml_valueType valtype)

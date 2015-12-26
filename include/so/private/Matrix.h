@@ -21,7 +21,7 @@
 #include <so/xml.h>
 
 struct so_Matrix {
-    char *name;
+    char *element_name;
     double *data;
     char **rownames;
     char **colnames;

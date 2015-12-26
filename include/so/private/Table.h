@@ -23,7 +23,7 @@
 #include <so/private/column.h>
 
 struct so_Table {
-    char *name;
+    char *element_name;
     so_Column **columns;
     char *oid;
     char *path;

@@ -31,15 +31,15 @@ void so_SOBlock_add_rawresults_datafile(so_SOBlock *self, char *description, cha
 
     so_RawResults *rr = self->RawResults;
 
-    so_DataFile *df = so_RawResults_create_DataFile(rr);
+    so_ExternalFile *df = so_RawResults_create_DataFile(rr);
 
-    so_DataFile_set_oid(df, oid);
+    so_ExternalFile_set_oid(df, oid);
 
     if (description) {
-        so_DataFile_set_Description(df, description);
+        so_ExternalFile_set_Description(df, description);
     }
     if (path) {
-        so_DataFile_set_path(df, path);
+        so_ExternalFile_set_path(df, path);
     }
 }
 
@@ -51,14 +51,14 @@ void so_SOBlock_add_rawresults_graphicsfile(so_SOBlock *self, char *description,
 
     so_RawResults *rr = self->RawResults;
 
-    so_GraphicsFile *df = so_RawResults_create_GraphicsFile(rr);
+    so_ExternalFile *df = so_RawResults_create_GraphicsFile(rr);
 
-    so_GraphicsFile_set_oid(df, oid);
+    so_ExternalFile_set_oid(df, oid);
     if (description) {
-        so_GraphicsFile_set_Description(df, description);
+        so_ExternalFile_set_Description(df, description);
     }
     if (path) {
-        so_GraphicsFile_set_path(df, path);
+        so_ExternalFile_set_path(df, path);
     }
 }
 
