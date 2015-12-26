@@ -23,7 +23,6 @@
 #include <so/private/column.h>
 
 struct so_Table {
-    char *element_name;
     so_Column **columns;
     char *oid;
     char *path;
@@ -42,7 +41,7 @@ struct so_Table {
     int reference_count;
 };
 
-so_xml so_Table_xml(so_Table *self);
+so_xml so_Table_xml(so_Table *self, char *element_name);
 int so_Table_start_element(so_Table *table, const char *localname, int nb_attributes, const char **attributes);
 void so_Table_end_element(so_Table *table, const char *localname);
 int so_Table_characters(so_Table *table, const char *ch, int len);

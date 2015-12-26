@@ -25,7 +25,7 @@ typedef struct so_Table so_Table;
 
 typedef enum { PHARMML_DELIMITER_TAB, PHARMML_DELIMITER_SPACE, PHARMML_DELIMITER_COMMA, PHARMML_DELIMITER_SEMICOLON } pharmml_delimiter;
 
-so_Table *so_Table_new(char *name);
+so_Table *so_Table_new();
 so_Table *so_Table_copy(so_Table *source);
 void so_Table_free(so_Table *table);
 void so_Table_ref(so_Table *self);

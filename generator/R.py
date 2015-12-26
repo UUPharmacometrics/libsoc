@@ -184,7 +184,7 @@ def print_set_child(name, child):
     print("SEXP ", common.create_set_name(name, child['name'], prefix="r_so"), "(SEXP self, SEXP child)", sep='')
     print("{")
     if child['type'] == "Table":
-        print("\tso_Table *table = df2table(child, \"", child['name'], "\");", sep='')
+        print("\tso_Table *table = df2table(child);", sep='')
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), table);", sep='')
     elif child['type'] == 'type_string':
         print("\tint fail = so_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), (char *) CHAR(STRING_ELT(child, 0)));", sep='')
@@ -196,7 +196,7 @@ def print_set_child(name, child):
     elif child['type'] == 'type_int':
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), INTEGER(child));", sep='')
     elif child['type'] == 'Matrix':
-        print("\tso_Matrix *matrix = Rmatrix2matrix(child, \"", child['name'], "\");", sep='')
+        print("\tso_Matrix *matrix = Rmatrix2matrix(child);", sep='')
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), matrix);", sep='')
     else:
         print("\tso_", name, "_set_", child['name'], "(R_ExternalPtrAddr(self), R_ExternalPtrAddr(child));", sep='')

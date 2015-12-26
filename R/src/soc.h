@@ -18,9 +18,9 @@
 #ifndef _SOC_H
 #define _SOC_H
 
-so_Table *df2table(SEXP df, char *table_name);
+so_Table *df2table(SEXP df);
 SEXP table2df(so_Table *table);
 SEXP matrix2Rmatrix(so_Matrix *matrix);
-so_Matrix *Rmatrix2matrix(SEXP R_matrix, char *matrix_name);
+so_Matrix *Rmatrix2matrix(SEXP R_matrix);
 
 #endif

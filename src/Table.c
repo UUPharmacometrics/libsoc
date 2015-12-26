@@ -35,16 +35,11 @@
  * \return A pointer to the newly created struct or NULL if memory allocation failed
  * \sa so_Table_copy, so_Table_free
  */
-so_Table *so_Table_new(char *name)
+so_Table *so_Table_new()
 {
     so_Table *table = calloc(sizeof(so_Table), 1);
     if (table) {
-        table->element_name = pharmml_strdup(name);
         table->reference_count = 1;
-        if (!table->element_name) {
-            free(table);
-            table = NULL;
-        }
     }
 
     return table;
@@ -57,7 +52,7 @@ so_Table *so_Table_new(char *name)
  */
 so_Table *so_Table_copy(so_Table *source)
 {
-    so_Table *dest = so_Table_new(source->element_name);
+    so_Table *dest = so_Table_new();
     if (dest) {
         dest->numrows = source->numrows;
         for (int i = 0; i < source->numcols; i++) {
@@ -90,7 +85,6 @@ void so_Table_free(so_Table *self)
         }
         free(self->oid);
         free(self->path);
-        free(self->element_name);
         free(self);
     }
 }
@@ -429,9 +423,9 @@ int so_Table_set_external_file_path(so_Table *self, char *path)
     }
 }
 
-so_xml so_Table_xml(so_Table *self)
+so_xml so_Table_xml(so_Table *self, char *element_name)
 {
-    xmlNodePtr xml = xmlNewNode(NULL, BAD_CAST self->element_name);
+    xmlNodePtr xml = xmlNewNode(NULL, BAD_CAST element_name);
 
     xmlNodePtr def = xmlNewChild(xml, NULL, BAD_CAST "ds:Definition", NULL);
 

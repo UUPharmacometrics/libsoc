@@ -58,9 +58,9 @@ SEXP r_so_Matrix_free(SEXP self)
 }
 
 
-so_Table *df2table(SEXP df, char *table_name)
+so_Table *df2table(SEXP df)
 {
-    so_Table *table = so_Table_new(table_name);
+    so_Table *table = so_Table_new();
 
     if (!table) {
         error("Failed to create so_Table object");
@@ -181,9 +181,9 @@ SEXP table2df(so_Table *table)
     return list;
 }
 
-so_Matrix *Rmatrix2matrix(SEXP R_matrix, char *matrix_name)
+so_Matrix *Rmatrix2matrix(SEXP R_matrix)
 {
-    so_Matrix *matrix = so_Matrix_new(matrix_name);
+    so_Matrix *matrix = so_Matrix_new();
 
     if (!matrix) {
         error("Failed to create so_Matrix object");

@@ -59,16 +59,6 @@ structure = {
         ],
         'xpath' : 'SO/SOBlock/ToolSettings'
     },
-    #'File' : {
-    #    'children' : [
-    #        { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
-    #        { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
-    #    ],
-    #    'attributes' : [
-    #        'oid'
-    #    ],
-    #    'xpath' : 'SO/SOBlock/ToolSettings/File'
-    #},
     'RawResults' : {
         'children' : [
             { 'name' : 'DataFile', 'type' : 'ExternalFile', 'array' : True },
@@ -76,26 +66,6 @@ structure = {
         ],
         'xpath' : 'SO/SOBlock/RawResults'
     },
-    #'DataFile' : {
-    #    'children' : [
-    #        { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
-    #        { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
-    #    ],
-    #    'attributes' : [
-    #        'oid'
-    #    ],
-    #    'xpath' : 'SO/SOBlock/RawResults/DataFile'
-    #},
-    #'GraphicsFile' : {
-    #    'children' : [
-    #        { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
-    #        { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
-    #    ],
-    #    'attributes' : [
-    #        'oid'
-    #    ],
-    #    'xpath' : 'SO/SOBlock/RawResults/GraphicsFile'
-    #},
     'TaskInformation' : {
         'children' : [
             { 'name' : 'Message', 'type' : 'Message', 'array' : True },
@@ -118,15 +88,6 @@ structure = {
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/Message'
     },
-    #'OutputFilePath' : {
-    #    'children' : [
-    #        { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
-    #    ],
-    #    'attributes' : [
-    #        'oid'
-    #    ],
-    #    'xpath' : 'SO/SOBlock/TaskInformation/OutputFilePath'
-    #},
     'RunTime' : {
         'children' : [
             { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
@@ -310,7 +271,6 @@ structure = {
         'xpath' : 'SimulationSubType'
     },
     'ExternalFile' : {
-        'named' : True,
         'children' : [
             { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
             { 'name' : 'format', 'type' : 'type_string', 'prefix' : 'ds' },
@@ -354,24 +314,6 @@ structure = {
         ],
         'xpath' : 'SO/SOBlock/OptimalDesign/OptimalDesignBlock'
     },
-    #'SimulatedData' : {
-    #    'children' : [
-    #        { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' }
-    #    ],
-    #    'attributes' : [
-    #        'oid'
-    #    ],
-    #    'xpath' : 'SO/SOBlock/OptimalDesign/OptimalDesignBlock/SimulatedData'
-    #},
-    #'Design' : {
-    #    'children' : [
-    #        { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' }
-    #    ],
-    #    'attributes' : [
-    #        'oid'
-    #    ],
-    #    'xpath' : 'SO/SOBlock/OptimalDesign/OptimalDesignBlock/Design'
-    #},
     'ModelDiagnostic' : {
         'children' : [
             { 'name' : 'DiagnosticPlotsStructuralModel', 'type' : 'DiagnosticPlotsStructuralModel' },
@@ -395,4 +337,3 @@ structure = {
         'xpath' : 'SO/SOBlock/ModelDiagnostic/DiagnosticPlotsStructuralModel/IndivFits'
     },
 }
-

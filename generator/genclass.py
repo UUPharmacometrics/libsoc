@@ -66,26 +66,14 @@ class genclass:
 
     def create_new(self):
         f = self.c_file
-        print("so_", self.name, " *so_", self.name, "_new(", sep='', end='', file=f)
-        if self.name in need_name:
-            print("char *name", end='', file=f)
-        print(")", file=f)
+        print("so_", self.name, " *so_", self.name, "_new()", sep='', file=f)
         print("{", file=f);
         print("\tso_", self.name, " *object = calloc(sizeof(so_", self.name, "), 1);", sep='', file=f)
         print("\tif (object) {", file=f)
         print("\t\tobject->reference_count = 1;", file=f)
         if self.extends:
-            print("\t\tobject->base = so_", self.extends, "_new(", end='', sep='', file=f)
-            if self.extends in need_name:
-                print("name", sep='', end='', file=f)
-            print(");", file=f)
+            print("\t\tobject->base = so_", self.extends, "_new();", sep='', file=f)
             print("\t\tif (!object->base) {", file=f)
-            print("\t\t\tfree(object);", file=f)
-            print("\t\t\tobject = NULL;", file=f)
-            print("\t\t}", file=f)
-        elif self.named:
-            print("\t\tobject->element_name = pharmml_strdup(name);", file=f)
-            print("\t\tif (!object->element_name) {", file=f)
             print("\t\t\tfree(object);", file=f)
             print("\t\t\tobject = NULL;", file=f)
             print("\t\t}", file=f)
@@ -112,13 +100,7 @@ class genclass:
         f = self.c_file
         print("so_", self.name, " *so_", self.name, "_copy(so_", self.name, " *self)", sep='', file=f)
         print("{", file=f)
-        print("\tso_", self.name, " *dest = so_", self.name, "_new(", end='', sep='', file=f)
-        if self.name in need_name:
-            if self.named:
-                print("self->element_name", end='', file=f) 
-            else:
-                print("self->base->element_name", end='', file=f)
-        print(");", file=f)
+        print("\tso_", self.name, " *dest = so_", self.name, "_new();", sep='', file=f)
         print("\tif (dest) {", file=f)
         if self.extends:
             print("\t\tdest->base = so_", self.extends, "_copy(self->base);", sep='', file=f)
@@ -381,20 +363,18 @@ class genclass:
         print(file=f)
         print("int so_", self.name, "_set_base(so_", self.name, " *self, so_", self.extends, " *value)", sep='', file=f)
         print("{", file=f)
-        print("\tchar *name = pharmml_strdup(self->base->element_name);", file=f)
-        print("\tif (!name) {", file=f)
-        print("\t\treturn 1;", file=f)
-        print("\t}", file=f)
         print("\tso_", self.extends, "_unref(value);", sep='', file=f)
         print("\tself->base = value;", file=f) 
-        print("\tself->base->element_name = name;", sep='', file=f)
         print("\treturn 0;", file=f)
         print("}", file=f)
         print(file=f)
 
     def create_xml(self):
         f = self.c_file
-        print("so_xml so_", self.name, "_xml(so_", self.name, " *self)", sep='', file=f)
+        print("so_xml so_", self.name, "_xml(so_", self.name, " *self", end='', sep='', file=f)
+        if self.name in need_name:
+            print(", char *element_name", end='', file=f)
+        print(")", sep='', file=f)
         print("{", file=f)
         print("\txmlNodePtr xml = NULL;", file=f)
         print(file=f)
@@ -407,14 +387,14 @@ class genclass:
             print("self->", self.children[-1]['name'], ") {", sep='', file=f)
 
         if self.extends:
-            print("\t\txml = so_", self.extends, "_xml(self->base);", sep='', file=f) 
+            print("\t\txml = so_", self.extends, "_xml(self->base, element_name);", sep='', file=f) 
         else:
             if self.element_name:
                 name = self.element_name
             else:
                 name = self.name
-            if self.named:
-                print('\t\txml = xmlNewNode(NULL, BAD_CAST self->element_name);', file=f)
+            if self.name in need_name:
+                print('\t\txml = xmlNewNode(NULL, BAD_CAST element_name);', file=f)
             else:
                 print('\t\txml = xmlNewNode(NULL, BAD_CAST "', name, '");', sep='', file=f)
 
@@ -426,10 +406,14 @@ class genclass:
         if self.children:
             for e in self.children:
                 print("\t\tif (self->", e['name'], ") {", sep='', file=f)
+                if e['type'] in need_name:
+                    extra = ", \"" + e['name'] + "\""
+                else:
+                    extra = ""
                 is_array = e.get('array', False)
                 if is_array:
                     print("\t\t\tfor (int i = 0; i < self->num_", e['name'], "; i++) {" ,sep='', file=f)
-                    print("\t\t\t\txmlNodePtr ", e['name'], " = so_", e['type'], "_xml(self->", e['name'], "[i]);", sep='', file=f)
+                    print("\t\t\t\txmlNodePtr ", e['name'], " = so_", e['type'], "_xml(self->", e['name'], "[i]", extra, ");", sep='', file=f)
                     print("\t\t\t\txmlAddChild(xml, ", e['name'], ");", sep='', file=f)
                     print("\t\t\t}", file=f)
                 else:
@@ -450,7 +434,7 @@ class genclass:
                             print("\t\t\tfree(number_string);", file=f);
                         print("\t\t\txmlAddChild(xml, ", e['name'], ");", sep='', file=f)
                     else:
-                        print("\t\t\txmlNodePtr ", e['name'], " = so_", e['type'], "_xml(self->", e['name'], ");", sep='', file=f)
+                        print("\t\t\txmlNodePtr ", e['name'], " = so_", e['type'], "_xml(self->", e['name'], extra, ");", sep='', file=f)
                         print("\t\t\txmlAddChild(xml, ", e['name'], ");", sep='', file=f)
 
                 print("\t\t}", file=f)
@@ -845,9 +829,6 @@ class genclass:
             if self.extends:
                 print("\tso_", self.extends, " *base;", sep='', file=f)
 
-            if self.named:
-                print("\tchar *element_name;", file=f)
-
             if self.attributes:
                 for a in self.attributes:
                     print("\tchar *", a, ";", sep='', file=f) 
@@ -883,7 +864,11 @@ class genclass:
             print("int so_", self.name, "_start_element(so_", self.name, " *self, const char *localname, int nb_attributes, const char **attributes);", sep='', file=f)
             print("void so_", self.name, "_end_element(so_", self.name, " *self, const char *localname);", sep='', file=f)
             print("int so_", self.name, "_characters(so_", self.name, " *self, const char *ch, int len);", sep='', file=f)
-            print("so_xml so_", self.name, "_xml(so_", self.name, " *self);", sep='', file=f)
+            if self.name in need_name:
+                extra = ", char *element_name"
+            else:
+                extra = ""
+            print("so_xml so_", self.name, "_xml(so_", self.name, " *self", extra, ");", sep='', file=f)
             if self.attributes:
                 print("int so_", self.name, "_init_attributes(so_", self.name, " *self, int nb_attributes, const char **attributes);", sep='', file=f)
             print(file=f)

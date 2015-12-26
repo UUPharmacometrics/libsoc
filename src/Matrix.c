@@ -32,16 +32,11 @@
  * \return A pointer to the newly created struct or NULL if memory allocation failed
  * \sa so_Matrix_copy, so_Matrix_free
  */
-so_Matrix *so_Matrix_new(char *name)
+so_Matrix *so_Matrix_new()
 {
     so_Matrix *matrix = calloc(sizeof(so_Matrix), 1);
     if (matrix) {
-        matrix->element_name = pharmml_strdup(name);
         matrix->reference_count = 1;
-        if (!matrix->element_name) {
-            free(matrix);
-            matrix = NULL;
-        } 
     }
     
     return matrix;
@@ -54,7 +49,7 @@ so_Matrix *so_Matrix_new(char *name)
  */
 so_Matrix *so_Matrix_copy(so_Matrix *source)
 {
-    so_Matrix *dest = so_Matrix_new(source->element_name);
+    so_Matrix *dest = so_Matrix_new();
     if (dest) {
         bool fail = false;
         if (so_Matrix_set_size(dest, source->numrows, source->numcols) != 0) {
@@ -96,7 +91,6 @@ so_Matrix *so_Matrix_copy(so_Matrix *source)
 void so_Matrix_free(so_Matrix *self)
 {
     if (self) {
-        free(self->element_name);
         free(self->data);
         if (self->rownames) {
             for (int i = 0; i < self->numrows; i++) {
@@ -267,9 +261,9 @@ double *so_Matrix_get_data(so_Matrix *self)
     return self->data;
 }
 
-so_xml so_Matrix_xml(so_Matrix *self)
+so_xml so_Matrix_xml(so_Matrix *self, char *element_name)
 {
-    xmlNodePtr xml = xmlNewNode(NULL, BAD_CAST self->element_name);
+    xmlNodePtr xml = xmlNewNode(NULL, BAD_CAST element_name);
 
     xmlNodePtr def = xmlNewChild(xml, NULL, BAD_CAST "ct:Matrix", NULL);
     xmlNewProp(def, BAD_CAST "matrixType", BAD_CAST "Any");
