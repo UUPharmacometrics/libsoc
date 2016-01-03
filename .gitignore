@@ -32,6 +32,8 @@ R/src/wininclude/*
 
 R-windep/
 
+fortran/libsoc.f03
+
 doxygen_sqlite3.db
 html/*
 latex/*
