@@ -751,7 +751,7 @@ class genclass:
                     print(");", file=f)
 
                     # _get_number_of_ for arrays
-                    if e.get("array", False):
+                    if e.get('array', False):
                         print("/** \\memberof so_", self.name, sep='', file=f)
                         print(" * Get the number of", e['name'], "currently contained in the", self.name, "structure", file=f)
                         print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
@@ -760,7 +760,7 @@ class genclass:
                         print("int so_", self.name, "_get_number_of_", e['name'], "(so_", self.name, " *self);", sep='', file=f)
 
                 for e in self.children:
-                    if not e.get('attribute', False):   # No setters for arrays
+                    if not e.get('array', False):   # No setters for arrays
                         return_type = "void"
                         if e['type'] == "type_string":
                             man_type = "string"
