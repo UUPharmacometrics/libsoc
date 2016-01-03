@@ -33,6 +33,8 @@ R/src/wininclude/*
 R-windep/
 
 fortran/libsoc.f03
+fortran/libsoc.mod
+fortran/test
 
 doxygen_sqlite3.db
 html/*

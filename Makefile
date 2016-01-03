@@ -60,6 +60,8 @@ clean:
 	rm -f doxygen_sqlite3.db
 	cd generator; python3 generate.py clean
 	rm -rf generator/__pycache__
+	rm fortran/libsoc.mod
+	rm fortran/test
 
 .PHONY: R
 R:

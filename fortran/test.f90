@@ -20,7 +20,7 @@ program main
     real(8),pointer :: time
     real(8),dimension(:,:),pointer :: matrix
 
-    my_so = so_SO_read("test.SO.xml")
+    my_so = so_SO_read("../test/pheno.SO.xml")
 
     !if (.NOT. c_associated(my_so)) then
     !    print *, so_get_last_error()
