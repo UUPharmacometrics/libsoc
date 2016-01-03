@@ -11,14 +11,18 @@ program main
     type(so_RunTime) :: rt
     type(so_Estimation) :: est
     type(so_PrecisionPopulationEstimates) :: ppe
+    type(so_PopulationEstimates) :: pe
     type(so_MLE) :: mle
     type(so_Matrix) :: cov
+    type(so_Table) :: mle_tab
     integer :: numrows
     integer :: numdf
     integer :: i
     character,pointer,dimension(:) :: path
     real(8),pointer :: time
     real(8),dimension(:,:),pointer :: matrix
+    type(c_ptr) :: column
+    real(8),dimension(:),pointer :: conv_col 
 
     my_so = so_SO_read("../test/pheno.SO.xml")
 
@@ -67,4 +71,13 @@ program main
     !matrix(1, 1) = 28.9
 
     !call so_SO_write(my_so, "changed.SO.xml", 1)
+
+    ! Get data from table
+    pe = so_Estimation_get_PopulationEstimates(est) 
+    mle_tab = so_PopulationEstimates_get_mle(pe)
+
+    column = so_Table_get_column_from_number(mle_tab, 0)
+    conv_col => so_Table_data_to_real(mle_tab, column)
+
+    print *, conv_col(1)
 end

@@ -7,6 +7,7 @@ import common
 types = ""
 interface = "\tinterface\n"
 contains = "\tcontains\n"
+enumerators = []
 
 def name_mangle(name):
     if len(name) > 62:
@@ -20,17 +21,56 @@ def name_mangle(name):
 
 def create_common():
     global interface
+    global contains
     interface += '\t\tfunction so_strlen(string) bind(C, name="strlen")\n'
     interface += "\t\t\tuse iso_c_binding\n"
     interface += "\t\t\ttype(c_ptr),intent(in),value :: string\n"
     interface += "\t\t\tinteger(kind = c_size_t) :: so_strlen\n"
     interface += "\t\tend function so_strlen\n\n"
+    
+    contains += "\t\tfunction so_Table_data_to_real(self, data)\n"
+    contains += "\t\t\ttype(so_Table) :: self\n"
+    contains += "\t\t\ttype(c_ptr) :: data\n"
+    contains += "\t\t\treal(kind=dp),dimension(:),pointer :: so_Table_data_to_real\n"
+    contains += "\t\t\tcall c_f_pointer(data, so_Table_data_to_real, [ so_Table_get_number_of_rows(self) ])\n"
+    contains += "\t\tend function so_Table_data_to_real\n\n"
+    contains += "\t\tfunction so_Table_data_to_integer(self, data)\n"
+    contains += "\t\t\ttype(so_Table) :: self\n"
+    contains += "\t\t\ttype(c_ptr) :: data\n"
+    contains += "\t\t\tinteger,dimension(:),pointer :: so_Table_data_to_integer\n"
+    contains += "\t\t\tcall c_f_pointer(data, so_Table_data_to_integer, [ so_Table_get_number_of_rows(self) ])\n"
+    contains += "\t\tend function so_Table_data_to_integer\n\n"
+
+def parse_enumerators():
+    global types
+    global enumerators
+    with open("../include/pharmml/common_types.h", "r") as header:
+        enum = ""
+        for line in header:
+            if enum != "":
+                enum += line.rstrip()
+                if ";" in enum: 
+                    m = re.search("{(.*)}\s*(\w+);", enum, flags=re.MULTILINE)
+                    if m:
+                        name = m.group(2)
+                        enumerators.append(name)
+                        array = m.group(1).split(",")
+                        array = [x.lstrip() for x in array]
+                        first = array[0]
+                        types += "\tenum, bind(C)\n"
+                        for e in array:
+                            types += "\t\tenumerator " + e + "\n"
+                        types += "\tend enum\n\n"
+                        types += "\tinteger, parameter :: " + name + " = kind(" + first + ")\n\n"
+                    enum = ""
+            if line.startswith("typedef enum"):
+                enum += line.rstrip()
 
 def parse_prototypes(name):
     global types
     protolist = []
     result = []
-    with open("../../soc/include/so/" + name, "r") as header:
+    with open("../include/so/" + name, "r") as header:
         for line in header:
             line = line.rstrip()
             if "(" in line and line.endswith(");"):
@@ -62,6 +102,7 @@ def parse_prototypes(name):
     return result
 
 def get_c_type_declaration(c_type, name, result=False): 
+    global enumerators
     if not result:
         value = ",value"
     else:
@@ -72,7 +113,7 @@ def get_c_type_declaration(c_type, name, result=False):
         decl = "character(kind=c_char) :: " + name + "(*)"
     elif c_type == "char *" and result:
         decl = "type(c_ptr) :: " + name
-    elif c_type == "int":
+    elif c_type == "int" or c_type in enumerators:
         decl = "integer(c_int)" + value + " :: " + name
     elif "*" in c_type:
         decl = "type(c_ptr)" + value + " :: " + name
@@ -82,6 +123,7 @@ def get_c_type_declaration(c_type, name, result=False):
     return decl
 
 def get_fort_type_declaration(c_type, name, result=False):
+    global enumerators
     decl = ""
 
     if c_type == "char *" and result:
@@ -90,6 +132,8 @@ def get_fort_type_declaration(c_type, name, result=False):
         decl = "character(len=*) :: " + name
     elif c_type == "int":
         decl = "integer :: " + name
+    elif c_type in enumerators:
+        decl = "integer(kind=" + c_type + ") :: " + name
     elif c_type == "int *":
         decl = "integer,pointer :: " + name
     elif c_type == "double":
@@ -99,6 +143,8 @@ def get_fort_type_declaration(c_type, name, result=False):
             decl = "real(kind=dp),dimension(:,:),pointer :: " + name
         else:
             decl = "real(kind=dp),pointer :: " + name
+    elif c_type == "void *":
+        decl = "type(c_ptr) :: " + name
     elif "*" in c_type:
         decl = "type(" + c_type[0:-2] + ")" + " :: " + name
     elif c_type == "so_xml":
@@ -110,10 +156,11 @@ def get_fort_type_declaration(c_type, name, result=False):
 
 def get_argument_conversion(c_type, name):
     # Create code and type declarations for conversion of fortran argument into c argument
+    global enumerators
     if c_type == "char *":
         declaration = "character(len=len_trim(" + name + ") + 1) :: new_" + name + "\n"
         code = "new_" + name + " = trim(" + name + ") // c_null_char\n"
-    elif c_type == "int":
+    elif c_type == "int" or c_type in enumerators:
         declaration = "integer(kind=c_int) :: new_" + name + "\n"
         code = "new_" + name + " = " + name + "\n"
     elif c_type == "int *":
@@ -125,6 +172,9 @@ def get_argument_conversion(c_type, name):
     elif c_type == "double *":
         declaration = "type(c_ptr) :: new_" + name + "\n"
         code = "new_" + name + " = c_loc(" + name + ")\n"
+    elif c_type == "void *":
+        declaration = "type(c_ptr) :: new_" + name + "\n"
+        code = "new_" + name + " = " + name + "\n"
     elif "*" in c_type:
         declaration = "type(c_ptr) :: new_" + name + "\n"
         code = "new_" + name + " = " + name + "%ptr\n"
@@ -132,10 +182,11 @@ def get_argument_conversion(c_type, name):
     return (declaration, code)
 
 def get_return_conversion(c_type, name):
+    global enumerators
     code = ""
     if c_type == "char *":
         code = "call c_f_pointer(res, " + name + ", [so_strlen(res)])"
-    elif c_type == "int":
+    elif c_type == "int" or c_type in enumerators:
         code = name + " = res"
     elif c_type == "int *":
         code = "call c_f_pointer(res, " + name + ")"
@@ -146,6 +197,8 @@ def get_return_conversion(c_type, name):
             code = "call c_f_pointer(res, " + name + ", [so_Matrix_get_number_of_columns(self), so_Matrix_get_number_of_rows(self)])"
         else:
             code = "call c_f_pointer(res, " + name + ")"
+    elif c_type == "void *":
+        code = name + " = res"
     elif "*" in c_type:
         code = name + "%ptr = res"
     return code + "\n"
@@ -249,12 +302,14 @@ def create_module():
 
 header_files = os.listdir("../include/so/")
 header_files.remove("xml.h")
-header_files.remove("Table.h")
+header_files.remove("private")
+
 for name in header_files:
     if not name.endswith(".h"):
         header_files.remove(name)
 
 create_common()
+parse_enumerators()
 
 for m in header_files:
     add_header(m)
