@@ -16,30 +16,61 @@ implied. See the License for the specific language governing
 permissions and limitations under the License.
 -->    
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:msteps="http://www.pharmml.org/pharmml/0.6/ModellingSteps"
-    xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths"
-    xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes"
-    xmlns:ds="http://www.pharmml.org/pharmml/0.6/Dataset"
-    targetNamespace="http://www.pharmml.org/pharmml/0.6/ModellingSteps" version="0.6"
+    xmlns:msteps="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:design="http://www.pharmml.org/pharmml/0.8/TrialDesign"
+    targetNamespace="http://www.pharmml.org/pharmml/0.8/ModellingSteps" version="0.8"
     elementFormDefault="qualified" attributeFormDefault="unqualified">
 
     <!-- 
         Imports
         -->
 
-    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/CommonTypes"
-        schemaLocation="http://www.pharmml.org/pharmml/0.6/CommonTypes"/>
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/CommonTypes"/>
 
-    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/Maths"
-        schemaLocation="http://www.pharmml.org/pharmml/0.6/Maths"/>
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/Maths"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/Maths"/>
 
-    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/Dataset"
-        schemaLocation="http://www.pharmml.org/pharmml/0.6/Dataset"/>
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/Dataset"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/Dataset"/>
 
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/TrialDesign"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/TrialDesign"/>
 
     <!--
         Simple types
         -->
+    <xs:simpleType name="OptimalDesignOpTypeType">
+        <xs:annotation>
+            <xs:documentation>
+                Type specifying the types of Optimal Design operation. 
+            </xs:documentation>
+        </xs:annotation>
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="ct:SymbolIdType">
+                    <xs:enumeration value="evaluation">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Evaluate a design.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="optimization">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Optimize a design.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:enumeration>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+    
     <xs:simpleType name="EstimationOpTypeType">
         <xs:annotation>
             <xs:documentation>
@@ -118,6 +149,122 @@ permissions and limitations under the License.
         <xs:restriction base="xs:NCName"/>
     </xs:simpleType>
     
+    <xs:simpleType name="CriterionType">
+        <xs:annotation>
+            <xs:documentation>
+                Type specifying criteria applied in design evaluation. 
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:NCName">
+            <xs:enumeration value="D"/>
+            <xs:enumeration value="ED"/>
+            <xs:enumeration value="C"/>
+            <xs:enumeration value="T"/>
+            <xs:enumeration value="A"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="builtInFIMfctType">
+        <xs:annotation>
+            <xs:documentation>
+                Type specifying build-in function type applied to FIM. 
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:NCName">
+            <xs:enumeration value="det"/>
+            <xs:enumeration value="logDet"/>
+            <xs:enumeration value="trInv"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ComputeAlgoType">
+        <xs:annotation>
+            <xs:documentation>
+                Type specifying build-in algorithm to calculate FIM. 
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:NCName">
+            <xs:enumeration value="FO"/>
+            <xs:enumeration value="FOCE"/>
+            <xs:enumeration value="FOCEI"/>
+            <xs:enumeration value="FOI"/>
+            <xs:enumeration value="LAPLACE"/>
+            <xs:enumeration value="GQ"/>
+            <xs:enumeration value="AGQ"/>
+            <xs:enumeration value="MCMC"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ApproxAlgoType">
+        <xs:annotation>
+            <xs:documentation>
+                Type specifying build-in algorithm to approximate FIM. 
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:NCName">
+            <xs:enumeration value="full"/>
+            <xs:enumeration value="fullParamaterised"/>
+            <xs:enumeration value="block"/>
+            <xs:enumeration value="reduced"/>
+            <xs:enumeration value="reducedWithDerivative"/>
+            <xs:enumeration value="reducedParamaterised"/>
+            <xs:enumeration value="locModels"/>
+            <xs:enumeration value="switchModels"/>
+            <xs:enumeration value="weightedModel"/>
+            <xs:enumeration value="MCMC"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="TypeFIMTypeType">
+        <xs:annotation>
+            <xs:documentation>
+                Type of the FIM to be calculated type. 
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:NCName">
+            <xs:enumeration value="population"/>
+            <xs:enumeration value="individual"/>
+            <xs:enumeration value="Bayesian"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="OptimizationType">
+        <xs:annotation>
+            <xs:documentation>
+                Type of the desing type. 
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:NCName">
+            <xs:enumeration value="statistical"/>
+            <xs:enumeration value="exact"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="OptimAlgoType">
+        <xs:annotation>
+            <xs:documentation>
+                Type of the desing type. 
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:NCName">
+            <xs:enumeration value="simplex"/>
+            <xs:enumeration value="FedorovWynn"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="CostListType">
+        <xs:annotation>
+            <xs:documentation>
+                Type of the cost to be calculated type. 
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:NCName">
+            <xs:enumeration value="individual"/>
+            <xs:enumeration value="sample"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    
     <!--
         Complex types
         -->    
@@ -130,12 +277,6 @@ permissions and limitations under the License.
         <xs:complexContent>
             <xs:extension base="msteps:CommonModellingStepType">
                 <xs:sequence>
-                    <xs:element name="Observations" minOccurs="0" maxOccurs="unbounded"
-                        type="msteps:ObservationsType">
-                        <xs:annotation>
-                            <xs:documentation>The observations to be generated by the simulation.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="Operation" type="msteps:SimulationOperationType">
                         <xs:annotation>
                             <xs:documentation>
@@ -143,83 +284,6 @@ permissions and limitations under the License.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-    <xs:complexType name="ObservationsType">
-        <xs:annotation>
-            <xs:documentation>
-                Type defining the observation timepoints.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:sequence>
-                    <xs:element ref="msteps:Timepoints">
-                        <xs:annotation>
-                            <xs:documentation>
-                                Defines the time-points of the observations.  
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:choice>
-                        <xs:element name="Continuous" type="msteps:ContinuousObservationType">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Defines the continuous variable output.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="Discrete" type="msteps:DiscreteObservationType">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Defines the discrete variable output.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:choice>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-    <xs:complexType name="ContinuousObservationType">
-        <xs:annotation>
-            <xs:documentation>
-                Type defining the type of a continuous observation variable to be simulated.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" ref="ct:SymbRef">
-                        <xs:annotation>
-                            <xs:documentation>
-                                Refers to the variable to be observed. 
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>                
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-    
-    <xs:complexType name="DiscreteObservationType">
-        <xs:annotation>
-            <xs:documentation>
-                Type defining the type of a discrete observation variable to be simulated.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" ref="ct:SymbRef">
-                        <xs:annotation>
-                            <xs:documentation>
-                                Refers to the variable to be observed. 
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>                
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -292,12 +356,7 @@ permissions and limitations under the License.
         </xs:annotation>
         <xs:complexContent>
             <xs:extension base="msteps:CommonModellingStepType">
-                <xs:sequence>
-                    <xs:element name="ObjectiveDataSet" type="msteps:DatasetMappingType" minOccurs="0" maxOccurs="unbounded">
-                            <xs:annotation>
-                                <xs:documentation>Defines the objective data to use in the estimation.</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
+                <xs:sequence>                    
                     <xs:element maxOccurs="1" minOccurs="1" name="ParametersToEstimate"
                         type="msteps:ToEstimateType">
                         <xs:annotation>
@@ -331,22 +390,6 @@ permissions and limitations under the License.
         </xs:complexContent>
     </xs:complexType>
     
-<!--    <xs:complexType name="NONMEMdataSetReferenceType">
-        <xs:annotation>
-            <xs:documentation>
-                Type defining reference to NONMEM dataset.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:sequence>
-                    <xs:element ref="ct:OidRef"/>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>-->
-    
-    <!-- TEST -->
     <xs:complexType name="ExternalDataSetReferenceType">
         <xs:annotation>
             <xs:documentation>
@@ -361,7 +404,38 @@ permissions and limitations under the License.
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-    <!-- TEST -->
+    
+    <xs:complexType name="ObservationsReferenceType">
+        <xs:annotation>
+            <xs:documentation>
+                Type defining reference to an external dataset or an Observation.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" ref="ct:OidRef"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    
+    <xs:complexType name="InterventionsReferenceType">
+        <xs:annotation>
+            <xs:documentation>
+                Type defining reference to an external dataset or an Intervention.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" ref="ct:OidRef"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
     
     <xs:complexType name="OperationPropertyType">
         <xs:annotation>
@@ -416,6 +490,50 @@ permissions and limitations under the License.
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    
+    <xs:complexType name="OptimalDesignOperationType">
+        <xs:annotation>
+            <xs:documentation>
+                Type defining the optimal design operation.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" ref="ct:Name"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" ref="msteps:Property">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Specifies a property of the operation.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="Algorithm" type="msteps:AlgorithmType">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Specifies the information about the algorithms used.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+                <xs:attribute name="order" type="xs:positiveInteger" use="required">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Specifies the order of the operation.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="opType" type="msteps:OptimalDesignOpTypeType" use="required">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Specifies the type of optimal design.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType> 
+    
     <xs:complexType name="EstimationOperationType">
         <xs:annotation>
             <xs:documentation>
@@ -458,6 +576,7 @@ permissions and limitations under the License.
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    
 
     <xs:complexType name="SimulationOperationType">
         <xs:annotation>
@@ -544,49 +663,6 @@ permissions and limitations under the License.
         </xs:complexContent>
     </xs:complexType>
     
-    <xs:complexType name="DatasetMappingType">
-        <xs:annotation>
-            <xs:documentation>
-                A type defining type data and task settings.                
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:sequence>
-                    <xs:element name="ColumnMapping" maxOccurs="unbounded" type="ds:ColumnMappingType">
-                        <xs:annotation>
-                            <xs:documentation>
-                                Defines mapping to the dataset containing objective data. 
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element ref="ds:DataSet">
-                        <xs:annotation>
-                            <xs:documentation>
-                                Instantiates the individual template defined above with data for each subject within
-                                the study.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>    
-    
-    <xs:complexType name="TimepointsType">
-        <xs:annotation>
-            <xs:documentation>
-                Timepoints.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:sequence>
-                    <xs:element ref="ct:Arrays"/>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
     <xs:complexType name="InitialEstimateType">
         <xs:annotation>
             <xs:documentation>
@@ -594,7 +670,7 @@ permissions and limitations under the License.
             </xs:documentation>
         </xs:annotation>
         <xs:complexContent>
-            <xs:extension base="ct:ScalarRhs">
+            <xs:extension base="ct:Rhs">
                 <xs:attribute name="fixed" type="xs:boolean">
                     <xs:annotation>
                         <xs:documentation>Specifies whether the initial estimate is fixed. If it is then this means that this parameter is not estimated, but assigned. If fixed is true then the upper and lower bounds are ignored.</xs:documentation>
@@ -625,12 +701,12 @@ permissions and limitations under the License.
                             <xs:documentation>The initial estimate to use.</xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                    <xs:element minOccurs="0" name="LowerBound" type="ct:ScalarRhs">
+                    <xs:element minOccurs="0" name="LowerBound" type="ct:Rhs">
                         <xs:annotation>
                             <xs:documentation>The lower bounds of the estimate.</xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                    <xs:element minOccurs="0" name="UpperBound" type="ct:ScalarRhs">
+                    <xs:element minOccurs="0" name="UpperBound" type="ct:Rhs">
                         <xs:annotation>
                             <xs:documentation>The upper bounds of the estimate.</xs:documentation>
                         </xs:annotation>
@@ -650,10 +726,9 @@ permissions and limitations under the License.
             <xs:extension base="ct:PharmMLRootType">
                 <xs:sequence>
                     <xs:element name="TargetToolReference" minOccurs="0" type="msteps:TargetToolReferenceType"/>
-                    <!-- TEST -->
                     <xs:element name="ExternalDataSetReference" minOccurs="0" type="msteps:ExternalDataSetReferenceType"/>
-<!--                    <xs:element name="NONMEMdataSetReference" minOccurs="0" type="msteps:NONMEMdataSetReferenceType"/>-->
-                    <!-- /TEST -->
+                    <xs:element name="InterventionsReference" minOccurs="0" type="msteps:InterventionsReferenceType"/>
+                    <xs:element name="ObservationsReference" minOccurs="0" type="msteps:ObservationsReferenceType"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" ref="ct:VariableAssignment"/>
                 </xs:sequence>
                 <xs:attributeGroup ref="ct:OidDefnGroup"/>
@@ -670,23 +745,11 @@ permissions and limitations under the License.
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
                 <xs:sequence>
-                    <xs:element name="ExternalDataSet" type="msteps:ExternalDataSetType" minOccurs="0" maxOccurs="unbounded">
-                        <xs:annotation>
-                            <xs:documentation>Defines the external format datset.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <!-- TEST -->
-<!--                    <xs:element name="NONMEMdataSet" type="msteps:NONMEMdataSetType" minOccurs="0" maxOccurs="unbounded">
-                        <xs:annotation>
-                            <xs:documentation>Defines the NONMEM format datset and its mapping with optional code injection.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>-->
-                    <!-- /TEST -->
                     <xs:element name="TargetTool" type="msteps:TargetToolType" minOccurs="0" maxOccurs="unbounded">
                         <xs:annotation>
                             <xs:documentation>Defines the target tool dataset and its mapping with optional code injection.</xs:documentation>
                         </xs:annotation>
-                    </xs:element>                        
+                    </xs:element>
                     <xs:element minOccurs="0" maxOccurs="unbounded" ref="msteps:CommonModellingStep">
                         <xs:annotation>
                             <xs:documentation>
@@ -694,153 +757,12 @@ permissions and limitations under the License.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" ref="msteps:OptimalDesignStep"/>
                     <xs:element minOccurs="0" name="StepDependencies" type="msteps:StepDependencyType">
                         <xs:annotation>
                             <xs:documentation>Defines dependencies between steps.</xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
-<!-- TEST -->
-<!--    <xs:complexType name="NONMEMdataSetType">
-        <xs:annotation>
-            <xs:documentation>
-                A type defining the NONMEM type data and task settings.                
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:sequence>
-                    <xs:choice maxOccurs="unbounded">
-                        <xs:element name="ColumnMapping" minOccurs="0" maxOccurs="unbounded" type="ds:ColumnMappingType">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Defines mapping to the dataset containing objective data. 
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="ColumnTransformation" minOccurs="0" maxOccurs="unbounded" type="ds:ColumnTransformationType">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Allows to encode any transformation of the columns.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="MultipleDVMapping" minOccurs="0" maxOccurs="unbounded" type="msteps:MultipleDVMappingType">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Defines mapping to the dataset containing objective data. 
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:choice>
-                    <xs:sequence>
-                        <xs:element ref="ds:DataSet">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Data for each subject within the study.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="CodeInjection" minOccurs="0" type="msteps:CodeInjectionType">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Placegholder for target tool code.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:sequence>
-                <xs:attributeGroup ref="ct:OidDefnGroup"/>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>-->
-    <!-- /TEST -->
-    
-    <xs:complexType name="ExternalDataSetType">
-        <xs:annotation>
-            <xs:documentation>
-                A type defining the external type data and task settings.                
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:sequence>
-                    <xs:choice maxOccurs="unbounded">
-                        <xs:element name="ColumnMapping" minOccurs="0" maxOccurs="unbounded" type="ds:ColumnMappingType">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Defines mapping to the dataset containing objective data. 
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="ColumnTransformation" minOccurs="0" maxOccurs="unbounded" type="ds:ColumnTransformationType">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Allows to encode any transformation of the columns.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="MultipleDVMapping" minOccurs="0" maxOccurs="unbounded" type="msteps:MultipleDVMappingType">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Defines mapping to the dataset containing objective data. 
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:choice>
-                    <xs:sequence>
-                        <xs:element ref="ds:DataSet">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Data for each subject within the study.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="CodeInjection" minOccurs="0" type="msteps:CodeInjectionType">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Placegholder for target tool code.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:sequence>
-                </xs:sequence>
-                <xs:attribute name="toolName" use="required" type="ct:ToolNameType">
-                    <xs:annotation>
-                        <xs:documentation>The tool name with which the dataset is compatible.</xs:documentation>
-                    </xs:annotation>
-                </xs:attribute>
-                <xs:attributeGroup ref="ct:OidDefnGroup"/>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-    
-    
-    <xs:complexType name="MultipleDVMappingType">
-        <xs:annotation>
-            <xs:documentation>
-                The type that defines column mapping.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:sequence>
-                    <xs:element ref="ds:ColumnRef">
-                        <xs:annotation>
-                            <xs:documentation>
-                                The column reference to map to.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element name="Piecewise" type="math:PiecewiseType">
-                        <xs:annotation>
-                            <xs:documentation>Defines a piecewise expression.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>                    
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -874,19 +796,17 @@ permissions and limitations under the License.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                    <xs:element ref="ds:TargetToolData">
+                    <xs:element ref="ds:TargetToolData" minOccurs="0">
                         <xs:annotation>
                             <xs:documentation>
-                                Instantiates the individual template defined above with data for each subject within
-                                the study.
+                                Target tool data if available.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                    <xs:element name="CodeInjection" minOccurs="0" type="msteps:CodeInjectionType">
+                    <xs:element name="CodeInjection" minOccurs="0" type="design:CodeInjectionType">
                         <xs:annotation>
                             <xs:documentation>
-                                Instantiates the individual template defined above with data for each subject within
-                                the study.
+                                Conde injection if available.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
@@ -895,95 +815,306 @@ permissions and limitations under the License.
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-
-    <xs:complexType name="SymbolMappingType">
+    
+    <xs:complexType name="FIMType">
         <xs:annotation>
-            <xs:documentation>
-                Type that defines variable/parameter, used in the injected code, to be mapped to the model or dataset.
-            </xs:documentation>
+            <xs:documentation>Type defining the FIM-atrix.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice>
+                    <xs:element ref="ct:Matrix"/>
+                    <xs:element name="File" type="ds:ExternalFileType"/>
+                </xs:choice>
+                <xs:attribute name="symbId" type="ct:SymbolIdType" use="required">
+                    <xs:annotation>
+                        <xs:documentation>The symbol id for thei FIM.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="MethodType">
+        <xs:annotation>
+            <xs:documentation>Method type.</xs:documentation>
         </xs:annotation>
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
                 <xs:sequence>
-                    <xs:element ref="ct:SymbRef">
+                    <xs:element name="Criterion" minOccurs="0" type="msteps:CriterionDefType">
                         <xs:annotation>
-                            <xs:documentation>
-                                The parameter reference in injected code to map to.
-                            </xs:documentation>
+                            <xs:documentation>Criterion selection and FIM fuction definition.</xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                    <xs:choice>
-                        <xs:element minOccurs="1" ref="ct:SymbRef">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The model parameter reference to map to.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element minOccurs="1" ref="ds:ColumnRef">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The column reference to map to.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:element>                        
-                    </xs:choice>
+                    <xs:element name="FIMfunction" minOccurs="0" type="msteps:FIMfunctionType">
+                        <xs:annotation>
+                            <xs:documentation>Standard or user-defined FIM functions.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="ComputeFIM" minOccurs="0" type="msteps:ComputeFIMType">
+                        <xs:annotation>
+                            <xs:documentation>Compute FIM algorithm definition.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="ApproximateFIM" minOccurs="0" type="msteps:ApproximateFIMType">
+                        <xs:annotation>
+                            <xs:documentation>FIM approximate algorithm definition.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="TypeFIM" minOccurs="0" type="msteps:TypeFIMType">
+                        <xs:annotation>
+                            <xs:documentation>FIM type to be computed.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="DesignType" minOccurs="0" type="msteps:DesignTypeType">
+                        <xs:annotation>
+                            <xs:documentation>Optimization design type.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="OptimizationAlgorithm" minOccurs="0" type="msteps:OptimizationAlgorithmType">
+                        <xs:annotation>
+                            <xs:documentation>Optimization design type.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-
-    <xs:complexType name="CodeInjectionType">
+    
+    <xs:complexType name="CriterionDefType">
         <xs:annotation>
-            <xs:documentation>
-                Type that defines the target tool code injection.
-            </xs:documentation>
+            <xs:documentation>Criterion type type.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:attribute name="type" use="required" type="msteps:CriterionType"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="FIMfunctionType">
+        <xs:annotation>
+            <xs:documentation>Type defining the FIM function.</xs:documentation>
         </xs:annotation>
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
                 <xs:sequence>
-                    <xs:element minOccurs="0" maxOccurs="unbounded" name="SymbolMapping" type="msteps:SymbolMappingType">
-                        <xs:annotation>
-                            <xs:documentation>Defines parameter mapping between injected code and model.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element name="TargetCode" type="msteps:GenericCodeType"/>
+                    <xs:element minOccurs="0" ref="ct:Assign"/>
+                </xs:sequence>
+                <xs:attribute name="type" type="msteps:builtInFIMfctType"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ComputeFIMType">
+        <xs:annotation>
+            <xs:documentation>Compute FIM algorithm type type.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:attribute name="type" use="required" type="msteps:ComputeAlgoType"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ApproximateFIMType">
+        <xs:annotation>
+            <xs:documentation>FIM approximation algorithm type type.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:attribute name="type" use="required" type="msteps:ApproxAlgoType"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="TypeFIMType">
+        <xs:annotation>
+            <xs:documentation>FIM type to be computed type type.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:attribute name="type" use="required" type="msteps:TypeFIMTypeType"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="DesignTypeType">
+        <xs:annotation>
+            <xs:documentation>Desing type type.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:attribute name="type" use="required" type="msteps:OptimizationType"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="OptimizationAlgorithmType">
+        <xs:annotation>
+            <xs:documentation>Optimization algorithm type type.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:attribute name="type" use="required" type="msteps:OptimAlgoType"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="CostType">
+        <xs:annotation>
+            <xs:documentation>Type defining the design cost specification.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="TotalCost" minOccurs="0" type="ct:StandardAssignType"/>
+                    <xs:element name="CostFunction" minOccurs="0" type="msteps:CostFunctionType"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
-    </xs:complexType>    
-
-    <xs:complexType name="GenericCodeType">
+    </xs:complexType>
+    
+    <xs:complexType name="CostFunctionType">
         <xs:annotation>
-            <xs:documentation>
-                Defines the target tool CDATA code injection containing element.
-            </xs:documentation>
+            <xs:documentation>Type defining the design cost specification.</xs:documentation>
         </xs:annotation>
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
                 <xs:sequence>
-                    <xs:element name="Symbol" minOccurs="0" maxOccurs="unbounded" type="msteps:TargetToolSymbolType"/>
-                    <xs:element name="Code" type="xs:string">
+                    <xs:element minOccurs="0" ref="ct:Assign"/>
+                </xs:sequence>
+                <xs:attribute name="type" use="optional" type="msteps:CostListType"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="PriorType">
+        <xs:annotation>
+            <xs:documentation>Type defining the prior.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice>
+                    <xs:element ref="ct:Matrix"/>
+                    <xs:element name="File" type="ds:ExternalFileType"/>
+                </xs:choice>
+                <xs:attribute name="symbId" type="ct:SymbolIdType" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>The symbol id for the FIM.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="ComputeType">
+        <xs:annotation>
+            <xs:documentation>Type defining the computation detailes.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="GraphOnly" minOccurs="0" type="ct:StandardAssignType"/>
+                    <xs:element name="PowerComparison" minOccurs="0" type="ct:StandardAssignType"/>
+                    <xs:element name="NSubjectComparison" minOccurs="0" type="ct:StandardAssignType"/>
+                    <xs:element name="PowerEquivalence" minOccurs="0" type="ct:StandardAssignType"/>
+                    <xs:element name="NSubjectEquivalence" minOccurs="0" type="ct:StandardAssignType"/>
+                    <xs:element name="EquivalenceRange" minOccurs="0" type="ct:StandardAssignType"/>
+                    <xs:element name="TypeIError" minOccurs="0" type="ct:StandardAssignType"/>
+                    <xs:element name="TypeIIError" minOccurs="0" type="ct:StandardAssignType"/>                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="SoftwareSettingsType">
+        <xs:annotation>
+            <xs:documentation>External file with sowtware-typical settings..</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="File" type="ds:ExternalFileType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="OptimiseOnType">
+        <xs:annotation>
+            <xs:documentation>Optimise on type.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="ArmSize" minOccurs="0"  type="ct:StandardExtAssignType"/>
+                    <xs:element name="DoseAmount" minOccurs="0"  type="ct:StandardExtAssignType"/>
+                    <xs:element name="DosingTimes" minOccurs="0"  type="ct:StandardExtAssignType"/>
+                    <xs:element name="Duration" minOccurs="0"  type="ct:StandardExtAssignType"/>
+                    <xs:element name="NumberArms" minOccurs="0"  type="ct:StandardExtAssignType"/>
+                    <xs:element name="NumberSamples" minOccurs="0"  type="ct:StandardExtAssignType"/>
+                    <xs:element name="NumberTimes" minOccurs="0"  type="ct:StandardExtAssignType"/>
+                    <xs:element name="ObservationTimes" minOccurs="0"  type="ct:StandardExtAssignType"/>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" ref="ct:SymbRef"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="OptimalDesignStepType">
+        <xs:annotation>
+            <xs:documentation>Evaluation task type.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="TargetToolReference" minOccurs="0" type="msteps:TargetToolReferenceType"/>
+                    
+                    <xs:element name="OptimiseOn" minOccurs="0" type="msteps:OptimiseOnType">
+                        <xs:annotation>
+                            <xs:documentation>Item to be optimised on, overwrite desing spaces.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    
+                    <xs:element name="FIM" minOccurs="0" type="msteps:FIMType">
+                        <xs:annotation>
+                            <xs:documentation>Fisher Information Matrix - either explicit or in file.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="Method" minOccurs="0" type="msteps:MethodType">
+                        <xs:annotation>
+                            <xs:documentation>Methods applied.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="Cost" minOccurs="0" type="msteps:CostType">
+                        <xs:annotation>
+                            <xs:documentation>Cost spoecification or function.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="PriorInformation" minOccurs="0" type="msteps:PriorType">
+                        <xs:annotation>
+                            <xs:documentation>Prior information specification.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="Compute" minOccurs="0" type="msteps:ComputeType">
+                        <xs:annotation>
+                            <xs:documentation>Compute info specification.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="SoftwareSettings" minOccurs="0" type="msteps:SoftwareSettingsType"/>
+                    
+                    <xs:element maxOccurs="unbounded" name="Operation" type="msteps:OptimalDesignOperationType">
                         <xs:annotation>
                             <xs:documentation>
-                                Original target tool code.
+                                The estimation operation. 
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
+                    
                 </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>    
-    
-    <xs:complexType name="TargetToolSymbolType">
-        <xs:annotation>
-            <xs:documentation>
-                Target tool variable type.
-            </xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:attributeGroup ref="ct:SymbolDefinitionGroup"/>                
+                <xs:attributeGroup ref="ct:OidDefnGroup"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1010,8 +1141,7 @@ permissions and limitations under the License.
             <xs:documentation>Defines mappings between the dataset and the model.</xs:documentation>
         </xs:annotation>
     </xs:element>
-            
-    <xs:element name="Timepoints" type="msteps:TimepointsType"/>
+               
     <xs:element abstract="true" name="CommonModellingStep" type="msteps:CommonModellingStepType">
         <xs:annotation>
             <xs:documentation>
@@ -1032,6 +1162,13 @@ permissions and limitations under the License.
         <xs:annotation>
             <xs:documentation>
                 A simulation step.                
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="OptimalDesignStep" type="msteps:OptimalDesignStepType">
+        <xs:annotation>
+            <xs:documentation>
+                An optimal design step - evaluation or optimization.
             </xs:documentation>
         </xs:annotation>
     </xs:element>

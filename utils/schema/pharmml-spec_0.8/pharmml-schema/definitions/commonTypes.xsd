@@ -14,37 +14,71 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
 implied. See the License for the specific language governing
 permissions and limitations under the License.
--->    
+-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes"
-    targetNamespace="http://www.pharmml.org/pharmml/0.6/CommonTypes"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    targetNamespace="http://www.pharmml.org/pharmml/0.8/CommonTypes"
     xmlns:distrib="http://www.uncertml.org/3.0"
-    xmlns:mdef="http://www.pharmml.org/pharmml/0.6/ModelDefinition"
-    xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths"
-    version="0.6" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
+    version="0.8" 
+    elementFormDefault="qualified" attributeFormDefault="unqualified">
     
-    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/Maths"
-        schemaLocation="http://www.pharmml.org/pharmml/0.6/Maths"/>
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/Maths"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/Maths"/>
     
-    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/ModelDefinition"
-        schemaLocation="http://www.pharmml.org/pharmml/0.6/ModelDefinition"/>
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/ModelDefinition"/>
     
     
     <!--
         Simple Types
       -->
-    <!-- TEST -->
+    <xs:simpleType name="TransitionMatrixAttrType">
+        <xs:annotation>
+            <xs:documentation>Defines the transition matrix type attribute.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="leftStochastic"/>
+            <xs:enumeration value="rightStochastic"/>
+            <xs:enumeration value="doublyStochastic"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="MissingDataAttributeType">
+        <xs:annotation>
+            <xs:documentation>Defines the missing data attribute.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="NA"/>
+            <xs:enumeration value="NaN"/>
+            <xs:enumeration value="minusInf"/>
+            <xs:enumeration value="plusInf"/>
+            <xs:enumeration value="ALQ"/>
+            <xs:enumeration value="BLQ"/>
+            <!-- extandable with other type if necessary -->
+        </xs:restriction>
+    </xs:simpleType>    
     <xs:simpleType name="ToolNameType">
         <xs:annotation>
             <xs:documentation>Defines the tool names attribute.</xs:documentation>
         </xs:annotation>
-        <xs:restriction base="xs:token">
-            <xs:enumeration value="BUGS"/>
-            <xs:enumeration value="Monolix"/>
-            <xs:enumeration value="NONMEM"/>
-        </xs:restriction>
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:enumeration value="BUGS"/>
+                    <xs:enumeration value="Monolix"/>
+                    <xs:enumeration value="NONMEM"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <!-- any string allowed without whitespaces -->
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:pattern value="[^\s]+"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
     </xs:simpleType>    
-    <!-- /TEST -->
     <xs:simpleType name="SymbolTypeType">
         <xs:annotation>
             <xs:documentation>Defines the symbol types. Restricted to the available types.</xs:documentation>
@@ -75,6 +109,31 @@ permissions and limitations under the License.
             <xs:enumeration value="no"/>
         </xs:restriction>
     </xs:simpleType>
+    
+    <xs:simpleType name="RegressorType">
+        <xs:annotation>
+            <xs:documentation>Defines the type of variable - either common variable or regressor.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="yes"/>
+            <xs:enumeration value="no"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="PMFtransformType">
+        <xs:annotation>
+            <xs:documentation>Defines the type of optional transform for PMF.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="identity"/>
+            <xs:enumeration value="log"/>
+            <xs:enumeration value="logit"/>
+            <xs:enumeration value="probit"/>
+            <xs:enumeration value="loglog"/>
+            <xs:enumeration value="comploglog"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
     <xs:simpleType name="LinkFunctionType">
         <xs:annotation>
             <xs:documentation>Defines the type of link function for discrete data models.</xs:documentation>
@@ -100,7 +159,14 @@ permissions and limitations under the License.
         </xs:annotation>
         <xs:restriction base="xs:NCName"/>
     </xs:simpleType>
-
+    <xs:simpleType name="CategoryIdType">
+        <xs:annotation>
+            <xs:documentation>Type for category identifiers.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="([a-zA-Z0-9])[a-zA-Z0-9\\_]*"/>
+        </xs:restriction>
+    </xs:simpleType>
     <xs:simpleType name="CatIdType">
         <xs:annotation>
             <xs:documentation>Type for symbols identifiers.</xs:documentation>
@@ -162,6 +228,16 @@ permissions and limitations under the License.
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
+    <xs:complexType name="MissingValueType">
+        <xs:annotation>
+            <xs:documentation>String value.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:restriction base="ct:PharmMLRootType">
+                <xs:attributeGroup ref="ct:RootAttributesGroup"/>
+            </xs:restriction>
+        </xs:complexContent>
+    </xs:complexType>
     <xs:complexType name="BooleanType" abstract="true">
         <xs:annotation>
             <xs:documentation>
@@ -220,6 +296,19 @@ permissions and limitations under the License.
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    <xs:complexType name="CovariateModelRefType">
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:attribute name="blkIdRef" type="ct:BlockIdType" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>Type for referencing a covariate model.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="oidRef" type="ct:oidType" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <xs:complexType name="SymbolRefType">
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
@@ -236,29 +325,24 @@ permissions and limitations under the License.
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-    <xs:complexType name="ScalarRhs">
+    
+    <xs:complexType name="CategoryRefType">
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
-                <xs:choice>
-                    <xs:element ref="math:Equation">
-                        <xs:annotation>
-                            <xs:documentation>A mathematical expression.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element ref="ct:Scalar">
-                        <xs:annotation>
-                            <xs:documentation>A scalar value.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element ref="ct:SymbRef">
-                        <xs:annotation>
-                            <xs:documentation>A variable reference.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                </xs:choice>
+                <xs:attribute name="blkIdRef" type="ct:BlockIdType">
+                    <xs:annotation>
+                        <xs:documentation>ID referencing a Block.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="catIdRef" type="ct:CategoryIdType" use="required">
+                    <xs:annotation>
+                        <xs:documentation>ID referencing a Category.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+
     <xs:complexType block="" mixed="false" name="AnnotationType">
         <xs:simpleContent>
             <xs:extension base="xs:string">
@@ -270,34 +354,43 @@ permissions and limitations under the License.
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
                 <xs:choice>
-                    <xs:element ref="math:Equation">
-                        <xs:annotation>
-                            <xs:documentation>A mathematical expression.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element ref="ct:Scalar">
-                        <xs:annotation>
-                            <xs:documentation>A scalar value.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element ref="ct:SymbRef">
-                        <xs:annotation>
-                            <xs:documentation>A variable reference.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
+                    <xs:element ref="math:Constant"/>
+                    <xs:element ref="ct:Scalar"/>
+                    <xs:element ref="ct:SymbRef"/>
                     <xs:element ref="ct:Sequence"/>
+                    <xs:element ref="ct:Interval"/>
                     <xs:element ref="ct:Vector"/>
                     <xs:element ref="ct:Matrix"/>
                     <xs:element ref="ct:Interpolation"/>
+                    <xs:element name="Realisation" type="mdef:RealisationType"/>
+                    <xs:element ref="math:PDF"/>
+                    <xs:element ref="math:CDF"/>
+                    <xs:element ref="math:HF"/>
+                    <xs:element ref="math:SF"/>
+                    <xs:element ref="math:Statsop"/>
+                    <xs:element ref="math:Naryop"/>
+                    <xs:element ref="math:Binop"/>
+                    <xs:element ref="math:Uniop"/>
+                    <xs:element name="Piecewise" type="math:PiecewiseType"/>
+                    <xs:element ref="math:FunctionCall"/>
+                    <xs:element ref="ct:Sum"/>
+                    <xs:element ref="ct:Product"/>
+                    <xs:element ref="ct:Delay"/>
+                    <xs:element ref="ct:VectorSelector"/>
+                    <xs:element ref="ct:MatrixSelector"/>
+                    <xs:element ref="math:MatrixUniop"/>
+                    <xs:element ref="mdef:Probability"/>
                 </xs:choice>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+
     <xs:complexType name="SequenceType">
         <xs:annotation>
             <xs:documentation>The definition of a uniform sequence of numbers. It has two forms
                 1. Begin:StepSize:End or
-                2. Begin:StepSize:Repetitions
+                2. Begin:StepSize:StepNumber
+                3. Begin:StepNumber:End
             </xs:documentation>
         </xs:annotation>
         <xs:complexContent>
@@ -308,28 +401,102 @@ permissions and limitations under the License.
                             <xs:documentation>The initial value of the sequence.</xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                    <xs:element name="StepSize" type="ct:Rhs">
+                    <xs:element name="StepSize" minOccurs="0" type="ct:Rhs">
                         <xs:annotation>
-                            <xs:documentation>The amount incremented to get the next value in the sequence. The step size can be negative</xs:documentation>
+                            <xs:documentation>The increment between steps. The step size can be negative</xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                    <xs:choice>
-                        <xs:element name="End" type="ct:Rhs">
+                    <xs:element name="StepNumber" minOccurs="0" type="ct:Rhs">
+                        <xs:annotation>
+                            <xs:documentation>The number of steps to occur in the sequence.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="End" minOccurs="0" type="ct:Rhs">
                             <xs:annotation>
                                 <xs:documentation>The maximum possible value of the sequence.</xs:documentation>
                             </xs:annotation>
-                        </xs:element>
-                        <xs:element name="Repetitions" type="ct:Rhs">
-                            <xs:annotation>
-                                <xs:documentation>The number of times to incrememnt the sequence by the step size.</xs:documentation>
-                            </xs:annotation>
-                        </xs:element>
-                    </xs:choice>
+                    </xs:element>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    
+    <xs:complexType name="StandardAssignType">
+        <xs:annotation>
+            <xs:documentation>Type defining one option only: Assign.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element ref="ct:Assign"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="StandardExtAssignType">
+        <xs:annotation>
+            <xs:documentation>Type defining one option only: Assign but can be empty as well.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" ref="ct:Assign"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="IntervalType">
+        <xs:annotation>
+            <xs:documentation>The definition of a range of numbers.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice>
+                    <xs:element name="IntervalLength" type="ct:StandardAssignType">
+                        <xs:annotation>
+                            <xs:documentation>The dosing period.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:sequence>
+                        <xs:element name="LeftEndpoint" type="ct:EndpointType">
+                            <xs:annotation>
+                                <xs:documentation>The left endpoint of the range.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="RightEndpoint" type="ct:EndpointType">
+                            <xs:annotation>
+                                <xs:documentation>The right endpoint of the range.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="EndpointType">
+        <xs:annotation>
+            <xs:documentation>The definition of a range of numbers.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:StandardAssignType">
+                <xs:attribute name="type" default="closed">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="closed"/>
+                            <xs:enumeration value="open"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
 
+    
     <xs:complexType name="CommonVariableDefinitionType" abstract="true">
         <xs:annotation>
             <xs:documentation>
@@ -369,6 +536,11 @@ permissions and limitations under the License.
                         <xs:documentation>The type of the variable.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
+                <xs:attribute name="regressor" type="ct:RegressorType" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>The type of the variable.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -388,40 +560,6 @@ permissions and limitations under the License.
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-        
-    <xs:complexType name="InitialValueType">
-        <xs:annotation>
-            <xs:documentation>The initial value of the derivative variable.</xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:sequence>
-                    <xs:element ref="ct:Assign">
-                        <xs:annotation>
-                            <xs:documentation>The initial value.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
-    <xs:complexType name="InitialTimeType">
-        <xs:annotation>
-            <xs:documentation>The value of the initial condition time.</xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:sequence>
-                    <xs:element ref="ct:Assign">
-                        <xs:annotation>
-                            <xs:documentation>The initial time.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
     
     <xs:complexType name="InitialConditionType">
         <xs:annotation>
@@ -430,8 +568,16 @@ permissions and limitations under the License.
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="InitialValue" type="ct:InitialValueType"/>
-                    <xs:element minOccurs="0" name="InitialTime" type="ct:InitialTimeType"/>
+                    <xs:element minOccurs="0" name="InitialValue" type="ct:StandardAssignType">
+                        <xs:annotation>
+                            <xs:documentation>The initial value of the ODE</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="InitialTime" type="ct:StandardAssignType">
+                        <xs:annotation>
+                            <xs:documentation>The value of the initial condition time.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -444,8 +590,16 @@ permissions and limitations under the License.
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="HistoryValue" type="ct:InitialValueType"/>  <!-- CHECK THIS one!!!!!!!!!! -->
-                    <xs:element minOccurs="0" name="HistoryTime" type="ct:InitialTimeType"/>
+                    <xs:element minOccurs="0" name="HistoryValue" type="ct:StandardAssignType">
+                        <xs:annotation>
+                            <xs:documentation>The history value of the ODE</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="HistoryTime" type="ct:StandardAssignType">
+                        <xs:annotation>
+                            <xs:documentation>The value of the history value time.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -559,7 +713,7 @@ permissions and limitations under the License.
                             <xs:documentation>The argument (parameter) to the function.</xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                    <xs:element minOccurs="0" name="Definition" type="ct:ScalarRhs">
+                    <xs:element minOccurs="0" name="Definition" type="ct:StandardAssignType">
                         <xs:annotation>
                             <xs:documentation>The body of the function defintion.</xs:documentation>
                         </xs:annotation>
@@ -591,6 +745,7 @@ permissions and limitations under the License.
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    
     <xs:complexType name="LevelReferenceType">
         <xs:annotation>
             <xs:documentation>
@@ -601,10 +756,26 @@ permissions and limitations under the License.
             <xs:extension base="ct:PharmMLRootType">
                 <xs:sequence>
                     <xs:element ref="ct:SymbRef"/>
+                    <xs:element name="RandomEffectMapping" minOccurs="0" type="ct:RandomEffectMappingType"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    
+    <xs:complexType name="RandomEffectMappingType">
+        <xs:annotation>
+            <xs:documentation>Type defining the stdev or variance to be referenced
+                in the VariabilityReference element.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element ref="ct:SymbRef"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <xs:complexType name="SymbolNameType">
         <xs:annotation>
             <xs:documentation>Type defining the name of the symbol in a form suitable for display. Currently this should be plain text and not include any markup.</xs:documentation>
@@ -720,20 +891,22 @@ permissions and limitations under the License.
                                         <xs:documentation>Cubic Polynomial interpolation</xs:documentation>
                                     </xs:annotation>
                                 </xs:enumeration>
+                                <xs:enumeration value="lastValue">
+                                    <xs:annotation>
+                                        <xs:documentation>Last value interpolation</xs:documentation>
+                                    </xs:annotation>
+                                </xs:enumeration>
                             </xs:restriction>
                         </xs:simpleType>
                     </xs:element> 
-                    <xs:element name="InterpIndepVar" type="ct:InterpolationIVType"/>
+                    <xs:element name="InterpIndepVar" minOccurs="0" type="ct:InterpolationIVType"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
 
 
-
-    <!-- relocated types Vector, Matrix, Sum, Product -->
-
-       <xs:complexType name="MatrixType">
+    <xs:complexType name="MatrixType">
         <xs:annotation>
             <xs:documentation>
                 The type specifies the content of a matrix.
@@ -753,6 +926,13 @@ permissions and limitations under the License.
                         </xs:annotation>
                     </xs:element>
                     <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        
+                        <xs:element name="MatrixColumn" type="ct:MatrixColumnType" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>A column in the matrix.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    
                         <xs:element name="MatrixRow" type="ct:MatrixRowType" maxOccurs="unbounded">
                             <xs:annotation>
                                 <xs:documentation>A row in the matrix.</xs:documentation>
@@ -826,7 +1006,7 @@ permissions and limitations under the License.
                         <xs:annotation>
                             <xs:documentation>A variable reference.</xs:documentation>
                         </xs:annotation>
-                    </xs:element>            
+                    </xs:element>
                 </xs:choice>
             </xs:extension>
         </xs:complexContent>
@@ -850,7 +1030,7 @@ permissions and limitations under the License.
                             </xs:annotation>
                         </xs:element>
                         <xs:element ref="ct:SymbRef"/>
-                        <xs:element ref="math:Equation">
+                        <xs:element ref="ct:Assign">
                             <xs:annotation>
                                 <xs:documentation>A mathematical expression.</xs:documentation>
                             </xs:annotation>
@@ -883,7 +1063,7 @@ permissions and limitations under the License.
                             </xs:annotation>
                         </xs:element>
                         <xs:element ref="ct:SymbRef"/>
-                        <xs:element ref="math:Equation">
+                        <xs:element ref="ct:Assign">
                             <xs:annotation>
                                 <xs:documentation>A mathematical expression.</xs:documentation>
                             </xs:annotation>
@@ -898,6 +1078,46 @@ permissions and limitations under the License.
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    
+    
+    <xs:complexType name="MatrixColumnType">
+        <xs:annotation>
+            <xs:documentation>This type specifies a column of values in a matrix. The column can contain 
+                indexed cells or scalars/symbols filling the whole column. Index of the matrix column is optional. 
+                If cells are defined inside column, the cells will be indexed relative to the column.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="ColumnIndex" minOccurs="0" type="ct:MatrixVectorIndexType"/>
+                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        <xs:element ref="ct:Scalar">
+                            <xs:annotation>
+                                <xs:documentation>A scalar value to be inserted into the vector at this point.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="ct:Sequence">
+                            <xs:annotation>
+                                <xs:documentation>A sequence (or uniform series) of numbers to be inserted into the vector at this point.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="ct:SymbRef"/>
+                        <xs:element ref="ct:Assign">
+                            <xs:annotation>
+                                <xs:documentation>A mathematical expression.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:choice>
+                </xs:sequence>
+                <xs:attribute name="default" type="xs:double" default="0">
+                    <xs:annotation>
+                        <xs:documentation>The default column value - overwrites the matrix default.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     
     <xs:complexType name="MatrixBlockType">
         <xs:annotation>
@@ -1023,7 +1243,7 @@ permissions and limitations under the License.
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
                 <xs:choice>
-                    <xs:element ref="math:Equation">
+                    <xs:element ref="ct:Assign">
                         <xs:annotation>
                             <xs:documentation>A mathematical expression.</xs:documentation>
                         </xs:annotation>
@@ -1087,7 +1307,7 @@ permissions and limitations under the License.
                                 <xs:documentation>A variable reference.</xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element ref="math:Equation">
+                        <xs:element ref="ct:Assign">
                             <xs:annotation>
                                 <xs:documentation>A mathematical expression.</xs:documentation>
                             </xs:annotation>
@@ -1132,7 +1352,7 @@ permissions and limitations under the License.
                                 <xs:documentation>A variable reference.</xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element ref="math:Equation">
+                        <xs:element ref="ct:Assign">
                             <xs:annotation>
                                 <xs:documentation>A mathematical expression.</xs:documentation>
                             </xs:annotation>
@@ -1159,7 +1379,7 @@ permissions and limitations under the License.
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
                 <xs:choice>
-                    <xs:element ref="math:Equation">
+                    <xs:element ref="ct:Assign">
                         <xs:annotation>
                             <xs:documentation>A mathematical expression.</xs:documentation>
                         </xs:annotation>
@@ -1188,7 +1408,7 @@ permissions and limitations under the License.
         </xs:annotation>
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
-                <xs:choice>
+                <xs:choice minOccurs="0">
                     <xs:element name="VectorElements" type="ct:VectorElementsType">
                         <xs:annotation>
                             <xs:documentation>Basic vector element - numerical value or symbolRef.</xs:documentation>
@@ -1241,6 +1461,11 @@ permissions and limitations under the License.
                         </xs:annotation>
                     </xs:element>
                     <xs:element ref="ct:SymbRef"/>
+                    <xs:element ref="ct:Assign">
+                        <xs:annotation>
+                            <xs:documentation>A mathematical expression.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
                 </xs:choice>
             </xs:extension>
         </xs:complexContent>
@@ -1392,6 +1617,16 @@ permissions and limitations under the License.
         </xs:attribute>
     </xs:attributeGroup>    
     
+    <xs:attributeGroup name="CovariateAttributeGroup">
+        <xs:attribute name="symbIdRef" type="ct:SymbolIdType" use="required">
+            <xs:annotation>
+                <xs:documentation>ID referencing a Symbol.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    
+    
     <!--
         Element Groups
         -->
@@ -1409,6 +1644,13 @@ permissions and limitations under the License.
     <!--
         Elements
         -->
+   <xs:element name="AssignStatement" type="math:LogicBinOpType">
+        <xs:annotation>
+            <xs:documentation>
+                Generic assignment statement.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
     <xs:element name="Sum" type="ct:SumType">
         <xs:annotation>
             <xs:documentation>Sigma sum element.</xs:documentation>
@@ -1429,6 +1671,13 @@ permissions and limitations under the License.
             <xs:documentation>Element defines a vector type, scalars and sequences</xs:documentation>
         </xs:annotation>
     </xs:element>
+    
+    <xs:element name="Interval" type="ct:IntervalType">
+        <xs:annotation>
+            <xs:documentation>Element defines an interval with length or endpoints definiton.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
     <xs:element name="OidRef" type="ct:OidRefType">
         <xs:annotation>
             <xs:documentation>
@@ -1472,6 +1721,50 @@ permissions and limitations under the License.
             </xs:documentation>
         </xs:annotation>
     </xs:element>
+    
+    <xs:element name="NA" substitutionGroup="ct:Scalar" type="ct:MissingValueType">
+        <xs:annotation>
+            <xs:documentation>
+                Element defines not available/missing data.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="NaN" substitutionGroup="ct:Scalar" type="ct:MissingValueType">
+        <xs:annotation>
+            <xs:documentation>
+                Element defines a not a number - impossible value (e.g., dividing by zero).
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="plusInf" substitutionGroup="ct:Scalar" type="ct:MissingValueType">
+        <xs:annotation>
+            <xs:documentation>
+                Element defines a positive infinity data item.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="minusInf" substitutionGroup="ct:Scalar" type="ct:MissingValueType">
+        <xs:annotation>
+            <xs:documentation>
+                Element defines a negative infinity data item.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="BLQ" substitutionGroup="ct:Scalar" type="ct:MissingValueType">
+        <xs:annotation>
+            <xs:documentation>
+                Element defines bellow level of quantification data item.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ALQ" substitutionGroup="ct:Scalar" type="ct:MissingValueType">
+        <xs:annotation>
+            <xs:documentation>
+                Element defines a above level of quantification data item.
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
     <xs:element name="Boolean" type="ct:BooleanType"  substitutionGroup="ct:Scalar" abstract="true">
         <xs:annotation>
             <xs:documentation>
@@ -1503,6 +1796,13 @@ permissions and limitations under the License.
             <xs:documentation>Element references a symbol defined elsewhere in the document.</xs:documentation>
         </xs:annotation>
     </xs:element>
+    
+    <xs:element name="CatRef" type="ct:CategoryRefType">
+        <xs:annotation>
+            <xs:documentation>Element references a symbol defined elsewhere in the document.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
     <xs:element name="Description" type="ct:AnnotationType">
         <xs:annotation>
             <xs:documentation>Element provides additional documentation about its parent element.</xs:documentation>

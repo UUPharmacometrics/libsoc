@@ -16,26 +16,151 @@ implied. See the License for the specific language governing
 permissions and limitations under the License.
 -->    
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.pharmml.org/pharmml/0.6/Maths"
-    xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" elementFormDefault="qualified"
-    attributeFormDefault="unqualified" version="0.6"
-    xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes"
-    xmlns:ds="http://www.pharmml.org/pharmml/0.6/Dataset"
-    xmlns:mdef="http://www.pharmml.org/pharmml/0.6/ModelDefinition">
+    targetNamespace="http://www.pharmml.org/pharmml/0.8/Maths"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths" elementFormDefault="qualified"
+    attributeFormDefault="unqualified" version="0.8"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
+    xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
     
-    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/ModelDefinition" 
-        schemaLocation="http://www.pharmml.org/pharmml/0.6/ModelDefinition"/>
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/ModelDefinition" 
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/ModelDefinition"/>
 
-    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/CommonTypes"
-        schemaLocation="http://www.pharmml.org/pharmml/0.6/CommonTypes"/>
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/CommonTypes"/>
     
-    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/Dataset"
-        schemaLocation="http://www.pharmml.org/pharmml/0.6/Dataset"/>
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/Dataset"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/Dataset"/>
+    
+    <xs:import namespace="http://www.pharmml.org/probonto/ProbOnto" 
+        schemaLocation="http://www.pharmml.org/probonto/ProbOnto"/>
+    
+    
+    <xs:complexType name="ProbabilityFctType">
+        <xs:annotation>
+            <xs:documentation>The general probability function type.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="Distribution" type="mdef:DistributionType"/>
+                    <xs:element minOccurs="0" ref="ct:Assign"/>
+                </xs:sequence>
+                <xs:attribute name="symbId" type="ct:SymbolIdType" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>The symbol id used to define the function.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="StatsopType">
+        <xs:annotation>
+            <xs:documentation>
+                Basic stats operators. Take up to two operands.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:choice>
+                        <xs:element ref="ct:SymbRef"/>
+                        <xs:element ref="ds:ColumnRef"/>
+                        <xs:element ref="ct:Sequence"/>
+                        <xs:element ref="ct:Interval"/>
+                        <xs:element ref="ct:Vector"/>
+                        <xs:element ref="ct:VectorSelector"/>
+                        <xs:element ref="ct:MatrixSelector"/>
+                        <xs:element ref="math:Uniop"/>
+                        <xs:element ref="math:Binop"/>
+                        <xs:element ref="math:Naryop"/>
+                        <xs:element ref="math:Statsop"/>
+                    </xs:choice>
+                    <xs:choice minOccurs="0">
+                        <xs:element ref="ct:SymbRef"/>
+                        <xs:element ref="ds:ColumnRef"/>
+                        <xs:element ref="ct:Sequence"/>
+                        <xs:element ref="ct:Interval"/>
+                        <xs:element ref="ct:Vector"/>
+                        <xs:element ref="ct:VectorSelector"/>
+                        <xs:element ref="ct:MatrixSelector"/>
+                        <xs:element ref="math:Uniop"/>
+                        <xs:element ref="math:Binop"/>
+                        <xs:element ref="math:Statsop"/>
+                        <xs:element ref="math:Naryop"/>
+                        <xs:element ref="ct:Scalar"/>
+                    </xs:choice>
+                </xs:sequence>
+                <xs:attribute name="op" use="required">
+                    <xs:annotation>
+                        <xs:documentation>The stats operator type.</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:Name">
+                            <xs:enumeration value="centredMoment"/>
+                            <xs:enumeration value="coefficientOfVariation"/>
+                            <xs:enumeration value="correlation"/>
+                            <xs:enumeration value="decile"/>
+                            <xs:enumeration value="geometricMean"/>
+                            <xs:enumeration value="kurtosis"/>
+                            <xs:enumeration value="mean"/>
+                            <xs:enumeration value="median"/>
+                            <xs:enumeration value="mode"/>
+                            <xs:enumeration value="moment"/>
+                            <xs:enumeration value="percentile"/>
+                            <xs:enumeration value="quantile"/>
+                            <xs:enumeration value="quartile"/>
+                            <xs:enumeration value="range"/>
+                            <xs:enumeration value="skewness"/>
+                            <xs:enumeration value="standardDeviation"/>
+                            <xs:enumeration value="variance"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+        
+    <xs:complexType name="NaryopType">
+        <xs:annotation>
+            <xs:documentation>
+                A N-ary operator describing a numerical operation. Takes N operands.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element ref="ct:MatrixSelector"/>
+                    <xs:element ref="ct:SymbRef"/>
+                    <xs:element ref="ct:Sequence"/>
+                    <xs:element ref="ct:Vector"/>
+                    <xs:element ref="ct:VectorSelector"/>
+                </xs:choice>
+                <xs:attribute name="op" use="required">
+                    <xs:annotation>
+                        <xs:documentation>The binary operator type. See the specification for a more detailed description.</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:Name">
+                            <xs:enumeration value="plus"/>
+                            <xs:enumeration value="times"/>
+                            <xs:enumeration value="min"/>
+                            <xs:enumeration value="max"/>
+                            <xs:enumeration value="gcd"/>
+                            <xs:enumeration value="lcm"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
     
     <xs:complexType name="BinopType">
         <xs:annotation>
             <xs:documentation>
-                A binary operator describing a numerical operation. Takes two operands (as you would expect).
+                A binary operator describing a numerical operation. Takes two operands.
             </xs:documentation>
         </xs:annotation>
         <xs:complexContent>
@@ -44,11 +169,17 @@ permissions and limitations under the License.
                     <xs:choice>
                         <xs:annotation>
                             <xs:documentation>Operand 1</xs:documentation>
-                        </xs:annotation> 
+                        </xs:annotation>
                         <xs:element ref="ct:Scalar"/>
                         <xs:element ref="ct:SymbRef"/>
                         <xs:element ref="ds:ColumnRef"/>
                         <xs:element ref="math:Constant"/>
+                        <xs:element ref="math:PDF"/>
+                        <xs:element ref="math:CDF"/>
+                        <xs:element ref="math:HF"/>
+                        <xs:element ref="math:SF"/>
+                        <xs:element ref="math:Statsop"/>
+                        <xs:element ref="math:Naryop"/>
                         <xs:element ref="math:Binop"/>
                         <xs:element ref="math:Uniop"/>
                         <xs:element ref="math:FunctionCall"/>
@@ -58,6 +189,7 @@ permissions and limitations under the License.
                         <xs:element ref="ct:VectorSelector"/>
                         <xs:element ref="ct:MatrixSelector"/>
                         <xs:element ref="mdef:Probability"/>
+                        <xs:element name="Realisation" type="mdef:RealisationType"/>
                     </xs:choice>
                     <xs:choice>
                         <xs:annotation>
@@ -67,6 +199,12 @@ permissions and limitations under the License.
                         <xs:element ref="ct:SymbRef"/>
                         <xs:element ref="ds:ColumnRef"/>
                         <xs:element ref="math:Constant"/>
+                        <xs:element ref="math:PDF"/>
+                        <xs:element ref="math:CDF"/>
+                        <xs:element ref="math:HF"/>
+                        <xs:element ref="math:SF"/>
+                        <xs:element ref="math:Statsop"/>
+                        <xs:element ref="math:Naryop"/>
                         <xs:element ref="math:Binop"/>
                         <xs:element ref="math:Uniop"/>
                         <xs:element ref="math:FunctionCall"/>
@@ -76,6 +214,7 @@ permissions and limitations under the License.
                         <xs:element ref="ct:VectorSelector"/>
                         <xs:element ref="ct:MatrixSelector"/>
                         <xs:element ref="mdef:Probability"/>
+                        <xs:element name="Realisation" type="mdef:RealisationType"/>
                     </xs:choice>
                 </xs:sequence>
                 <xs:attribute name="op" use="required">
@@ -94,7 +233,7 @@ permissions and limitations under the License.
                             <xs:enumeration value="min"/>
                             <xs:enumeration value="max"/>
                             <xs:enumeration value="rem"/>
-                            <xs:enumeration value="atan2"/>     <!-- moved from UniopType -->
+                            <xs:enumeration value="atan2"/>
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:attribute>
@@ -104,7 +243,7 @@ permissions and limitations under the License.
     <xs:complexType name="UniopType">
         <xs:annotation>
             <xs:documentation>
-                The unary operator type. Takes one operator.
+                The unary operator type. Takes one operand.
             </xs:documentation>
         </xs:annotation>
         <xs:complexContent>
@@ -134,12 +273,12 @@ permissions and limitations under the License.
                             <xs:enumeration value="probit"/>
                             <xs:enumeration value="minus"/>
                             <xs:enumeration value="sqrt"/>
-                            <xs:enumeration value="heaviside"/>     <!-- NEW -->
-                            <xs:enumeration value="sign"/>          <!-- NEW -->
+                            <xs:enumeration value="heaviside"/>
+                            <xs:enumeration value="sign"/>
                             <xs:enumeration value="sin"/>
                             <xs:enumeration value="cos"/>
                             <xs:enumeration value="tan"/>
-                            <xs:enumeration value="cot"/>   <!--atan2 moved to BinopType -->
+                            <xs:enumeration value="cot"/>
                             <xs:enumeration value="sec"/>
                             <xs:enumeration value="csc"/>
                             <xs:enumeration value="sinh"/>
@@ -168,6 +307,37 @@ permissions and limitations under the License.
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+    
+    <xs:complexType name="MatrixUniOpType">
+        <xs:annotation>
+            <xs:documentation>
+                An operator describing a matrix and vector operation.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="math:ExprType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Extends the expression which is in effect the operand.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:attribute name="op" use="required">
+                    <xs:annotation>
+                        <xs:documentation>The matrix operators.</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:Name">
+                            <xs:enumeration value="determinant"/>
+                            <xs:enumeration value="inverse"/>
+                            <xs:enumeration value="trace"/>
+                            <xs:enumeration value="transpose"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <xs:complexType name="ConstantType">
         <xs:annotation>
             <xs:documentation>
@@ -180,10 +350,8 @@ permissions and limitations under the License.
             </xs:annotation>
             <xs:simpleType>
                 <xs:restriction base="xs:Name">
-                    <xs:enumeration value="notanumber"/>
                     <xs:enumeration value="pi"/>
                     <xs:enumeration value="exponentiale"/>
-                    <xs:enumeration value="infinity"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
@@ -201,7 +369,6 @@ permissions and limitations under the License.
         </xs:sequence>
     </xs:complexType>
     
-    <!-- TEST -->
     <xs:complexType name="PieceType">
         <xs:annotation>
             <xs:documentation>The schema type defining a `piece' in a piecewise function.</xs:documentation>
@@ -209,14 +376,77 @@ permissions and limitations under the License.
         <xs:complexContent>
             <xs:extension base="math:ExprType">
                 <xs:sequence>
+                    <xs:choice minOccurs="0">
+                        <xs:element name="UncertML" type="mdef:UncertMLType"/>
+                        <xs:element ref="po:ProbOnto"/>
+                    </xs:choice>
                     <xs:element name="CategoryMapping" minOccurs="0" type="ds:CategoryMappingType"/>
+                    <xs:element minOccurs="0" name="Piecewise" type="math:PiecewiseType"/>
                     <xs:element ref="math:Condition"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-    <!-- /TEST -->
 
+
+    <xs:complexType name="ConditionalStatementType">
+        <xs:annotation>
+            <xs:documentation>The schema type defining a conditional statement.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="If" type="math:IfElseIfType">
+                <xs:annotation>
+                    <xs:documentation>Defines 'If' statement in the conditional statement.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="ElseIf" type="math:IfElseIfType">
+                <xs:annotation>
+                    <xs:documentation>Defines 'ElseIf' statement(s) in the piecewise function.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="Else" type="math:ElseType">
+                <xs:annotation>
+                    <xs:documentation>Defines 'Else' statement in the conditional statement.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="IfElseIfType">
+        <xs:annotation>
+            <xs:documentation>The schema type defining statement(s) in a conditional statement.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="math:ExprType">
+                <xs:sequence>
+                    <xs:element ref="math:Condition"/>
+                    <xs:choice maxOccurs="unbounded">
+                        <xs:element minOccurs="0" name="ConditionalStatement" type="math:ConditionalStatementType"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" ref="ct:AssignStatement"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" ref="mdef:CommonParameterElement"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>    
+    
+    <xs:complexType name="ElseType">
+        <xs:annotation>
+            <xs:documentation>The schema type defining statement(s) in a conditional statement.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="math:ExprType">
+                <xs:choice maxOccurs="unbounded">
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ConditionalStatement" type="math:ConditionalStatementType"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" ref="ct:AssignStatement"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" ref="mdef:CommonParameterElement"/>
+                    </xs:sequence>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
     <xs:complexType name="ExprType">
         <xs:annotation>
             <xs:documentation>The schema type defining a mathematical expression.</xs:documentation>
@@ -225,16 +455,26 @@ permissions and limitations under the License.
             <xs:extension base="ct:PharmMLRootType">
                 <xs:choice maxOccurs="1" minOccurs="1">
                     <xs:element ref="ct:Scalar"/>
-                    <xs:element maxOccurs="1" minOccurs="1" ref="ct:SymbRef"/>
+                    <xs:element minOccurs="0" ref="ct:SymbRef"/>
                     <xs:element ref="math:Constant"/>
+                    <xs:element name="Realisation" type="mdef:RealisationType"/>
+                    <xs:element ref="math:PDF"/>
+                    <xs:element ref="math:CDF"/>
+                    <xs:element ref="math:HF"/>
+                    <xs:element ref="math:SF"/>
+                    <xs:element ref="math:Statsop"/>
+                    <xs:element ref="math:Naryop"/>
                     <xs:element ref="math:Binop"/>
                     <xs:element ref="math:Uniop"/>
                     <xs:element ref="math:FunctionCall"/>
                     <xs:element ref="ct:Sum"/>
                     <xs:element ref="ct:Product"/>
+                    <xs:element ref="ct:Vector"/>
+                    <xs:element ref="ct:Matrix"/>
                     <xs:element ref="ct:VectorSelector"/>
                     <xs:element ref="ct:MatrixSelector"/>
                     <xs:element ref="mdef:Probability"/>
+                    <xs:element ref="math:MatrixUniop"/>
                 </xs:choice>
             </xs:extension>
         </xs:complexContent>
@@ -270,15 +510,26 @@ permissions and limitations under the License.
                         <xs:element ref="ct:Scalar"/>
                         <xs:element ref="math:Constant"/>
                         <xs:element ref="ct:SymbRef"/>
+                        <xs:element ref="ct:CatRef"/>
+                        <xs:element name="ArmRef" type="ct:OidRefType"/>
                         <xs:element ref="ds:ColumnRef"/>
+                        <xs:element ref="math:PDF"/>
+                        <xs:element ref="math:CDF"/>
+                        <xs:element ref="math:HF"/>
+                        <xs:element ref="math:SF"/>
+                        <xs:element ref="math:Statsop"/>
+                        <xs:element ref="math:Naryop"/>
                         <xs:element ref="math:Binop"/>
                         <xs:element ref="math:Uniop"/>
                         <xs:element ref="math:FunctionCall"/>
                         <xs:element ref="ct:Sum"/>
                         <xs:element ref="ct:Product"/>
+                        <xs:element ref="ct:Vector"/>
+                        <xs:element ref="ct:Matrix"/>
                         <xs:element ref="ct:VectorSelector"/>
                         <xs:element ref="ct:MatrixSelector"/>
                         <xs:element ref="mdef:Probability"/>
+                        <xs:element name="Realisation" type="mdef:RealisationType"/>
                     </xs:choice>
                     <xs:choice>
                         <xs:annotation>
@@ -289,15 +540,26 @@ permissions and limitations under the License.
                         <xs:element ref="ct:Scalar"/>
                         <xs:element ref="math:Constant"/>
                         <xs:element ref="ct:SymbRef"/>
+                        <xs:element ref="ct:CatRef"/>
+                        <xs:element name="ArmRef" type="ct:OidRefType"/>
                         <xs:element ref="ds:ColumnRef"/>
+                        <xs:element ref="math:PDF"/>
+                        <xs:element ref="math:CDF"/>
+                        <xs:element ref="math:HF"/>
+                        <xs:element ref="math:SF"/>
+                        <xs:element ref="math:Statsop"/>
+                        <xs:element ref="math:Naryop"/>
                         <xs:element ref="math:Binop"/>
                         <xs:element ref="math:Uniop"/>
                         <xs:element ref="math:FunctionCall"/>
                         <xs:element ref="ct:Sum"/>
                         <xs:element ref="ct:Product"/>
+                        <xs:element ref="ct:Vector"/>
+                        <xs:element ref="ct:Matrix"/>
                         <xs:element ref="ct:VectorSelector"/>
                         <xs:element ref="ct:MatrixSelector"/>
                         <xs:element ref="mdef:Probability"/>
+                        <xs:element name="Realisation" type="mdef:RealisationType"/>
                     </xs:choice>
                 </xs:sequence>
                 <xs:attribute name="op" use="required">
@@ -333,6 +595,12 @@ permissions and limitations under the License.
                     <xs:element ref="ct:Scalar"/>
                     <xs:element ref="math:Constant"/>
                     <xs:element ref="ct:SymbRef"/>
+                    <xs:element ref="math:PDF"/>
+                    <xs:element ref="math:CDF"/>
+                    <xs:element ref="math:HF"/>
+                    <xs:element ref="math:SF"/>
+                    <xs:element ref="math:Statsop"/>
+                    <xs:element ref="math:Naryop"/>
                     <xs:element ref="math:Binop"/>
                     <xs:element ref="math:Uniop"/>
                     <xs:element ref="math:FunctionCall"/>
@@ -341,6 +609,7 @@ permissions and limitations under the License.
                     <xs:element ref="ct:VectorSelector"/>
                     <xs:element ref="ct:MatrixSelector"/>
                     <xs:element ref="mdef:Probability"/>
+                    <xs:element name="Realisation" type="mdef:RealisationType"/>
                 </xs:choice>
             </xs:extension>
         </xs:complexContent>
@@ -362,33 +631,7 @@ permissions and limitations under the License.
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-    <xs:complexType name="EquationType">
-        <xs:annotation>
-            <xs:documentation>Complex Type that defines a mathematical equation.</xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:choice>
-                    <xs:element ref="ct:Scalar"/>
-                    <xs:element maxOccurs="1" minOccurs="1" ref="ct:SymbRef"/>
-                    <xs:element ref="math:Binop"/>
-                    <xs:element ref="math:Uniop"/>
-                    <xs:element name="Piecewise" type="math:PiecewiseType">
-                        <xs:annotation>
-                            <xs:documentation>Defines a piecewise expression.</xs:documentation>
-                        </xs:annotation>
-                    </xs:element>
-                    <xs:element ref="math:FunctionCall"/>
-                    <xs:element ref="ct:Sum"/>
-                    <xs:element ref="ct:Product"/>
-                    <xs:element ref="ct:Delay"/>
-                    <xs:element ref="ct:VectorSelector"/>
-                    <xs:element ref="ct:MatrixSelector"/>
-                    <xs:element ref="mdef:Probability"/>
-                </xs:choice>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
+
     <xs:complexType name="FunctionCallType">
         <xs:annotation>
             <xs:documentation>A type defining a function call.</xs:documentation>
@@ -419,15 +662,9 @@ permissions and limitations under the License.
             <xs:element minOccurs="0" ref="ct:Symbol"/>
             <xs:element minOccurs="0" ref="ct:Description"/>
             <xs:choice>
-                <xs:element maxOccurs="1" ref="math:Equation"/>
+                <xs:element ref="ct:Assign"/>
                 <xs:element ref="ct:Scalar"/>
-                <xs:element ref="math:Constant"/>
                 <xs:element ref="ct:SymbRef"/>
-                <xs:element ref="ct:Sum"/>
-                <xs:element ref="ct:Product"/>
-                <xs:element ref="ct:VectorSelector"/>
-                <xs:element ref="ct:MatrixSelector"/>
-                <xs:element ref="mdef:Probability"/>
             </xs:choice>
         </xs:sequence>
         <xs:attribute name="symbId" type="ct:SymbolIdType" use="required">
@@ -454,6 +691,36 @@ permissions and limitations under the License.
             <xs:documentation>A function call.</xs:documentation>
         </xs:annotation>
     </xs:element>
+    <xs:element name="PDF" type="math:ProbabilityFctType">
+        <xs:annotation>
+            <xs:documentation>Probability density function, PDF.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CDF" type="math:ProbabilityFctType">
+        <xs:annotation>
+            <xs:documentation>Cumulative distribution function, CDF.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="HF" type="math:ProbabilityFctType">
+        <xs:annotation>
+            <xs:documentation>Hazard function, HZ.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SF" type="math:ProbabilityFctType">
+        <xs:annotation>
+            <xs:documentation>Survival function, SF.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Statsop" type="math:StatsopType">
+        <xs:annotation>
+            <xs:documentation>A statistical operator.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Naryop" type="math:NaryopType">
+        <xs:annotation>
+            <xs:documentation>A N-ary operator.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
     <xs:element name="Binop" type="math:BinopType">
         <xs:annotation>
             <xs:documentation>A binary operator.</xs:documentation>
@@ -462,6 +729,11 @@ permissions and limitations under the License.
     <xs:element name="Uniop" type="math:UniopType">
         <xs:annotation>
             <xs:documentation>A unary operator.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="MatrixUniop" type="math:MatrixUniOpType">
+        <xs:annotation>
+            <xs:documentation>A unary matrix operator.</xs:documentation>
         </xs:annotation>
     </xs:element>
     <xs:element name="LogicBinop" type="math:LogicBinOpType">
@@ -481,16 +753,6 @@ permissions and limitations under the License.
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="math:LogicConditionType"> </xs:extension>
-            </xs:complexContent>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="Equation">
-        <xs:annotation>
-            <xs:documentation>A mathematical expression that is evaluated to a scalar type.</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-            <xs:complexContent>
-                <xs:extension base="math:EquationType"> </xs:extension>
             </xs:complexContent>
         </xs:complexType>
     </xs:element>

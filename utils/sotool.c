@@ -28,7 +28,7 @@ void usage()
 
 void validate(const char *xmlPath)
 {
-    if (xmlLoadCatalog("/usr/share/libsoc/pharmml-spec-dev_0.5.2/definitions/xmlCatalog.xml") != 0) {
+    if (xmlLoadCatalog("/usr/share/libsoc/pharmml-spec_0.8/pharmml-schema/definitions/xmlCatalog.xml") != 0) {
         printf("Error when loading catalog\n");
         exit(5);
     }

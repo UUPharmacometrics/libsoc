@@ -16,31 +16,33 @@ implied. See the License for the specific language governing
 permissions and limitations under the License.
 -->    
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.pharmml.org/pharmml/0.6/PharmML"
-    xmlns:mml="http://www.pharmml.org/pharmml/0.6/PharmML"
-    xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" xmlns:distrib="http://www.uncertml.org/3.0"
-    xmlns:design="http://www.pharmml.org/pharmml/0.6/TrialDesign"
-    xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes"
-    xmlns:msteps="http://www.pharmml.org/pharmml/0.6/ModellingSteps"
-    xmlns:mdef="http://www.pharmml.org/pharmml/0.6/ModelDefinition" version="0.6"
+    targetNamespace="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:mml="http://www.pharmml.org/pharmml/0.8/PharmML"
+    xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths" 
+    xmlns:distrib="http://www.uncertml.org/3.0"
+    xmlns:design="http://www.pharmml.org/pharmml/0.8/TrialDesign"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+    xmlns:msteps="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+    xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition" version="0.8"
     elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/Maths"
-        schemaLocation="http://www.pharmml.org/pharmml/0.6/Maths"/>
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/Maths"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/Maths"/>
     
-    <xs:import namespace="http://www.uncertml.org/3.0" schemaLocation="http://www.uncertml.org/3.0"/>
+    <xs:import namespace="http://www.uncertml.org/3.0" 
+        schemaLocation="http://www.uncertml.org/3.0"/>
 
-    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/TrialDesign"
-        schemaLocation="http://www.pharmml.org/pharmml/0.6/TrialDesign"/>
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/TrialDesign"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/TrialDesign"/>
 
-    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/ModellingSteps"
-        schemaLocation="http://www.pharmml.org/pharmml/0.6/ModellingSteps"/>
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/ModellingSteps"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/ModellingSteps"/>
 
-    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/CommonTypes"
-        schemaLocation="http://www.pharmml.org/pharmml/0.6/CommonTypes"/>
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/CommonTypes"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/CommonTypes"/>
 
-    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/ModelDefinition"
-        schemaLocation="http://www.pharmml.org/pharmml/0.6/ModelDefinition"/>
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/ModelDefinition"/>
     
     <xs:complexType name="IndependentVariableType">
         <xs:annotation>
@@ -65,7 +67,7 @@ permissions and limitations under the License.
             <xs:sequence>
                 <xs:element ref="ct:Name"/>
                 <xs:element minOccurs="0" ref="ct:Description"/>
-                <xs:element minOccurs="0" name="IndependentVariable"
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="IndependentVariable"
                     type="mml:IndependentVariableType"> </xs:element>
                 <xs:element maxOccurs="unbounded" minOccurs="0" ref="ct:FunctionDefinition">
                     <xs:annotation>
@@ -134,7 +136,7 @@ permissions and limitations under the License.
                 <xs:documentation>Defines the OID key.</xs:documentation>
             </xs:annotation>
             <xs:selector    
-                xpath=".//design:Epoch|.//design:Arm|.//design:Cell|.//design:Activity|.//design:Segment|.//design:Individual|.//design:Demographic|.//msteps:SimulationStep|.//msteps:EstimationStep|.//design:ObservationsEvent|.//msteps:ExternalDataSet|.//msteps:TargetTool"/>
+                xpath=".//design:Arm|.//design:Action|.//design:Administration|.//design:Individual|.//msteps:SimulationStep|.//msteps:EstimationStep|.//msteps:OptimalDesignStep|.//design:ExternalDataSet|.//msteps:TargetTool|.//design:Observation|.//design:ObservationsCombination|.//design:IndividualObservations|.//design:InterventionsCombination"/>
             <xs:field xpath="@oid"/>
         </xs:key>
         <xs:keyref refer="mml:oidKey" name="oidRef">
@@ -142,7 +144,7 @@ permissions and limitations under the License.
                 <xs:documentation>Ensures all treatment Id refs point to valid treatment id. Prevents dangling references.</xs:documentation>
             </xs:annotation>
             <xs:selector
-                xpath=".//design:ActivityRef|.//design:SegmentRef|.//design:ArmRef|.//design:EpochRef|.//design:CellRef|.//ct:OidRef"/>
+                xpath=".//design:ObservationRef|.//design:InterventionRef|.//design:ArmRef|.//ct:OidRef"/>
             <xs:field xpath="@oidRef"/>
         </xs:keyref>
     </xs:element>

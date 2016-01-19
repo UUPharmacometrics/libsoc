@@ -51,7 +51,8 @@ utils:
 .PHONY: install_utils
 install_utils:
 	cp utils/sotool /usr/bin
-	cp -rf utils/schema /usr/share/libsoc
+	mkdir -p /usr/share/libsoc
+	cp -rf utils/schema/* /usr/share/libsoc
 
 .PHONY: clean
 clean:

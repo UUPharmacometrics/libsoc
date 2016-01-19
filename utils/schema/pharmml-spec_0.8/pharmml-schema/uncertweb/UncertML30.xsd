@@ -204,10 +204,10 @@
         <xs:choice>
             <xs:sequence minOccurs="1" maxOccurs="unbounded">
                 <xs:element name="val" type="un:ContinuousValueType"/>
-                <!--<xs:choice>
+                <xs:choice>
                     <xs:element name="rVal" type="un:ContinuousValueType" />
                     <xs:element ref="un:var" />
-                </xs:choice>-->
+                </xs:choice>
             </xs:sequence>
             <xs:element ref="un:arrayVar"/>
         </xs:choice>
