@@ -21,10 +21,13 @@
 #include <stdbool.h>
 #include <pharmml/common_types.h>
 
-#define NUMCOLTYPES 27
+#define NUMCOLTYPES 37
 static char *coltypenames[] = {
-    "undefined", "addl", "adm", "arm", "censoring", "cmt", "covariate", "demographic", "dose", "duration", "dv", "dvid", "epoch",
-    "evid", "id", "idv", "ii", "limit", "mdv", "occasion", "rate", "reg", "replicate", "ss", "ssEndTime", "ssPeriod", "time" };
+    "undefined", "addl", "adm", "arm", "censoring", "cmt", "covariate", "dose", "duration", "dv", "dvid", "epoch",
+    "evid", "id", "idv", "ii", "limit", "mdv", "occasion", "rate", "reg", "replicate", "ss", "ssEndTime", "ssPeriod", "time",
+    "indivParameter", "popParameter", "randEffect", "residual", "statPrecision", "strataVariable", "structParameter",
+    "varParameter_var", "varParameter_stdev", "varParameter_cov", "varParameter_corr"
+};
 
 #define NUMVALTYPES 5
 static const char *valtypenames[] = { "real", "int", "string", "id", "boolean" }; 
