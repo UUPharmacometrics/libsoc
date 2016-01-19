@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<UncertML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.uncertml.org/Test testSchema.xsd" 
+ xmlns="http://www.uncertml.org/Test"
+ xmlns:un="http://www.uncertml.org/3.0">
+ <un:CentredMoment order="2" definition="http://www.uncertml.org/statistics/centred-moment">
+  <un:value><un:var varId="a"/></un:value>
+ </un:CentredMoment>
+     <un:CentredMoment order="2" definition="http://www.uncertml.org/statistics/centred-moment">
+  <un:value><un:rVal>6.28</un:rVal></un:value>
+ </un:CentredMoment>
+ <un:CentredMoment order="2" definition="http://www.uncertml.org/statistics/centred-moment">
+  <un:value><un:rVal>3.14</un:rVal></un:value>
+ </un:CentredMoment>
+ <un:CoefficientOfVariation definition="http://www.uncertml.org/statistics/coefficient-of-variation">
+  <un:value><un:rVal>3.24</un:rVal></un:value>
+ </un:CoefficientOfVariation>
+ <un:Kurtosis definition="http://www.uncertml.org/statistics/kurtosis">
+  <un:value>
+   <un:kVal>3.14</un:kVal>
+  </un:value>
+ </un:Kurtosis>
+<un:Kurtosis definition="http://www.uncertml.org/statistics/kurtosis">
+  <un:value>
+   <un:var varId="a"/>
+  </un:value>
+ </un:Kurtosis>
+<un:NormalDistribution definition="http://www.uncertml.org/distributions/normal">
+  <un:mean>
+   <un:rVal>10.0</un:rVal>
+  </un:mean>
+  <un:variance>
+   <un:prVal>0.1</un:prVal>
+  </un:variance>
+</un:NormalDistribution>  
+  
+
+  
+  <un:DiracDeltaDistribution definition="http://en.wikipedia.org/wiki/Dirac_delta_function#As_a_distribution">
+     <un:location>
+       <un:rVal>0.0</un:rVal>
+     </un:location>
+  </un:DiracDeltaDistribution>
+
+  <un:ContinuousUnivariateMixtureModel definition="Needed! This is a spike and slab prior">
+    <un:component weight="0.">
+      <un:NormalDistribution definition="http://www.uncertml.org/distributions/normal">
+        <un:mean>
+          <un:rVal>10.0</un:rVal>
+        </un:mean>
+        <un:variance>
+          <un:prVal>1000.0</un:prVal>
+        </un:variance>
+        <un:truncationLowerInclusiveBound>
+          <un:rVal>0.0</un:rVal>
+        </un:truncationLowerInclusiveBound>
+      </un:NormalDistribution>
+    </un:component>
+    <un:component weight="0.34">
+        <un:DiracDeltaDistribution definition="http://en.wikipedia.org/wiki/Dirac_delta_function#As_a_distribution">
+            <un:location>
+                <un:rVal>0.0</un:rVal>
+            </un:location>
+        </un:DiracDeltaDistribution>
+    </un:component>
+  </un:ContinuousUnivariateMixtureModel>
+  
+  
+  
+ <un:NormalDistribution definition="http://www.uncertml.org/distributions/normal">
+  <un:mean>
+   <un:var varId="as"/>
+  </un:mean>
+  <un:variance>
+   <un:var varId="var"/>
+  </un:variance>
+ </un:NormalDistribution>
+    
+ <un:NormalDistribution definition="http://www.uncertml.org/distributions/normal">
+  <un:mean>
+   <un:rVal>-24.1</un:rVal>
+  </un:mean>
+  <un:variance>
+   <un:prVal>34.1</un:prVal>
+  </un:variance>
+ </un:NormalDistribution>
+
+<!-- invalid but more concise
+<un:NormalDistribution definition="http://www.uncertml.org/distributions/normal">
+  <un:mean varId="as"/>
+  <un:variance varId="var"/>
+ </un:NormalDistribution>
+    
+ <un:NormalDistribution definition="http://www.uncertml.org/distributions/normal">
+  <un:mean>3.0</un:mean>
+  <un:variance>4.0</un:variance>
+ </un:NormalDistribution>
+    -->
+    
+ <un:DiscreteProbability  definition="http://www.uncertml.org/statistics/discrete-probability">
+    <un:categoryProb definition="We need this">
+        <un:name>red</un:name>
+        <un:prob>
+            <un:pVal>0.5</un:pVal>
+  	    </un:prob>
+	</un:categoryProb>
+ </un:DiscreteProbability>
+ <un:DiscreteProbability  definition="http://www.uncertml.org/statistics/discrete-probability">
+    <un:categoryProb definition="We need this">
+        <un:name>green</un:name>
+        <un:prob><un:var varId="a"/></un:prob>
+	</un:categoryProb>
+ </un:DiscreteProbability>
+
+ <un:MultivariateNormalDistribution  definition="http://www.uncertml.org/distributions/multivariate-normal">
+  <un:meanVector><un:arrayVar varId="mu_b"/></un:meanVector>
+  <un:covarianceMatrix dimension="2" definition="">
+   <un:values><un:var varId="a"/></un:values> 
+  </un:covarianceMatrix>
+ </un:MultivariateNormalDistribution>
+
+<un:MultivariateNormalDistribution  definition="http://www.uncertml.org/distributions/multivariate-normal">
+  <un:meanVector><un:rVal>1.2</un:rVal><un:rVal>2.2</un:rVal></un:meanVector>
+  <un:covarianceMatrix dimension="2" definition="">
+   <un:values><un:rVal>1.2</un:rVal><un:rVal>2.2</un:rVal></un:values>
+  </un:covarianceMatrix>
+ </un:MultivariateNormalDistribution>
+
+<!-- DC: Here is what I'd like to achieve ...
+    LB: the only difference now is that the real values (or vars) are enclosed in a 'values' element
+    This is the only way to do this while reusing the types we have, otherwise we have to 
+    extend RealArrayType (messy) or define the array again inline
+    
+ <un:MultivariateNormalDistribution  definition="http://www.uncertml.org/distributions/multivariate-normal">
+  <un:meanVector><un:rVal>1.2</un:rVal><un:rVal>2.2</un:rVal></un:meanVector>
+  <un:covarianceMatrix dimension="2" definition="">
+   <un:rVal>4.2</un:rVal><un:rVal>2.2</un:rVal><un:rVal>2.2</un:rVal><un:rVal>6.12</un:rVal>
+  </un:covarianceMatrix>
+ </un:MultivariateNormalDistribution> 
+-->
+    
+ <un:Realisation definition="http://www.uncertml.org/samples/realisation">
+  <un:weight><un:var varId="w1"/></un:weight>
+  <un:value><un:rVal>6.28</un:rVal></un:value><un:value><un:rVal>6.28</un:rVal></un:value><un:value><un:rVal>6.28</un:rVal></un:value>
+ </un:Realisation>
+    <un:Realisation definition="http://www.uncertml.org/samples/realisation">
+  <un:weight><un:var varId="w2"/></un:weight>
+  <un:value><un:rVal>3.14</un:rVal></un:value>
+ </un:Realisation>
+ <un:Realisation definition="http://www.uncertml.org/samples/realisation">
+  <un:weight><un:var varId="w3"/></un:weight>
+  <un:value><un:rVal>9.42</un:rVal></un:value>
+ </un:Realisation>
+ <un:Realisation id="abc" definition="http://www.uncertml.org/samples/realisation">
+  <un:weight><un:prVal>0.5</un:prVal></un:weight>
+  <un:category><un:sVal>Blue</un:sVal></un:category>
+ </un:Realisation>
+ <un:Realisation id="abc2" definition="http://www.uncertml.org/samples/realisation">
+  <un:weight><un:var varId="w"/></un:weight>
+  <un:category><un:sVal>Red</un:sVal></un:category>
+ </un:Realisation>
+ <Statistics>
+  <un:Mean definition="http://www.uncertml.org/statistics/mean">
+   <un:value><un:rVal>243.3</un:rVal></un:value>
+  </un:Mean>
+ <un:Mean definition="http://www.uncertml.org/statistics/mean">
+   <un:value><un:var varId="mu"/></un:value>
+  </un:Mean>
+  <un:Range definition="http://www.uncertml.org/statistics/range">
+   <un:lower><un:rVal>0</un:rVal></un:lower>
+   <un:upper><un:rVal>100</un:rVal></un:upper>
+  </un:Range>
+ </Statistics>
+ <Distributions>
+  <un:BetaDistribution definition="http://www.uncertml.org/distributions/beta">
+   <un:alpha><un:var varId="a"/></un:alpha>
+   <un:beta><un:var varId="b"/></un:beta>
+  </un:BetaDistribution>
+ <un:BetaDistribution definition="http://www.uncertml.org/distributions/beta">
+   <un:alpha><un:prVal>6.26</un:prVal></un:alpha>
+   <un:beta><un:prVal>3.14</un:prVal></un:beta>
+  </un:BetaDistribution>
+ </Distributions>
+ <Samples>
+  <un:RandomSample definition="http://www.uncertml.org/samples/random">
+   <un:samplingMethodDescription><un:sVal>Sampling Method</un:sVal></un:samplingMethodDescription>
+   <un:Realisation definition="http://www.uncertml.org/samples/realisation">
+    <un:weight><un:prVal>0.5</un:prVal></un:weight>
+    <un:value><un:rVal>3.14</un:rVal></un:value>
+   </un:Realisation>
+   <un:Realisation definition="http://www.uncertml.org/samples/realisation">
+    <un:weight><un:prVal>0.5</un:prVal></un:weight>
+    <un:value><un:var varId="as"/></un:value>
+   </un:Realisation>
+  </un:RandomSample>
+  <un:RandomSample definition="http://www.uncertml.org/samples/random">
+   <un:Realisation id="foo" definition="http://www.uncertml.org/samples/realisation">
+    <un:weight><un:prVal>1.0</un:prVal></un:weight>
+    <un:value><un:rVal>236</un:rVal></un:value>
+   </un:Realisation>
+    <un:Realisation id="foo2" definition="http://www.uncertml.org/samples/realisation">
+    <un:weight><un:prVal>1.0</un:prVal></un:weight>
+    <un:value><un:var varId="asa"/></un:value>
+   </un:Realisation>
+  </un:RandomSample>
+ </Samples>
+ <Metrics>
+    <un:ConfusionMatrix definition="http://www.uncertml.org/metrics/confusion-matrix">
+        <!-- TODO - change this URL!! at the moment it's 'statistics'-->
+  <un:sourceCategories>
+   <un:sVal>Red</un:sVal><un:sVal>Green</un:sVal><un:sVal>Blue</un:sVal>
+  </un:sourceCategories>
+  <un:targetCategories>
+   <un:sVal>Red</un:sVal><un:sVal>Green</un:sVal><un:sVal>Blue</un:sVal>
+  </un:targetCategories>
+  <un:counts>
+    <un:nnVal>1</un:nnVal>
+    <un:nnVal>2</un:nnVal>
+    <un:nnVal>3</un:nnVal>
+    <un:nnVal>4</un:nnVal>
+    <un:nnVal>5</un:nnVal>
+    <un:nnVal>6</un:nnVal>
+  </un:counts>
+ </un:ConfusionMatrix> 
+    
+     <un:ConfusionMatrix definition="http://www.uncertml.org/metrics/confusion-matrix">
+        <!-- TODO - change this URL!! at the moment it's 'statistics'-->
+  <un:sourceCategories><un:arrayVar varId="arrayOfLabels"/></un:sourceCategories>
+  <un:targetCategories><un:arrayVar varId="arrayOfLabels"/></un:targetCategories>
+  <un:counts><un:arrayVar varId="arrayOfValues"/></un:counts>
+ </un:ConfusionMatrix> 
+    
+     <un:ConfusionMatrix definition="http://www.uncertml.org/metrics/confusion-matrix">
+        <!-- TODO - change this URL!! at the moment it's 'statistics'-->
+  <un:sourceCategories><un:sVal>Red</un:sVal><un:var varId="secondLabel"/><un:sVal>Blue</un:sVal></un:sourceCategories>
+  <un:targetCategories><un:arrayVar varId="arrayOfLabels"/></un:targetCategories>
+  <un:counts><un:arrayVar varId="arrayOfValues"/></un:counts>
+ </un:ConfusionMatrix> 
+    
+</Metrics>
+</UncertML>

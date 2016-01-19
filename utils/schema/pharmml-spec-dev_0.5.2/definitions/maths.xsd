@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2013 European Molecular Biology Laboratory, Heidelberg,
+Germany and Novo Nordisk A/S, Bagsvaerd, Denmark.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you
+may not use this file except in compliance with the License.  You may
+obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+     
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing
+permissions and limitations under the License.
+-->    
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.pharmml.org/pharmml/0.6/Maths"
+    xmlns:math="http://www.pharmml.org/pharmml/0.6/Maths" elementFormDefault="qualified"
+    attributeFormDefault="unqualified" version="0.6"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.6/Dataset"
+    xmlns:mdef="http://www.pharmml.org/pharmml/0.6/ModelDefinition">
+    
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/ModelDefinition" 
+        schemaLocation="http://www.pharmml.org/pharmml/0.6/ModelDefinition"/>
+
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/CommonTypes"
+        schemaLocation="http://www.pharmml.org/pharmml/0.6/CommonTypes"/>
+    
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/Dataset"
+        schemaLocation="http://www.pharmml.org/pharmml/0.6/Dataset"/>
+    
+    <xs:complexType name="BinopType">
+        <xs:annotation>
+            <xs:documentation>
+                A binary operator describing a numerical operation. Takes two operands (as you would expect).
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:choice>
+                        <xs:annotation>
+                            <xs:documentation>Operand 1</xs:documentation>
+                        </xs:annotation> 
+                        <xs:element ref="ct:Scalar"/>
+                        <xs:element ref="ct:SymbRef"/>
+                        <xs:element ref="ds:ColumnRef"/>
+                        <xs:element ref="math:Constant"/>
+                        <xs:element ref="math:Binop"/>
+                        <xs:element ref="math:Uniop"/>
+                        <xs:element ref="math:FunctionCall"/>
+                        <xs:element ref="ct:Sum"/>
+                        <xs:element ref="ct:Product"/>
+                        <xs:element ref="ct:Delay"/>
+                        <xs:element ref="ct:VectorSelector"/>
+                        <xs:element ref="ct:MatrixSelector"/>
+                        <xs:element ref="mdef:Probability"/>
+                    </xs:choice>
+                    <xs:choice>
+                        <xs:annotation>
+                            <xs:documentation>Operand 2</xs:documentation>
+                        </xs:annotation>
+                        <xs:element ref="ct:Scalar"/>
+                        <xs:element ref="ct:SymbRef"/>
+                        <xs:element ref="ds:ColumnRef"/>
+                        <xs:element ref="math:Constant"/>
+                        <xs:element ref="math:Binop"/>
+                        <xs:element ref="math:Uniop"/>
+                        <xs:element ref="math:FunctionCall"/>
+                        <xs:element ref="ct:Sum"/>
+                        <xs:element ref="ct:Product"/>
+                        <xs:element ref="ct:Delay"/>
+                        <xs:element ref="ct:VectorSelector"/>
+                        <xs:element ref="ct:MatrixSelector"/>
+                        <xs:element ref="mdef:Probability"/>
+                    </xs:choice>
+                </xs:sequence>
+                <xs:attribute name="op" use="required">
+                    <xs:annotation>
+                        <xs:documentation>The binary operator type. See the specification for a more detailed description.</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:Name">
+                            <xs:enumeration value="plus"/>
+                            <xs:enumeration value="minus"/>
+                            <xs:enumeration value="times"/>
+                            <xs:enumeration value="divide"/>
+                            <xs:enumeration value="power"/>
+                            <xs:enumeration value="logx"/>
+                            <xs:enumeration value="root"/>
+                            <xs:enumeration value="min"/>
+                            <xs:enumeration value="max"/>
+                            <xs:enumeration value="rem"/>
+                            <xs:enumeration value="atan2"/>     <!-- moved from UniopType -->
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="UniopType">
+        <xs:annotation>
+            <xs:documentation>
+                The unary operator type. Takes one operator.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="math:ExprType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Extends the expression which is in effect the operand.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:attribute name="op" use="required">
+                    <xs:annotation>
+                        <xs:documentation>The operator. More detail in the specification.</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:Name">
+                            <xs:enumeration value="abs"/>
+                            <xs:enumeration value="exp"/>
+                            <xs:enumeration value="factorial"/>
+                            <xs:enumeration value="factln"/>
+                            <xs:enumeration value="gammaln"/>
+                            <xs:enumeration value="log"/>
+                            <xs:enumeration value="log2"/>
+                            <xs:enumeration value="log10"/>
+                            <xs:enumeration value="logistic"/>
+                            <xs:enumeration value="logit"/>
+                            <xs:enumeration value="normcdf"/>
+                            <xs:enumeration value="probit"/>
+                            <xs:enumeration value="minus"/>
+                            <xs:enumeration value="sqrt"/>
+                            <xs:enumeration value="heaviside"/>     <!-- NEW -->
+                            <xs:enumeration value="sign"/>          <!-- NEW -->
+                            <xs:enumeration value="sin"/>
+                            <xs:enumeration value="cos"/>
+                            <xs:enumeration value="tan"/>
+                            <xs:enumeration value="cot"/>   <!--atan2 moved to BinopType -->
+                            <xs:enumeration value="sec"/>
+                            <xs:enumeration value="csc"/>
+                            <xs:enumeration value="sinh"/>
+                            <xs:enumeration value="cosh"/>
+                            <xs:enumeration value="tanh"/>
+                            <xs:enumeration value="sech"/>
+                            <xs:enumeration value="csch"/>
+                            <xs:enumeration value="coth"/>
+                            <xs:enumeration value="arcsin"/>
+                            <xs:enumeration value="arccos"/>
+                            <xs:enumeration value="arctan"/>
+                            <xs:enumeration value="arcsec"/>
+                            <xs:enumeration value="arccsc"/>
+                            <xs:enumeration value="arccot"/>
+                            <xs:enumeration value="arcsinh"/>
+                            <xs:enumeration value="arccosh"/>
+                            <xs:enumeration value="arctanh"/>
+                            <xs:enumeration value="arcsech"/>
+                            <xs:enumeration value="arccsch"/>
+                            <xs:enumeration value="arccoth"/>
+                            <xs:enumeration value="floor"/>
+                            <xs:enumeration value="ceiling"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ConstantType">
+        <xs:annotation>
+            <xs:documentation>
+                The schema type defining a mathematical constant.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="op" use="required">
+            <xs:annotation>
+                <xs:documentation>The type of constant.</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:Name">
+                    <xs:enumeration value="notanumber"/>
+                    <xs:enumeration value="pi"/>
+                    <xs:enumeration value="exponentiale"/>
+                    <xs:enumeration value="infinity"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="PiecewiseType">
+        <xs:annotation>
+            <xs:documentation>The schema type defining a piecewise function.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="Piece" type="math:PieceType">
+                <xs:annotation>
+                    <xs:documentation>Defines a piece in the piecewise function.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- TEST -->
+    <xs:complexType name="PieceType">
+        <xs:annotation>
+            <xs:documentation>The schema type defining a `piece' in a piecewise function.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="math:ExprType">
+                <xs:sequence>
+                    <xs:element name="CategoryMapping" minOccurs="0" type="ds:CategoryMappingType"/>
+                    <xs:element ref="math:Condition"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- /TEST -->
+
+    <xs:complexType name="ExprType">
+        <xs:annotation>
+            <xs:documentation>The schema type defining a mathematical expression.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice maxOccurs="1" minOccurs="1">
+                    <xs:element ref="ct:Scalar"/>
+                    <xs:element maxOccurs="1" minOccurs="1" ref="ct:SymbRef"/>
+                    <xs:element ref="math:Constant"/>
+                    <xs:element ref="math:Binop"/>
+                    <xs:element ref="math:Uniop"/>
+                    <xs:element ref="math:FunctionCall"/>
+                    <xs:element ref="ct:Sum"/>
+                    <xs:element ref="ct:Product"/>
+                    <xs:element ref="ct:VectorSelector"/>
+                    <xs:element ref="ct:MatrixSelector"/>
+                    <xs:element ref="mdef:Probability"/>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="LogicConditionType">
+        <xs:annotation>
+            <xs:documentation>The schema type defining logical condition.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice maxOccurs="1">
+                    <xs:element ref="math:LogicBinop"/>
+                    <xs:element ref="math:LogicUniop"/>
+                    <xs:element ref="ct:Boolean"/>
+                    <xs:element ref="math:Otherwise"/>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="LogicBinOpType">
+        <xs:annotation>
+            <xs:documentation>The schema type defining a binary logical operator.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:choice>
+                        <xs:annotation>
+                            <xs:documentation>Operand 1.</xs:documentation>
+                        </xs:annotation>
+                        <xs:element ref="math:LogicBinop"/>
+                        <xs:element ref="math:LogicUniop"/>
+                        <xs:element ref="ct:Scalar"/>
+                        <xs:element ref="math:Constant"/>
+                        <xs:element ref="ct:SymbRef"/>
+                        <xs:element ref="ds:ColumnRef"/>
+                        <xs:element ref="math:Binop"/>
+                        <xs:element ref="math:Uniop"/>
+                        <xs:element ref="math:FunctionCall"/>
+                        <xs:element ref="ct:Sum"/>
+                        <xs:element ref="ct:Product"/>
+                        <xs:element ref="ct:VectorSelector"/>
+                        <xs:element ref="ct:MatrixSelector"/>
+                        <xs:element ref="mdef:Probability"/>
+                    </xs:choice>
+                    <xs:choice>
+                        <xs:annotation>
+                            <xs:documentation>Operand 2.</xs:documentation>
+                        </xs:annotation>
+                        <xs:element ref="math:LogicBinop"/>
+                        <xs:element ref="math:LogicUniop"/>
+                        <xs:element ref="ct:Scalar"/>
+                        <xs:element ref="math:Constant"/>
+                        <xs:element ref="ct:SymbRef"/>
+                        <xs:element ref="ds:ColumnRef"/>
+                        <xs:element ref="math:Binop"/>
+                        <xs:element ref="math:Uniop"/>
+                        <xs:element ref="math:FunctionCall"/>
+                        <xs:element ref="ct:Sum"/>
+                        <xs:element ref="ct:Product"/>
+                        <xs:element ref="ct:VectorSelector"/>
+                        <xs:element ref="ct:MatrixSelector"/>
+                        <xs:element ref="mdef:Probability"/>
+                    </xs:choice>
+                </xs:sequence>
+                <xs:attribute name="op" use="required">
+                    <xs:annotation>
+                        <xs:documentation>The logical binary operator type.</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:Name">
+                            <xs:enumeration value="lt"/>
+                            <xs:enumeration value="leq"/>
+                            <xs:enumeration value="gt"/>
+                            <xs:enumeration value="geq"/>
+                            <xs:enumeration value="eq"/>
+                            <xs:enumeration value="neq"/>
+                            <xs:enumeration value="and"/>
+                            <xs:enumeration value="or"/>
+                            <xs:enumeration value="xor"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="LogicExprType">
+        <xs:annotation>
+            <xs:documentation>A logical expression.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice maxOccurs="1">
+                    <xs:element ref="math:LogicBinop"/>
+                    <xs:element ref="math:LogicUniop"/>
+                    <xs:element ref="ct:Scalar"/>
+                    <xs:element ref="math:Constant"/>
+                    <xs:element ref="ct:SymbRef"/>
+                    <xs:element ref="math:Binop"/>
+                    <xs:element ref="math:Uniop"/>
+                    <xs:element ref="math:FunctionCall"/>
+                    <xs:element ref="ct:Sum"/>
+                    <xs:element ref="ct:Product"/>
+                    <xs:element ref="ct:VectorSelector"/>
+                    <xs:element ref="ct:MatrixSelector"/>
+                    <xs:element ref="mdef:Probability"/>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="LogicUniOpType">
+        <xs:complexContent>
+            <xs:extension base="math:LogicExprType">
+                <xs:attribute name="op" use="required">
+                    <xs:annotation>
+                        <xs:documentation>The unary operator type.</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:Name">
+                            <xs:enumeration value="isDefined"/>
+                            <xs:enumeration value="not"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="EquationType">
+        <xs:annotation>
+            <xs:documentation>Complex Type that defines a mathematical equation.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice>
+                    <xs:element ref="ct:Scalar"/>
+                    <xs:element maxOccurs="1" minOccurs="1" ref="ct:SymbRef"/>
+                    <xs:element ref="math:Binop"/>
+                    <xs:element ref="math:Uniop"/>
+                    <xs:element name="Piecewise" type="math:PiecewiseType">
+                        <xs:annotation>
+                            <xs:documentation>Defines a piecewise expression.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="math:FunctionCall"/>
+                    <xs:element ref="ct:Sum"/>
+                    <xs:element ref="ct:Product"/>
+                    <xs:element ref="ct:Delay"/>
+                    <xs:element ref="ct:VectorSelector"/>
+                    <xs:element ref="ct:MatrixSelector"/>
+                    <xs:element ref="mdef:Probability"/>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="FunctionCallType">
+        <xs:annotation>
+            <xs:documentation>A type defining a function call.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element ref="ct:SymbRef"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="FunctionArgument">
+                        <xs:annotation>
+                            <xs:documentation>An argument of the function.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="math:FunctionArgumentType"/>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="FunctionArgumentType">
+        <xs:annotation>
+            <xs:documentation>A type defining an argument of a function being called.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element minOccurs="0" ref="ct:Symbol"/>
+            <xs:element minOccurs="0" ref="ct:Description"/>
+            <xs:choice>
+                <xs:element maxOccurs="1" ref="math:Equation"/>
+                <xs:element ref="ct:Scalar"/>
+                <xs:element ref="math:Constant"/>
+                <xs:element ref="ct:SymbRef"/>
+                <xs:element ref="ct:Sum"/>
+                <xs:element ref="ct:Product"/>
+                <xs:element ref="ct:VectorSelector"/>
+                <xs:element ref="ct:MatrixSelector"/>
+                <xs:element ref="mdef:Probability"/>
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="symbId" type="ct:SymbolIdType" use="required">
+            <xs:annotation>
+                <xs:documentation>The symbold ID of the argument.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    
+    
+    <!-- elements -->
+    <xs:element name="Otherwise">
+        <xs:annotation>
+            <xs:documentation>The otherwise case in a piecewise function.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Constant" type="math:ConstantType">
+        <xs:annotation>
+            <xs:documentation>A constant symbol.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="FunctionCall" type="math:FunctionCallType">
+        <xs:annotation>
+            <xs:documentation>A function call.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Binop" type="math:BinopType">
+        <xs:annotation>
+            <xs:documentation>A binary operator.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Uniop" type="math:UniopType">
+        <xs:annotation>
+            <xs:documentation>A unary operator.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="LogicBinop" type="math:LogicBinOpType">
+        <xs:annotation>
+            <xs:documentation>A logical binary operator used in logical expressions.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="LogicUniop" type="math:LogicUniOpType">
+        <xs:annotation>
+            <xs:documentation>A logical unary operator used in logical expressions.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Condition">
+        <xs:annotation>
+            <xs:documentation>A condition defined by a logical expression. Can be evaluated to True or False.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="math:LogicConditionType"> </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Equation">
+        <xs:annotation>
+            <xs:documentation>A mathematical expression that is evaluated to a scalar type.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="math:EquationType"> </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

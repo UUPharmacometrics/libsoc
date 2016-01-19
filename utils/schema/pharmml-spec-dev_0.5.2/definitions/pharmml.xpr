@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="14.2">
+    <meta>
+        <filters directoryPatterns="" filePatterns="" positiveFilePatterns="" showHiddenFiles="false"/>
+        <options>
+            <serialized version="14.2" xml:space="preserve">
+                <map>
+                    <entry>
+                        <String>catalogs.v5</String>
+                        <String-array>
+                            <String>${pdu}/xmlCatalog.xml</String>
+                        </String-array>
+                    </entry>
+                    <entry>
+                        <String>default.xml.schema.version</String>
+                        <String>1.0</String>
+                    </entry>
+                    <entry>
+                        <String>enable.project.master.files.support</String>
+                        <Boolean>true</Boolean>
+                    </entry>
+                    <entry>
+                        <String>honour.all.schema.locationsv7.0</String>
+                        <Boolean>true</Boolean>
+                    </entry>
+                    <entry>
+                        <String>key.xml.catalog.option.pane</String>
+                        <Boolean>true</Boolean>
+                    </entry>
+                    <entry>
+                        <String>key.xml.schema.option.pane</String>
+                        <Boolean>true</Boolean>
+                    </entry>
+                    <entry>
+                        <String>key.xslt.saxon8.option.pane</String>
+                        <Boolean>true</Boolean>
+                    </entry>
+                    <entry>
+                        <String>prefer</String>
+                        <String>system</String>
+                    </entry>
+                    <entry>
+                        <String>process.namespaces.through.uri.mapping.for.xml.schema</String>
+                        <Boolean>true</Boolean>
+                    </entry>
+                    <entry>
+                        <String>saxon.latest.config.file</String>
+                        <String>file:/Users/smoodie/workspace42/MssmMlTestSuite/testFiles/definitions/xmlCatalog.xml</String>
+                    </entry>
+                    <entry>
+                        <String>saxon.sa.assertions.can.see.comments</String>
+                        <Boolean>true</Boolean>
+                    </entry>
+                    <entry>
+                        <String>saxon.sa.multiple.schema.imports</String>
+                        <Boolean>true</Boolean>
+                    </entry>
+                    <entry>
+                        <String>saxon8.no.version.warning</String>
+                        <Boolean>true</Boolean>
+                    </entry>
+                    <entry>
+                        <String>saxon8.schema.based.validation</String>
+                        <String>saxon.source.schema.based.validation</String>
+                    </entry>
+                    <entry>
+                        <String>saxon8.validation.warnings.in.result</String>
+                        <Boolean>true</Boolean>
+                    </entry>
+                    <entry>
+                        <String>validation.scenarios</String>
+                        <validationScenario-array/>
+                    </entry>
+                    <entry>
+                        <String>xslt.strip.ws</String>
+                        <String>saxon.strip.ws.ignorable</String>
+                    </entry>
+                </map>
+            </serialized>
+        </options>
+    </meta>
+    <projectTree name="pharmml.xpr">
+        <folder masterFiles="true" name="Master Files">
+            <file name="pharmml.xsd"/>
+        </folder>
+        <file name="commonTypes.xsd"/>
+        <file name="dataset.xsd"/>
+        <file name="maths.xsd"/>
+        <file name="modelDefinition.xsd"/>
+        <file name="modellingSteps.xsd"/>
+        <file name="pharmml.xsd"/>
+        <file name="trialDesign.xsd"/>
+    </projectTree>
+</project>

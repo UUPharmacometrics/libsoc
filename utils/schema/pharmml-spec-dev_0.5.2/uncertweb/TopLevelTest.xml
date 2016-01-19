@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<UncertML xmlns="http://www.uncertml.org/3.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.uncertml.org/3.0 ./UncertML30.xsd">
+    <NormalDistribution definition="">
+        <mean><rVal>10</rVal></mean>
+        <stddev><var varId="omega_W"/></stddev>
+    </NormalDistribution>
+</UncertML>

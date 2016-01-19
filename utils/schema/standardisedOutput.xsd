@@ -1,0 +1,709 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2014-2015 European Molecular Biology Laboratory, Heidelberg,
+Germany and Merck Institute for Pharmacometrics, Merck Serono, Lausanne, Switzerland.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you
+may not use this file except in compliance with the License.  You may
+obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+     
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing
+permissions and limitations under the License.
+-->    
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.pharmml.org/so/0.2/StandardisedOutput"
+    xmlns:so="http://www.pharmml.org/so/0.2/StandardisedOutput"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    xmlns:distrib="http://www.uncertml.org/3.0"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.6/CommonTypes"
+    xmlns:ds="http://www.pharmml.org/pharmml/0.6/Dataset"
+    version="0.2">
+    
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/CommonTypes"
+        schemaLocation="http://www.pharmml.org/pharmml/0.6/CommonTypes"/>
+    
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.6/Dataset"
+        schemaLocation="http://www.pharmml.org/pharmml/0.6/Dataset"/>
+   
+    <xs:import namespace="http://www.uncertml.org/3.0" 
+        schemaLocation="http://www.uncertml.org/3.0"/>    
+    
+
+    <xs:complexType name="SOType">
+        <xs:annotation>
+            <xs:documentation>A type defining the SO.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="PharmMLRef" minOccurs="0" type="so:PharmMLRefType">
+                        <xs:annotation>
+                            <xs:documentation>The path of the realted PharmML file.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:choice>
+                        <xs:element maxOccurs="unbounded" name="SOBlock" type="so:SOBlockType"/>
+                        <xs:sequence> 
+                            <!-- same elements as in the SOBlockType -->
+                            <xs:element minOccurs="0" name="ToolSettings" type="so:ToolSettingsType"/>
+                            <xs:element minOccurs="0" name="RawResults" type="so:RawResultsType"/>
+                            <xs:element minOccurs="0" name="TaskInformation" type="so:TaskInformationType"/>
+                            <xs:element minOccurs="0" name="Estimation" type="so:EstimationType"/>
+                            <xs:element minOccurs="0" name="ModelDiagnostic" type="so:ModelDiagnosticType"/>
+                            <xs:element minOccurs="0" name="Simulation" type="so:SimulationType"/>
+                            <xs:element minOccurs="0" name="OptimalDesign" type="so:OptimalDesignType"/>
+                        </xs:sequence>
+                    </xs:choice>
+                </xs:sequence>
+                <xs:attribute name="writtenVersion" type="xs:string" use="required">
+                    <xs:annotation>
+                        <xs:documentation>The version of PharmML that this document was compliant with when this document was written.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="implementedBy" type="xs:string" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>The author of this PharmML implementation.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="metadataFile" type="xs:string" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>The RDF file wth annotations for this model.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="SOBlockType">
+        <xs:annotation>
+            <xs:documentation>A type defining the SO block.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <!-- same elements as in the SOType -->
+                    <xs:element minOccurs="0" name="ToolSettings" type="so:ToolSettingsType"/>
+                    <xs:element minOccurs="0" name="RawResults" type="so:RawResultsType"/>
+                    <xs:element minOccurs="0" name="TaskInformation" type="so:TaskInformationType"/>
+                    <xs:element minOccurs="0" name="Estimation" type="so:EstimationType"/>
+                    <xs:element minOccurs="0" name="ModelDiagnostic" type="so:ModelDiagnosticType"/>
+                    <xs:element minOccurs="0" name="Simulation" type="so:SimulationType"/>
+                    <xs:element minOccurs="0" name="OptimalDesign" type="so:OptimalDesignType"/>
+                </xs:sequence>
+                <xs:attributeGroup ref="ct:BlockDefnGroup"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ToolSettingsType">
+        <xs:annotation>
+            <xs:documentation>Tool Settings Type</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice maxOccurs="unbounded">
+                    <xs:sequence>
+                        <xs:element name="File" minOccurs="0" maxOccurs="unbounded" type="ds:ExternalFileType"/>
+                    </xs:sequence>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="RawResultsType">
+        <xs:annotation>
+            <xs:documentation>Row Results Type</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice maxOccurs="unbounded">
+                    <xs:sequence>
+                        <xs:element name="DataFile" minOccurs="0" maxOccurs="unbounded" type="ds:ExternalFileType"/>
+                        <xs:element name="GraphicsFile" minOccurs="0" maxOccurs="unbounded" type="ds:ExternalFileType"/>
+                    </xs:sequence>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="TaskInformationType">
+        <xs:annotation>
+            <xs:documentation>Type specifying task information.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="Message" minOccurs="0" maxOccurs="unbounded" type="so:MessageType"/>
+                    <xs:element name="OutputFilePath" minOccurs="0" type="ds:ExternalFileType"/>
+                    <xs:element name="RunTime" minOccurs="0" type="ct:Rhs"/>
+                    <xs:element name="NumberChains" minOccurs="0" type="ct:Rhs"/>             
+                    <xs:element name="NumberIterations" minOccurs="0" type="ct:Rhs"/>                    
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="MessageType">
+        <xs:annotation>
+            <xs:documentation>Basic messages type.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="Toolname" type="ct:Rhs"/>
+                    <xs:element name="Name" type="ct:Rhs"/>
+                    <xs:element name="Content" type="ct:Rhs"/>
+                    <xs:element name="Severity" type="ct:Rhs"/>
+                </xs:sequence>
+                <xs:attribute use="required" name="type">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="ERROR"/>
+                            <xs:enumeration value="WARNING"/>
+                            <xs:enumeration value="TERMINATION"/>
+                            <xs:enumeration value="INFORMATION"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="EstimationType">
+        <xs:annotation>
+            <xs:documentation>Type defining the estimation section of the SO.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="PopulationEstimates" type="so:PopulationEstimatesType">
+                        <xs:annotation>
+                            <xs:documentation>Population estimates</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="PrecisionPopulationEstimates" type="so:PrecisionPopulationEstimatesType">
+                        <xs:annotation>
+                            <xs:documentation>Precision of population estimates</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="IndividualEstimates" type="so:IndividualEstimatesType">
+                        <xs:annotation>
+                            <xs:documentation>Individual estimates</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="PrecisionIndividualEstimates" type="so:SOTableDistribType">
+                        <xs:annotation>
+                            <xs:documentation>Precision of individual estimates</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="Residuals" type="so:ResidualType">
+                        <xs:annotation>
+                            <xs:documentation>The residuals</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="Predictions" type="ds:DataSetType">
+                        <xs:annotation>
+                            <xs:documentation>Population and individual predictions in one table</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="Likelihood" type="so:LikelihoodType">
+                        <xs:annotation>
+                            <xs:documentation>The Likelihood</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="TargetToolMessages" type="so:TargetToolMessagesType">
+                        <xs:annotation>
+                            <xs:documentation>The messages from target tool</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="PharmMLRefType">
+        <xs:annotation>
+            <xs:documentation>
+                Type defining the PharmML reference in the SO file.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:attribute name="name" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="SOMatrixType">
+        <xs:annotation>
+            <xs:documentation>Type defining the natrix with estimation results.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element ref="ct:Matrix">
+                        <xs:annotation>
+                            <xs:documentation>Matrix for results storage.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="SOTableDistribType">
+        <xs:annotation>
+            <xs:documentation>Type defining distribution of the estimation results.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice>
+                    <xs:element ref="distrib:AbstractContinuousUnivariateDistribution">
+                        <xs:annotation>
+                            <xs:documentation>
+                                A continuous univariate probability distribution, defined by UncertML. 
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="distrib:AbstractContinuousMultivariateDistribution">
+                        <xs:annotation>
+                            <xs:documentation>
+                                A continuous multivariate probability distribution, defined by UncertML. 
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="DataSet" type="ds:DataSetType">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Inline data set/table or an external file.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="PopulationEstimatesType">
+        <xs:annotation>
+            <xs:documentation>Type defining the population estimates.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="MLE" minOccurs="0" type="ds:DataSetType">
+                        <xs:annotation>
+                            <xs:documentation>Placeholder for MLE population estimates.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="Bayesian" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Placeholder for Bayesian population estimates.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="ct:PharmMLRootType">
+                                    <xs:sequence>
+                                        <xs:element name="PosteriorMean" minOccurs="0" type="ds:DataSetType"/>                                        
+                                        <xs:element name="PosteriorMedian" minOccurs="0" type="ds:DataSetType"/>                                        
+                                        <xs:element name="PosteriorMode" minOccurs="0" type="ds:DataSetType"/>                                        
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Bootstrap" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Placeholder for Bootstrap population estimates.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="ct:PharmMLRootType">
+                                    <xs:sequence>
+                                        <xs:element name="Mean" minOccurs="0" type="ds:DataSetType"/>                                        
+                                        <xs:element name="Median" minOccurs="0" type="ds:DataSetType"/>                                        
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>    
+    
+    <xs:complexType name="PrecisionPopulationEstimatesType">
+        <xs:annotation>
+            <xs:documentation>Type defining the precision population estimates.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:annotation>
+                    <xs:documentation>
+                        First level of the precision of population estimates.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                    <!-- MLE -->
+                    <xs:element minOccurs="0" name="MLE">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Second level of the precision of the MLE population estimates.
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="ct:PharmMLRootType">
+                                    <xs:choice maxOccurs="unbounded">
+                                        <xs:sequence>
+                                            <xs:element name="FIM" minOccurs="0" type="so:SOMatrixType"/>
+                                            <xs:element name="CovarianceMatrix" minOccurs="0" type="so:SOMatrixType"/>
+                                            <xs:element name="CorrelationMatrix" minOccurs="0" type="so:SOMatrixType"/>
+                                            <xs:element name="StandardError" minOccurs="0" type="ds:DataSetType"/>
+                                            <xs:element name="RelativeStandardError" minOccurs="0" type="ds:DataSetType"/>
+                                            <xs:element name="AsymptoticCI" minOccurs="0" type="ds:DataSetType"/>
+                                            <xs:element name="ConditionNumber" minOccurs="0" type="ct:Rhs"/>                    
+                                        </xs:sequence>
+                                    </xs:choice>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <!-- BAYESIAN -->
+                    <xs:element minOccurs="0" name="Bayesian">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Second level of the precision of the Bayesian population estimates.
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="ct:PharmMLRootType">
+                                    <xs:sequence>
+                                        <xs:element name="StandardDeviationPosterior" minOccurs="0" type="ds:DataSetType"/>
+                                        <xs:element name="PosteriorDistribution" minOccurs="0" type="so:SOTableDistribType"/>
+                                        <xs:element name="PercentilesCI" minOccurs="0" type="ds:DataSetType"/>
+                                    </xs:sequence>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <!-- BOOTSTRAP -->
+                    <xs:element name="Bootstrap" minOccurs="0" type="so:PrecisionEstimatesPercentileType"/>                                        
+                    <!-- LLP -->
+                    <xs:element name="LLP" minOccurs="0" type="so:PrecisionEstimatesPercentileType"/>                                        
+                    <!-- SIR -->
+                    <xs:element name="SIR" minOccurs="0" type="so:PrecisionEstimatesPercentileType"/>                                        
+                    <!-- MultiDimLLP -->
+                    <xs:element name="MultiDimLLP" minOccurs="0" type="so:PrecisionEstimatesPercentileType"/>                                        
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="ResidualType">
+        <xs:annotation>
+            <xs:documentation>Type for residuals</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="ResidualTable" minOccurs="0" type="ds:DataSetType"/>
+                    <xs:element name="EpsShrinkage" minOccurs="0" type="ds:DataSetType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="PrecisionEstimatesPercentileType">
+        <xs:annotation>
+            <xs:documentation>Combined type for other population estimates</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="PrecisionEstimates" type="ds:DataSetType"/>
+                    <xs:element name="Percentiles" type="ds:DataSetType"/>
+                    <xs:element name="PosteriorDistribution" minOccurs="0" type="so:SOTableDistribType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="IndividualEstimatesType">
+        <xs:annotation>
+            <xs:documentation>Type defining the individual estimates.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <!-- MLE -->
+                    <xs:element minOccurs="0" name="Estimates">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Individual estimates.
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="ct:PharmMLRootType">
+                                    <xs:choice maxOccurs="unbounded">
+                                        <xs:sequence>
+                                            <xs:element name="Mean" minOccurs="0" type="ds:DataSetType"/>
+                                            <xs:element name="Median" minOccurs="0" type="ds:DataSetType"/>
+                                            <xs:element name="Mode" minOccurs="0" type="ds:DataSetType"/>
+                                            <xs:element name="Samples" minOccurs="0" type="ds:DataSetType"/>
+                                        </xs:sequence>
+                                    </xs:choice>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <!-- BAYESIAN -->
+                    <xs:element minOccurs="0" name="RandomEffects">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Bayesian individual estimates.
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="ct:PharmMLRootType">
+                                    <xs:choice maxOccurs="unbounded">
+                                        <xs:sequence>
+                                            <xs:element name="EffectMean" minOccurs="0" type="ds:DataSetType"/>
+                                            <xs:element name="EffectMedian" minOccurs="0" type="ds:DataSetType"/>
+                                            <xs:element name="EffectMode" minOccurs="0" type="ds:DataSetType"/>
+                                            <xs:element name="Samples" minOccurs="0" type="ds:DataSetType"/>
+                                        </xs:sequence>
+                                    </xs:choice>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="EtaShrinkage" minOccurs="0" type="ds:DataSetType"/>                                        
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="LikelihoodType">
+        <xs:annotation>
+            <xs:documentation>Type defining the likelihood.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice maxOccurs="unbounded">
+                    <xs:sequence>
+                        <xs:element name="LogLikelihood" minOccurs="0" type="ct:RealValueType"/>
+                        <xs:element name="Deviance" minOccurs="0" type="ct:RealValueType"/>
+                        <xs:element name="IndividualContribToLL" minOccurs="0" type="ds:DataSetType"/>
+                        <xs:element name="InformationCriteria" minOccurs="0" type="so:InformationCriteriaType"/>
+                    </xs:sequence>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="InformationCriteriaType">
+        <xs:annotation>
+            <xs:documentation>AIC, BIC and DIC measures to be defined here.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice maxOccurs="unbounded">
+                    <xs:sequence>
+                        <xs:element name="AIC" minOccurs="0" type="ct:RealValueType"/>
+                        <xs:element name="BIC" minOccurs="0" type="ct:RealValueType"/>
+                        <xs:element name="DIC" minOccurs="0" type="ct:RealValueType"/>                        
+                    </xs:sequence>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="TargetToolMessagesType">
+        <xs:annotation>
+            <xs:documentation>Type defining the target tool messages.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice maxOccurs="unbounded">
+                    <xs:sequence>
+                        <xs:element name="Termination" minOccurs="0" type="ct:StringValueType"/>
+                        <xs:element name="Warnings" minOccurs="0" type="ct:StringValueType"/>
+                        <xs:element name="Errors" minOccurs="0" type="ct:StringValueType"/>
+                        <xs:element name="ElapsedTime" minOccurs="0" type="ct:RealValueType"/>
+                        <xs:element name="OutputFilePath" minOccurs="0" type="ds:ExternalFileType"/>
+                        <xs:element name="ChainsNumber" minOccurs="0" type="ct:RealValueType"/>
+                        <xs:element name="IterationNumber" minOccurs="0" type="ct:RealValueType"/>
+                    </xs:sequence>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="SimulationType">
+        <xs:annotation>
+            <xs:documentation>Type for the simulation section of the SO.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                    <xs:choice>
+                        <xs:element maxOccurs="unbounded" name="SimulationBlock" type="so:SimulationBlockType"/>
+                        <xs:sequence> 
+                            <xs:element name="SimulatedProfiles" minOccurs="0" maxOccurs="unbounded" type="so:SimulationSubType"/>
+                            <xs:element name="IndivParameters" minOccurs="0" maxOccurs="unbounded" type="so:SimulationSubType"/>
+                            <xs:element name="RandomEffects" minOccurs="0" maxOccurs="unbounded" type="so:SimulationSubType"/>
+                            <xs:element name="Covariates" minOccurs="0" maxOccurs="unbounded" type="so:SimulationSubType"/>
+                            <xs:element name="PopulationParameters" minOccurs="0" maxOccurs="unbounded" type="so:SimulationSubType"/>
+                            <xs:element name="Dosing" minOccurs="0" maxOccurs="unbounded" type="so:SimulationSubType"/>
+                            <xs:element name="RawResultsFile" minOccurs="0" type="ds:ExternalFileType"/>
+                        </xs:sequence>
+                    </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="SimulationSubType">
+        <xs:complexContent>
+            <xs:extension base="ds:DataSetType">
+                <xs:attribute name="name" use="optional" type="xs:string"/>
+                <xs:attribute name="extFileNo" use="optional" type="xs:integer"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="SimulationBlockType">
+        <xs:annotation>
+            <xs:documentation>Type for the simulation block for on ereplicate.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence> 
+                    <xs:element name="SimulatedProfiles" minOccurs="0" maxOccurs="unbounded" type="so:SimulationSubType"/>
+                    <xs:element name="IndivParameters" minOccurs="0" maxOccurs="unbounded" type="so:SimulationSubType"/>
+                    <xs:element name="RandomEffects" minOccurs="0" maxOccurs="unbounded" type="so:SimulationSubType"/>
+                    <xs:element name="Covariates" minOccurs="0" maxOccurs="unbounded" type="so:SimulationSubType"/>
+                    <xs:element name="PopulationParameters" minOccurs="0" maxOccurs="unbounded" type="so:SimulationSubType"/>
+                    <xs:element name="Dosing" minOccurs="0" maxOccurs="unbounded" type="so:SimulationSubType"/>
+                    <xs:element name="RawResultsFile" minOccurs="0" type="ds:ExternalFileType"/>
+                </xs:sequence>
+                <xs:attribute name="replicate" type="xs:integer"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="ModelDiagnosticType">
+        <xs:annotation>
+            <xs:documentation>Type for the model diagnostic</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice maxOccurs="unbounded">
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="DiagnosticPlotsStructuralModel" type="so:DiagnosticPlotsStructuralModelType"/>
+                        <xs:element minOccurs="0" name="DiagnosticPlotsIndividualParams" type="ds:DataSetType"/>
+                    </xs:sequence>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="DiagnosticPlotsStructuralModelType">
+        <xs:annotation>
+            <xs:documentation>Type for diagnostic pLots for the structural model</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice maxOccurs="unbounded">
+                    <xs:sequence>
+                        <xs:element name="IndivFits" minOccurs="0" type="so:IndivFits"/>
+                        <xs:element name="IndivPredictionVsObserv" minOccurs="0" type="ds:DataSetType"/>
+                        <xs:element name="VPC" minOccurs="0" type="ds:DataSetType"/>
+                    </xs:sequence>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="IndivFits">
+        <xs:annotation>
+            <xs:documentation>Type for indivitual fits</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice maxOccurs="unbounded">
+                    <xs:sequence>
+                        <xs:element name="ObservationTable" minOccurs="0" type="ds:DataSetType"/>
+                        <xs:element name="PredictionTable" minOccurs="0" type="ds:DataSetType"/>
+                    </xs:sequence>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="OptimalDesignType">
+        <xs:annotation>
+            <xs:documentation>Type for the simulation section of the SO.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:choice>
+                    <xs:element maxOccurs="unbounded" name="OptimalDesignBlock" type="so:OptimalDesignBlockType"/>
+                    <xs:sequence> 
+                        <xs:element name="FIM" minOccurs="0" type="so:SOMatrixType"/>
+                        <xs:element name="CovarianceMatrix" minOccurs="0" type="so:SOMatrixType"/>
+                        <xs:element name="ParameterPrecision" minOccurs="0" type="ds:DataSetType"/>
+                        <xs:element name="Criteria" minOccurs="0" type="ds:DataSetType"/>
+                        <xs:element name="Tests" minOccurs="0" type="ds:DataSetType"/>
+                        <xs:element name="SimulatedData" minOccurs="0" type="ds:ExternalFileType"/>
+                        <xs:element name="Design" minOccurs="0" type="ds:ExternalFileType"/>
+                    </xs:sequence>
+                </xs:choice>
+                <xs:attribute name="type" type="so:DesignTypeType"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="OptimalDesignBlockType">
+        <xs:annotation>
+            <xs:documentation>Type for the simulation block for on ereplicate.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element name="FIM" minOccurs="0" type="so:SOMatrixType"/>
+                    <xs:element name="CovarianceMatrix" minOccurs="0" type="so:SOMatrixType"/>
+                    <xs:element name="ParameterPrecision" minOccurs="0" type="ds:DataSetType"/>
+                    <xs:element name="Criteria" minOccurs="0" type="ds:DataSetType"/>
+                    <xs:element name="Tests" minOccurs="0" type="ds:DataSetType"/>
+                    <xs:element name="SimulatedData" minOccurs="0" type="ds:ExternalFileType"/>
+                    <xs:element name="Design" minOccurs="0" type="ds:ExternalFileType"/>
+                </xs:sequence>
+                <xs:attribute name="blockNumber" type="xs:integer"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:simpleType name="DesignTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="evaluation"/>
+            <xs:enumeration value="optimization"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <!-- elements -->
+    <xs:element name="SO" type="so:SOType">
+        <xs:annotation>
+            <xs:documentation>The main SO element.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+        
+</xs:schema>
