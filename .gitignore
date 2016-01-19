@@ -36,6 +36,8 @@ fortran/libsoc.f03
 fortran/libsoc.mod
 fortran/test
 
+utils/sotool
+
 doxygen_sqlite3.db
 html/*
 latex/*
