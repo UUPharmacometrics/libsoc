@@ -71,8 +71,8 @@ structure = {
             { 'name' : 'Message', 'type' : 'Message', 'array' : True },
             { 'name' : 'OutputFilePath', 'type' : 'ExternalFile', 'array' : True },
             { 'name' : 'RunTime', 'type' : 'type_real' },
-            { 'name' : 'NumberChains', 'type' : 'NumberChains' },
-            { 'name' : 'NumberIterations', 'type' : 'NumberIterations' },
+            { 'name' : 'NumberChains', 'type' : 'type_int' },
+            { 'name' : 'NumberIterations', 'type' : 'type_int' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation'
     },
@@ -87,19 +87,6 @@ structure = {
             'type'
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/Message'
-    },
-    'NumberChains' : {
-        'children' : [
-            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
-            { 'name' : 'Real', 'type' : 'type_real', 'prefix' : 'ct' },
-        ],
-        'xpath' : 'SO/SOBlock/TaskInformation/NumberChains'
-    },
-    'NumberIterations' : {
-        'children' : [
-            { 'name' : 'Real', 'type' : 'type_real', 'prefix' : 'ct' },
-        ],
-        'xpath' : 'SO/SOBlock/TaskInformation/NumberIterations'
     },
     'Estimation' : {
         'children' : [
