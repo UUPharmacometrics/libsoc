@@ -70,7 +70,7 @@ structure = {
         'children' : [
             { 'name' : 'Message', 'type' : 'Message', 'array' : True },
             { 'name' : 'OutputFilePath', 'type' : 'ExternalFile', 'array' : True },
-            { 'name' : 'RunTime', 'type' : 'RunTime' },
+            { 'name' : 'RunTime', 'type' : 'type_real' },
             { 'name' : 'NumberChains', 'type' : 'NumberChains' },
             { 'name' : 'NumberIterations', 'type' : 'NumberIterations' },
         ],
@@ -87,13 +87,6 @@ structure = {
             'type'
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/Message'
-    },
-    'RunTime' : {
-        'children' : [
-            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
-            { 'name' : 'Real', 'type' : 'type_real', 'prefix' : 'ct' },
-        ],
-        'xpath' : 'SO/SOBlock/TaskInformation/RunTime'
     },
     'NumberChains' : {
         'children' : [
