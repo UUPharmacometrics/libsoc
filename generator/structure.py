@@ -95,7 +95,7 @@ structure = {
             { 'name' : 'IndividualEstimates', 'type' : 'IndividualEstimates' },
             { 'name' : 'Residuals', 'type' : 'Residuals' },
             { 'name' : 'Predictions', 'type' : 'Table' },
-            { 'name' : 'Likelihood', 'type' : 'Likelihood' },
+            { 'name' : 'OFMeasures', 'type' : 'OFMeasures' },
         ],
         'xpath' : 'SO/SOBlock/Estimation'
     },
@@ -183,13 +183,14 @@ structure = {
         ],
         'xpath' : 'SO/SOBlock/Estimation/Residuals'
     },
-    'Likelihood' : {
+    'OFMeasures' : {
         'children' : [
+            { 'name' : 'Likelihood', 'type' : 'type_real' },
             { 'name' : 'LogLikelihood', 'type' : 'type_real' },
             { 'name' : 'Deviance', 'type' : 'type_real' },
             { 'name' : 'IndividualContribtoLL', 'type' : 'Table' },
         ],
-        'xpath' : 'SO/SOBlock/Estimation/Likelihood'
+        'xpath' : 'SO/SOBlock/Estimation/OFMeasures'
     },
     'Simulation' : {
         'children' : [
