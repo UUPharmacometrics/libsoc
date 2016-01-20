@@ -73,16 +73,8 @@ void so_SOBlock_add_message(so_SOBlock *self, char *type, char *toolname, char *
     so_Message *m = so_TaskInformation_create_Message(ti);
 
     so_Message_set_type(m, type);
-
-    so_Toolname *tn = so_Message_create_Toolname(m);
-    so_Toolname_set_String(tn, toolname);
-
-    so_Name *n = so_Message_create_Name(m);
-    so_Name_set_String(n, name);
-
-    so_Content *c = so_Message_create_Content(m);
-    so_Content_set_String(c, content);
-
-    so_Severity *s = so_Message_create_Severity(m);
-    so_Severity_set_Int(s, &severity);
+    so_Message_set_Toolname(m, toolname);
+    so_Message_set_Name(m, name);
+    so_Message_set_Content(m, content);
+    so_Message_set_Severity(m, &severity);
 }

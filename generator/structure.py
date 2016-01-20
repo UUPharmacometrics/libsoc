@@ -78,10 +78,10 @@ structure = {
     },
     'Message' : {
         'children' : [
-            { 'name' : 'Toolname', 'type' : 'Toolname' },
-            { 'name' : 'Name', 'type' : 'Name' },
-            { 'name' : 'Content', 'type' : 'Content' },
-            { 'name' : 'Severity', 'type' : 'Severity' },
+            { 'name' : 'Toolname', 'type' : 'type_string' },
+            { 'name' : 'Name', 'type' : 'type_string' },
+            { 'name' : 'Content', 'type' : 'type_string' },
+            { 'name' : 'Severity', 'type' : 'type_int' },
         ],
         'attributes' : [
             'type'
@@ -100,30 +100,6 @@ structure = {
             { 'name' : 'Real', 'type' : 'type_real', 'prefix' : 'ct' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/NumberIterations'
-    },
-    'Toolname' : {
-        'children' : [
-            { 'name' : 'String', 'type' : 'type_string', 'prefix' : 'ct' },
-        ],
-        'xpath' : 'SO/SOBlock/TaskInformation/Message/Toolname'
-    },
-    'Name' : {
-        'children' : [
-            { 'name' : 'String', 'type' : 'type_string', 'prefix' : 'ct' },
-        ],
-        'xpath' : 'SO/SOBlock/TaskInformation/Message/Name'
-    },
-    'Content' : {
-        'children' : [
-            { 'name' : 'String', 'type' : 'type_string', 'prefix' : 'ct' },
-        ],
-        'xpath' : 'SO/SOBlock/TaskInformation/Message/Content'
-    },
-    'Severity' : {
-        'children' : [
-            { 'name' : 'Int', 'type' : 'type_int', 'prefix' : 'ct' },
-        ],
-        'xpath' : 'SO/SOBlock/TaskInformation/Message/Severity'
     },
     'Estimation' : {
         'children' : [
