@@ -45,5 +45,6 @@ int so_Table_new_column(so_Table *self, char *columnId, pharmml_columnType colum
 int so_Table_new_column_no_copy(so_Table *self, char *columnId, pharmml_columnType columnType, pharmml_valueType valueType, void *data);
 void so_Table_set_ExternalFile(so_Table *self, so_ExternalFile *value);
 so_ExternalFile *so_Table_get_ExternalFile(so_Table *self);
+so_ExternalFile *so_Table_create_ExternalFile(so_Table *self);
 
 #endif

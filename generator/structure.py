@@ -61,7 +61,7 @@ structure = {
     },
     'RawResults' : {
         'children' : [
-            { 'name' : 'DataFile', 'type' : 'ExternalFile', 'array' : True },
+            { 'name' : 'DataFile', 'type' : 'Table', 'array' : True },
             { 'name' : 'GraphicsFile', 'type' : 'ExternalFile', 'array' : True },
         ],
         'xpath' : 'SO/SOBlock/RawResults'

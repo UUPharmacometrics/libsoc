@@ -22,6 +22,7 @@
 #include <so.h>
 #include <so/private/SO.h>
 #include <so/private/SOBlock.h>
+#include <so/Table.h>
 
 void so_SOBlock_add_rawresults_datafile(so_SOBlock *self, char *description, char *path, char *oid)
 {
@@ -31,15 +32,16 @@ void so_SOBlock_add_rawresults_datafile(so_SOBlock *self, char *description, cha
 
     so_RawResults *rr = self->RawResults;
 
-    so_ExternalFile *df = so_RawResults_create_DataFile(rr);
+    so_Table *df = so_RawResults_create_DataFile(rr);
+    so_ExternalFile *ext = so_Table_create_ExternalFile(df);
 
-    so_ExternalFile_set_oid(df, oid);
+    so_ExternalFile_set_oid(ext, oid);
 
     if (description) {
-        so_ExternalFile_set_Description(df, description);
+        so_ExternalFile_set_Description(ext, description);
     }
     if (path) {
-        so_ExternalFile_set_path(df, path);
+        so_ExternalFile_set_path(ext, path);
     }
 }
 
