@@ -182,15 +182,9 @@ structure = {
             { 'name' : 'StandardError', 'type' : 'Table' },
             { 'name' : 'RelativeStandardError', 'type' : 'Table' },
             { 'name' : 'AsymptoticCI', 'type' : 'Table' },
-            { 'name' : 'ConditionNumber', 'type' : 'ConditionNumber' },
+            { 'name' : 'ConditionNumber', 'type' : 'type_real' },
         ],
         'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates/MLE' 
-    },
-    'ConditionNumber' : {
-        'children' : [
-            { 'name' : 'Real', 'type' : 'type_real', 'prefix' : 'ct' },
-        ],
-        'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates/ConditionNumber'
     },
     'IndividualEstimates' : {
         'children' : [
