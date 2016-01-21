@@ -103,16 +103,19 @@ structure = {
         'children' : [
             { 'name' : 'MLE', 'type' : 'Table' },
             { 'name' : 'Bayesian', 'type' : 'Bayesian' },
-            { 'name' : 'Bootstrap', 'type' : 'Bootstrap' }
+            { 'name' : 'OtherMethod', 'type' : 'OtherMethod' }
         ],
         'xpath' : 'SO/SOBlock/Estimation/PopulationEstimates'
     },
-    'Bootstrap' : {
+    'OtherMethod' : {
         'children' : [
             { 'name' : 'Mean', 'type' : 'Table' },
             { 'name' : 'Median', 'type' : 'Table' }
         ],
-        'xpath' : 'SO/SOBlock/Estimation/PopulationEstimates/Bootstrap'
+        'attributes' : [
+            'method'
+        ],
+        'xpath' : 'SO/SOBlock/Estimation/PopulationEstimates/OtherMethod'
     },
     'Bayesian' : {
         'children' : [
@@ -126,8 +129,20 @@ structure = {
         'children' : [
             { 'name' : 'MLE', 'type' : 'MLE' },
             { 'name' : 'Bayesian', 'type' : 'Bayesian_PPE' },
+            { 'name' : 'OtherMethod', 'type' : 'OtherMethod_PPE' },
         ],
         'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates'
+    },
+    'OtherMethod_PPE' : {
+        'children' : [
+            { 'name' : 'CovarianceMatrix', 'type' : 'Matrix' },
+            { 'name' : 'CorrelationMatrix', 'type' : 'Matrix' },
+            { 'name' : 'StandardDeviation', 'type' : 'Table' },
+            { 'name' : 'StandardError', 'type' : 'Table' },
+            { 'name' : 'AsymptoticCI', 'type' : 'Table' },
+            { 'name' : 'PercentilesCI', 'type' : 'Table' },
+        ],
+        'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates/OtherMethod'
     },
     'Bayesian_PPE' : {
         'element_name' : 'Bayesian',
@@ -223,11 +238,11 @@ structure = {
     },
     'ExternalFile' : {
         'children' : [
+            { 'name' : 'Description' , 'type' : 'type_string', 'prefix' : 'ct' },
             { 'name' : 'path', 'type' : 'type_string', 'prefix' : 'ds' },
             { 'name' : 'format', 'type' : 'type_string', 'prefix' : 'ds' },
             { 'name' : 'delimiter', 'type' : 'type_string', 'prefix' : 'ds' },
             { 'name' : 'MissingData', 'type' : 'MissingData', 'array' : True, 'prefix' : 'ds' }, 
-            { 'name' : 'Description' , 'type' : 'type_string', 'prefix' : 'ct' },
         ],
         'attributes' : [
             'oid'

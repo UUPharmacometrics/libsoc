@@ -387,21 +387,28 @@ so_ExternalFile *so_Table_create_ExternalFile(so_Table *self)
 	return obj;
 }
 
+void so_Table_set_write_external_file(so_Table *self, int write_external_file)
+{
+    self->write_external_file = write_external_file;
+}
+
 so_xml so_Table_xml(so_Table *self, char *element_name)
 {
     xmlNodePtr xml = xmlNewNode(NULL, BAD_CAST element_name);
 
-    xmlNodePtr def = xmlNewChild(xml, NULL, BAD_CAST "ds:Definition", NULL);
 
     char temp_colnum[10];
 
-    for (int i = 0; i < self->numcols; i++) {
-        xmlNodePtr col = xmlNewChild(def, NULL, BAD_CAST "ds:Column", NULL);
-        xmlNewProp(col, BAD_CAST "columnId", BAD_CAST self->columns[i]->columnId);
-        xmlNewProp(col, BAD_CAST "columnType", BAD_CAST pharmml_columnType_to_string(self->columns[i]->columnType));
-        xmlNewProp(col, BAD_CAST "valueType", BAD_CAST pharmml_valueType_to_string(self->columns[i]->valueType));
-        snprintf(temp_colnum, 10, "%d", i + 1);
-        xmlNewProp(col, BAD_CAST "columnNum", BAD_CAST temp_colnum);
+    if (self->numcols > 0) {
+        xmlNodePtr def = xmlNewChild(xml, NULL, BAD_CAST "ds:Definition", NULL);
+        for (int i = 0; i < self->numcols; i++) {
+            xmlNodePtr col = xmlNewChild(def, NULL, BAD_CAST "ds:Column", NULL);
+            xmlNewProp(col, BAD_CAST "columnId", BAD_CAST self->columns[i]->columnId);
+            xmlNewProp(col, BAD_CAST "columnType", BAD_CAST pharmml_columnType_to_string(self->columns[i]->columnType));
+            xmlNewProp(col, BAD_CAST "valueType", BAD_CAST pharmml_valueType_to_string(self->columns[i]->valueType));
+            snprintf(temp_colnum, 10, "%d", i + 1);
+            xmlNewProp(col, BAD_CAST "columnNum", BAD_CAST temp_colnum);
+        }
     }
 
     if (!self->ExternalFile) {
@@ -439,52 +446,54 @@ so_xml so_Table_xml(so_Table *self, char *element_name)
         xmlNodePtr ext = so_ExternalFile_xml(self->ExternalFile, "ds:ExternalFile");
         xmlAddChild(xml, ext);
 
-        char *delimiter_string;
-        if (strcmp(self->ExternalFile->delimiter, "COMMA") == 0) {
-            delimiter_string = ",";
-        } else if (strcmp(self->ExternalFile->delimiter, "SPACE") == 0) {
-            delimiter_string = " ";
-        } else if (strcmp(self->ExternalFile->delimiter, "TAB")  == 0) {
-            delimiter_string = "\t";
-        } else if (strcmp(self->ExternalFile->delimiter, "SEMICOLON") == 0) {
-            delimiter_string = ";";
-        }
-        FILE *fp = fopen(self->ExternalFile->path, "w");
+        if (self->write_external_file) {
+            char *delimiter_string;
+            if (strcmp(self->ExternalFile->delimiter, "COMMA") == 0) {
+                delimiter_string = ",";
+            } else if (strcmp(self->ExternalFile->delimiter, "SPACE") == 0) {
+                delimiter_string = " ";
+            } else if (strcmp(self->ExternalFile->delimiter, "TAB")  == 0) {
+                delimiter_string = "\t";
+            } else if (strcmp(self->ExternalFile->delimiter, "SEMICOLON") == 0) {
+                delimiter_string = ";";
+            }
+            FILE *fp = fopen(self->ExternalFile->path, "w");
 
-        for (int i = 0; i < self->numrows; i++) {
-            for (int j = 0; j < self->numcols; j++) {
-                char *value_string;
-                if (self->columns[j]->valueType == PHARMML_VALUETYPE_REAL) {
-                    double *ptr = (double *) self->columns[j]->column;
-                    value_string = pharmml_double_to_string(ptr[i]);
-                } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_INT) {
-                    int *ptr = (int *) self->columns[j]->column;
-                    value_string = pharmml_int_to_string(ptr[i]);
-                } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_STRING || self->columns[j]->valueType == PHARMML_VALUETYPE_ID) {
-                    char **ptr = (char **) self->columns[j]->column;
-                    value_string = ptr[i];
-                } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_BOOLEAN) {
-                    bool *ptr = (bool *) self->columns[j]->column;
-                    if (ptr[i]) {
-                        value_string = "True";
-                    } else {
-                        value_string = "False";
+            for (int i = 0; i < self->numrows; i++) {
+                for (int j = 0; j < self->numcols; j++) {
+                    char *value_string;
+                    if (self->columns[j]->valueType == PHARMML_VALUETYPE_REAL) {
+                        double *ptr = (double *) self->columns[j]->column;
+                        value_string = pharmml_double_to_string(ptr[i]);
+                    } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_INT) {
+                        int *ptr = (int *) self->columns[j]->column;
+                        value_string = pharmml_int_to_string(ptr[i]);
+                    } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_STRING || self->columns[j]->valueType == PHARMML_VALUETYPE_ID) {
+                        char **ptr = (char **) self->columns[j]->column;
+                        value_string = ptr[i];
+                    } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_BOOLEAN) {
+                        bool *ptr = (bool *) self->columns[j]->column;
+                        if (ptr[i]) {
+                            value_string = "True";
+                        } else {
+                            value_string = "False";
+                        }
+                    }
+
+                    fprintf(fp, "%s", value_string);
+                    if (j != self->numcols - 1) {
+                        fprintf(fp, "%s", delimiter_string);
+                    }
+
+                    if (self->columns[j]->valueType == PHARMML_VALUETYPE_REAL || self->columns[j]->valueType == PHARMML_VALUETYPE_INT) {
+                        free(value_string);
                     }
                 }
-
-                fprintf(fp, "%s", value_string);
-                if (j != self->numcols - 1) {
-                    fprintf(fp, "%s", delimiter_string);
-                }
-
-                if (self->columns[j]->valueType == PHARMML_VALUETYPE_REAL || self->columns[j]->valueType == PHARMML_VALUETYPE_INT) {
-                    free(value_string);
-                }
+                fprintf(fp, "\n");
             }
-            fprintf(fp, "\n");
-        }
 
-        fclose(fp);
+            fclose(fp);
+        }
     }
 
     return xml;
@@ -502,10 +511,16 @@ int so_Table_start_element(so_Table *table, const char *localname, int nb_attrib
     } else if (strcmp("Table", localname) == 0) {
         table->in_table = 1;
     } else if (strcmp("ExternalFile", localname) == 0) {
-		so_ExternalFile *ExternalFile = so_Table_create_ExternalFile(table);
-		if (!ExternalFile) {
+ 		so_ExternalFile *ext_file = so_ExternalFile_new();
+		if (!ext_file) {
 			return 1;
 		}
+		int fail = so_ExternalFile_init_attributes(ext_file, nb_attributes, attributes);
+		if (fail) {
+			so_ExternalFile_free(ext_file);
+			return 1;
+		}
+        table->ExternalFile = ext_file;
         table->in_externalfile = 1;
     } else if (table->in_definition && strcmp("Column", localname) == 0) {
         so_Column *col = so_Column_new();

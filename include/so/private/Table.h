@@ -26,6 +26,7 @@
 struct so_Table {
     so_Column **columns;
     so_ExternalFile *ExternalFile;
+    int write_external_file;
     int numcols;
     int numrows;
     int current_column;
