@@ -340,7 +340,11 @@ def print_accessors(name, struct):
                 print("\t\t\t\ta = list()")
                 print("\t\t\t\tfor (i in seq.int(1, n)) {")
                 print("\t\t\t\t\tchild = so_", name, "_get_", child['name'], "(.self$.cobj, i - 1L)", sep='')
-                print("\t\t\t\t\ta[i] = so_", child['type'], "$new(cobj=child)", sep='')
+                if child['type'] == 'Table':
+                    print("\t\t\t\t\ta[i] = child")
+                else:
+                    print("\t\t\t\t\ta[i] = so_", child['type'], "$new(cobj=child)", sep='')
+                    print("\t\t\t\t\tso_", child['type'], "_ref(child)", sep='')
                 print("\t\t\t\t}")
                 print("\t\t\t\treturn(a)")
                 print("\t\t\t}")
@@ -349,6 +353,7 @@ def print_accessors(name, struct):
             else:
                 print("\t\t\tchild = so_", name, "_get_", child['name'], "(.self$.cobj)", sep='')
                 print("\t\t\tif (!isnull(child)) {")
+                print("\t\t\t\tso_", child['type'], "_ref(child)", sep='')
                 print("\t\t\t\tso_", child['type'], "$new(cobj=child)", sep='')
                 print("\t\t\t}")
 
@@ -399,7 +404,7 @@ def print_classes(name, struct):
     print("\t\t\t}")
     print("\t\t},")
     print("\t\tfinalize = function() {")
-    #print("\t\t\tso_", name, "_unref(.self$.cobj)", sep='')
+    print("\t\t\tso_", name, "_unref(.self$.cobj)", sep='')
     print("\t\t}", end='')
     if 'children' in struct:
         for child in struct['children']:
