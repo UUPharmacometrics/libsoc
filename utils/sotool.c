@@ -19,9 +19,9 @@ void usage()
 {
     printf("Usage: sotool <command> <cmd-options>\n"
             "Where <command> is one of:\n"
-            "    merge <dest> <source files> -- merge SOBlocks from multiple files into one file\n"
-            "    pretty <file> -- pretty print an so\n"
-            "    validate <file> -- validate an so file against schema\n"
+            "    merge <dest> <source files> -- Merge SOBlocks from multiple files into one file\n"
+            "    pretty <file>               -- Pretty print an so\n"
+            "    validate <file>             -- Validate an so file against schema\n"
           );
     exit(0);
 }
