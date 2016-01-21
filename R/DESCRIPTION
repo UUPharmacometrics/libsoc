@@ -1,6 +1,6 @@
 Package: libsoc
-Version: 0.2
-Date: 2015-12-18
+Version: 0.3
+Date: 2016-01-21
 Title: A package to handle PharmML standardized output (SO) xml files
 Author: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
 Maintainer: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
