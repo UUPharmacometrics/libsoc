@@ -88,7 +88,7 @@ int pharmml_valueType_to_size(pharmml_valueType valtype)
     if (valtype == PHARMML_VALUETYPE_REAL) {
         return sizeof(double);
     } else if (valtype == PHARMML_VALUETYPE_INT) {
-        return sizeof(long int);
+        return sizeof(int);
     } else if (valtype == PHARMML_VALUETYPE_STRING || valtype == PHARMML_VALUETYPE_ID) {
         return sizeof(char *);
     } else if (valtype == PHARMML_VALUETYPE_BOOLEAN) {
