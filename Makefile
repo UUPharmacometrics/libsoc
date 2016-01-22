@@ -71,6 +71,7 @@ clean:
 	cd generator; python3 generate.py clean
 	rm -rf generator/__pycache__
 	rm -f fortran/libsoc.mod
+	rm -f fortran/libsoc.f03
 	rm -f fortran/test
 	rm -f utils/sotool
 

@@ -8,7 +8,6 @@ program main
     type(so_RawResults) :: rr
     type(so_ExternalFile) :: df
     type(so_TaskInformation) :: ti
-    type(so_RunTime) :: rt
     type(so_Estimation) :: est
     type(so_PrecisionPopulationEstimates) :: ppe
     type(so_PopulationEstimates) :: pe
@@ -35,16 +34,15 @@ program main
     block = so_SO_get_SOBlock(my_so, 0)
     rr = so_SOBlock_get_RawResults(block)
     numdf = so_RawResults_get_number_of_DataFile(rr)
-    do i = 0, numdf - 1
-        df = so_RawResults_get_DataFile(rr, i)
-        path => so_ExternalFile_get_path(df)
-        print *, path
-    end do
+!    do i = 0, numdf - 1
+!        df = so_RawResults_get_DataFile(rr, i)
+!        path => so_ExternalFile_get_path(df)
+!        print *, path
+!    end do
 
     ! Print RunTime
     ti = so_SOBlock_get_TaskInformation(block)
-    rt = so_TaskInformation_get_RunTime(ti)
-    time => so_RunTime_get_Real(rt)
+    time => so_TaskInformation_get_RunTime(ti)
     if (.NOT. associated(time)) then
         print *, "no time!"
     else
