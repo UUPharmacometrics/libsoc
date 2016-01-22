@@ -41,6 +41,9 @@ so_Matrix_free <- function(self) {
 
 so_SO$methods(
     write = function(filename, pretty=TRUE) {
-        invisible(so_SO_write(.self$.cobj, filename, ifelse(pretty, 1L, 0L)))
+        fail = so_SO_write(.self$.cobj, filename, ifelse(pretty, 1L, 0L))
+        if (fail != 0) {
+            stop(paste0("Could not write to file ", filename))
+        }
     }
 )

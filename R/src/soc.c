@@ -41,8 +41,14 @@ SEXP r_so_SO_write(SEXP so, SEXP filename, SEXP pretty)
     const char *c_filename = CHAR(STRING_ELT(filename, 0));
     int c_pretty = INTEGER(pretty)[0];
 
-    so_SO_write(c_so, (char *) c_filename, c_pretty);
-    return R_NilValue;
+    int fail = so_SO_write(c_so, (char *) c_filename, c_pretty);
+
+    SEXP ret;
+    PROTECT(ret = NEW_INTEGER(1));
+    INTEGER_POINTER(ret)[0] = fail;
+    UNPROTECT(1);
+
+    return ret;
 }
 
 SEXP r_so_Table_free(SEXP self)

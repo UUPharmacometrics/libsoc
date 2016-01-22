@@ -101,9 +101,10 @@ so_SO *so_SO_read(char *filename)
  * \param self - The SO to write
  * \param filename - the file to write to
  * \param pretty - 1 for nice indentation, 0 for compact
+ * \return - 0 if no error
  * \sa so_SO_read
  */
-void so_SO_write(so_SO *self, char *filename, int pretty)
+int so_SO_write(so_SO *self, char *filename, int pretty)
 {
     xmlDocPtr doc = xmlNewDoc(BAD_CAST "1.0");
 
@@ -120,9 +121,15 @@ void so_SO_write(so_SO *self, char *filename, int pretty)
 
     xmlDocSetRootElement(doc, root);
 
-    xmlSaveFormatFileEnc(filename, doc, "UTF-8", pretty);
+    int fail = xmlSaveFormatFileEnc(filename, doc, "UTF-8", pretty);
 
     xmlFreeDoc(doc);
+
+    if (fail == -1) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 /** \memberof so_SO
