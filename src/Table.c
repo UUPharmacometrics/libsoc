@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
 #include <libxml/SAX.h>
 #include <libxml/tree.h>
 
@@ -397,7 +398,6 @@ so_xml so_Table_xml(so_Table *self, char *element_name)
 {
     xmlNodePtr xml = xmlNewNode(NULL, BAD_CAST element_name);
 
-
     char temp_colnum[10];
 
     if (self->numcols > 0) {
@@ -418,9 +418,19 @@ so_xml so_Table_xml(so_Table *self, char *element_name)
             xmlNodePtr row = xmlNewChild(tab, NULL, BAD_CAST "ds:Row", NULL);
             for (int j = 0; j < self->numcols; j++) {
                 char *value_string;
+                char *special_string = NULL;
                 if (self->columns[j]->valueType == PHARMML_VALUETYPE_REAL) {
                     double *ptr = (double *) self->columns[j]->column;
-                    value_string = pharmml_double_to_string(ptr[i]);
+                    double number = ptr[i];
+                    if (isinf(number)) {
+                        if (number > 0) {
+                            special_string = "ct:plusInf";
+                        } else {
+                            special_string = "ct:minusInf";
+                        }
+                    } else {
+                        value_string = pharmml_double_to_string(number);
+                    }
                 } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_INT) {
                     int *ptr = (int *) self->columns[j]->column;
                     value_string = pharmml_int_to_string(ptr[i]);
@@ -435,6 +445,8 @@ so_xml so_Table_xml(so_Table *self, char *element_name)
                     } else {
                         xmlNewChild(row, NULL, BAD_CAST "ct:False", NULL);
                     }
+                } else if (special_string) {
+                    xmlNewChild(row, NULL, BAD_CAST special_string, NULL);
                 } else {
                     xmlNewChild(row, NULL, BAD_CAST pharmml_valueType_to_element(self->columns[j]->valueType), BAD_CAST value_string);
                     if (self->columns[j]->valueType == PHARMML_VALUETYPE_REAL || self->columns[j]->valueType == PHARMML_VALUETYPE_INT) {
@@ -600,6 +612,20 @@ int so_Table_start_element(so_Table *table, const char *localname, int nb_attrib
                 return 1;
             }
             table->current_column++;
+        }
+    } else if (table->in_row && strcmp("plusInf", localname) == 0) {
+        so_Column *column = table->columns[table->current_column];
+        table->current_column++;
+        int fail = so_Column_add_real(column, INFINITY);
+        if (fail) {
+            return 1;
+        }
+    } else if (table->in_row && strcmp("minusInf", localname) == 0) {
+        so_Column *column = table->columns[table->current_column];
+        table->current_column++;
+        int fail = so_Column_add_real(column, -INFINITY);
+        if (fail) {
+            return 1;
         }
     }
 
