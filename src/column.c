@@ -18,6 +18,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <so/private/column.h>
+#include <pharmml/string.h>
 
 so_Column *so_Column_new()
 {

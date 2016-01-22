@@ -22,6 +22,7 @@
 #include <so/Matrix.h>
 #include <so/private/Matrix.h>
 #include <pharmml/common_types.h>
+#include <pharmml/string.h>
 
 /** \struct so_Matrix
 	 \brief A structure representing a matrix

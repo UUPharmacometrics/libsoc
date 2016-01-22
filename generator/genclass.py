@@ -60,6 +60,7 @@ class genclass:
         print("#include <string.h>", file=f)
         print("#include <libxml/tree.h>", file=f)
         print("#include <pharmml/common_types.h>", file=f)
+        print("#include <pharmml/string.h>", file=f)
         print('#include <so/', self.name, '.h>', sep='', file=f)
         print('#include <so/private/', self.name, '.h>', sep='', file=f)
         print(file=f)

@@ -24,6 +24,7 @@
 #include <so/Table.h>
 #include <so/private/Table.h>
 #include <pharmml/common_types.h>
+#include <pharmml/string.h>
 #include <so/private/column.h>
 #include <so/ExternalFile.h>
 #include <so/private/ExternalFile.h>
