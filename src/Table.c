@@ -422,7 +422,9 @@ so_xml so_Table_xml(so_Table *self, char *element_name)
                 if (self->columns[j]->valueType == PHARMML_VALUETYPE_REAL) {
                     double *ptr = (double *) self->columns[j]->column;
                     double number = ptr[i];
-                    if (isinf(number)) {
+                    if (pharmml_is_na(number)) {
+                        special_string = "ct:NA";
+                    } else if (isinf(number)) {
                         if (number > 0) {
                             special_string = "ct:plusInf";
                         } else {
@@ -624,6 +626,13 @@ int so_Table_start_element(so_Table *table, const char *localname, int nb_attrib
         so_Column *column = table->columns[table->current_column];
         table->current_column++;
         int fail = so_Column_add_real(column, -INFINITY);
+        if (fail) {
+            return 1;
+        }
+    } else if (table->in_row && strcmp("NA", localname) == 0) {
+        so_Column *column = table->columns[table->current_column];
+        table->current_column++;
+        int fail = so_Column_add_real(column, pharmml_na());
         if (fail) {
             return 1;
         }
