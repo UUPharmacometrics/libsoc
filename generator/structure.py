@@ -26,15 +26,24 @@ need_name = [
 structure = {
     'SO' : {
         'children' : [
+            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
             { 'name' : 'PharmMLRef', 'type' : 'PharmMLRef' },
             { 'name' : 'SOBlock', 'type' : 'SOBlock', 'array' : True },
+        ],
+        'attributes' : [
+            'id',
+            'metadataFile'
         ],
         'xpath' : 'SO',
         'fields' : [ 'int error;' ]
     },
     'PharmMLRef' : {
+        'children' : [
+            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+        ],
         'attributes' : [
-            'name'
+            'name',
+            'id'
         ],
         'xpath' : 'SO/PharmMLRef'
     },

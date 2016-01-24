@@ -35,7 +35,11 @@ void so_SO_on_start_element(void *ctx, const xmlChar *localname, const xmlChar *
 {
     char *name = (char *) localname;
     so_SO *so = (so_SO *) ctx;
-    so->error = so_SO_start_element(so, name, nb_attributes, (const char **) attributes);
+    if (strcmp("SO", name) == 0) {
+        so_SO_init_attributes(so, nb_attributes, (const char **) attributes);
+    } else {
+        so->error = so_SO_start_element(so, name, nb_attributes, (const char **) attributes);
+    }
 }
 
 void so_SO_on_end_element(void *ctx, const xmlChar *localname, const xmlChar *prefix, const xmlChar *URI)
@@ -117,7 +121,6 @@ int so_SO_write(so_SO *self, char *filename, int pretty)
     xmlNewProp(root, BAD_CAST "xsi:schemaLocation", BAD_CAST "http://www.pharmml.org/so/0.3/StandardisedOutput");
     xmlNewProp(root, BAD_CAST "implementedBy", BAD_CAST "MJS");
     xmlNewProp(root, BAD_CAST "writtenVersion", BAD_CAST "0.3");
-    xmlNewProp(root, BAD_CAST "id", BAD_CAST "i1");
 
     xmlDocSetRootElement(doc, root);
 
