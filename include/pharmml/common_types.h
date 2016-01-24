@@ -41,5 +41,6 @@ pharmml_valueType pharmml_string_to_valueType(const char *str);
 int pharmml_valueType_to_size(pharmml_valueType valtype);
 double pharmml_na();
 int pharmml_is_na(double x);
+double pharmml_nan();
 
 #endif

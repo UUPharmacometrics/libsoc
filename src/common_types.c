@@ -99,6 +99,7 @@ int pharmml_valueType_to_size(pharmml_valueType valtype)
 }
 
 #define PHARMML_NA 0x7FF00000000007A2ULL 
+#define PHARMML_NAN 0x7FF0000000000001ULL 
 
 union pharmml_double {
     double x;
@@ -120,4 +121,13 @@ int pharmml_is_na(double x)
     my_double.x = x;
 
     return my_double.y == PHARMML_NA;
+}
+
+double pharmml_nan()
+{
+    union pharmml_double my_double;
+
+    my_double.y = PHARMML_NAN;
+
+    return my_double.x;
 }

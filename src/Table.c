@@ -424,6 +424,8 @@ so_xml so_Table_xml(so_Table *self, char *element_name)
                     double number = ptr[i];
                     if (pharmml_is_na(number)) {
                         special_string = "ct:NA";
+                    } else if (isnan(number)) {
+                        special_string = "ct:NaN";
                     } else if (isinf(number)) {
                         if (number > 0) {
                             special_string = "ct:plusInf";
@@ -633,6 +635,13 @@ int so_Table_start_element(so_Table *table, const char *localname, int nb_attrib
         so_Column *column = table->columns[table->current_column];
         table->current_column++;
         int fail = so_Column_add_real(column, pharmml_na());
+        if (fail) {
+            return 1;
+        }
+    } else if (table->in_row && strcmp("NaN", localname) == 0) {
+        so_Column *column = table->columns[table->current_column];
+        table->current_column++;
+        int fail = so_Column_add_real(column, pharmml_nan());
         if (fail) {
             return 1;
         }
