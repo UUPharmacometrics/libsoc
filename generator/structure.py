@@ -31,8 +31,8 @@ structure = {
             { 'name' : 'SOBlock', 'type' : 'SOBlock', 'array' : True },
         ],
         'attributes' : [
-            'id',
-            'metadataFile'
+            { 'name' : 'id', 'type' : 'type_string' },
+            { 'name' : 'metadataFile', 'type' : 'type_string' },
         ],
         'xpath' : 'SO',
         'fields' : [ 'int error;' ]
@@ -42,8 +42,8 @@ structure = {
             { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
         ],
         'attributes' : [
-            'name',
-            'id'
+            { 'name' : 'name', 'type' : 'type_string' },
+            { 'name' : 'id', 'type' : 'type_string' },
         ],
         'xpath' : 'SO/PharmMLRef'
     },
@@ -58,7 +58,7 @@ structure = {
             { 'name' : 'OptimalDesign', 'type' : 'OptimalDesign' },
         ],
         'attributes' : [
-            'blkId'
+            { 'name' : 'blkId', 'type' : 'type_string' },
         ],
         'xpath' : 'SO/SOBlock'
     },
@@ -93,7 +93,7 @@ structure = {
             { 'name' : 'Severity', 'type' : 'type_int' },
         ],
         'attributes' : [
-            'type'
+            { 'name' : 'type', 'type' : 'type_string' },
         ],
         'xpath' : 'SO/SOBlock/TaskInformation/Message'
     },
@@ -122,7 +122,7 @@ structure = {
             { 'name' : 'Median', 'type' : 'Table' }
         ],
         'attributes' : [
-            'method'
+            { 'name': 'method', 'type' : 'type_string' },
         ],
         'xpath' : 'SO/SOBlock/Estimation/PopulationEstimates/OtherMethod'
     },
@@ -233,15 +233,15 @@ structure = {
             { 'name' : 'RawResultsFile', 'type' : 'ExternalFile' },
         ],
         'attributes' : [
-            'replicate'
+            { 'name' : 'replicate', 'type' : 'type_int' },
         ],
         'xpath' : 'SO/SOBlock/Simulation/SimulationBlock'
     },
     'SimulationSubType' : {
         'extends' : 'Table',
         'attributes' : [
-            'name',
-            'extFileNo'
+            { 'name' : 'name', 'type' : 'type_string' },
+            { 'name' : 'extFileNo', 'type' : 'type_int' },
         ],
         'xpath' : 'SimulationSubType'
     },
@@ -254,15 +254,15 @@ structure = {
             { 'name' : 'MissingData', 'type' : 'MissingData', 'array' : True, 'prefix' : 'ds' }, 
         ],
         'attributes' : [
-            'oid'
+            { 'name' : 'oid', 'type' : 'type_string' },
         ],
         'xpath' : 'ExternalFile'
     },
     'MissingData' : {
-        'attributes' : {
-            'dataCode',
-            'missingDataType'
-        },
+        'attributes' : [
+            { 'name' : 'dataCode', 'type' : 'type_string' },
+            { 'name' : 'missingDataType', 'type' : 'type_string' },
+        ],
         'xpath' : 'MissingData'
     },
     'OptimalDesign' : {
@@ -270,7 +270,7 @@ structure = {
             { 'name' : 'OptimalDesignBlock', 'type' : 'OptimalDesignBlock', 'array' : True },
         ],
         'attributes' : [
-            'type'
+            { 'name' : 'type', 'type' : 'type_string' },
         ],
         'xpath' : 'SO/SOBlock/OptimalDesign'
     },
@@ -285,7 +285,7 @@ structure = {
             { 'name' : 'Design', 'type' : 'ExternalFile' },
         ],
         'attributes' : [
-            'blockNumber'
+            { 'name' : 'blockNumber', 'type' : 'type_int' },
         ],
         'xpath' : 'SO/SOBlock/OptimalDesign/OptimalDesignBlock'
     },

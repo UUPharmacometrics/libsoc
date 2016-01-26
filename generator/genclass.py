@@ -111,11 +111,19 @@ class genclass:
             print("\t\t}", file=f)
         if self.attributes:
             for attr in self.attributes:
-                print("\t\tdest->", attr, " = pharmml_strdup(self->", attr, ");", sep='', file=f)
-                print("\t\tif (!dest->", attr, ") {", sep='', file=f)
-                print("\t\t\tso_", self.name, "_free(dest);", sep='', file=f)
-                print("\t\t\treturn NULL;", file=f)
-                print("\t\t}", file=f)
+                if attr['type'] == "type_string":
+                    print("\t\tdest->", attr['name'], " = pharmml_strdup(self->", attr['name'], ");", sep='', file=f)
+                    print("\t\tif (!dest->", attr['name'], ") {", sep='', file=f)
+                    print("\t\t\tso_", self.name, "_free(dest);", sep='', file=f)
+                    print("\t\t\treturn NULL;", file=f)
+                    print("\t\t}", file=f)
+                elif attr['type'] == "type_int":
+                    print("\t\tif (self->", attr['name'], ") {", sep='', file=f)
+                    print("\t\t\tdest->", attr['name'], "_number = self->", attr['name'], "_number;", sep='', file=f)
+                    print("\t\t\tdest->", attr['name'], " = &(dest->", attr['name'], "_number);", sep='', file=f)
+                    print("\t\t} else {", file=f)
+                    print("\t\t\tdest->", attr['name'], " = NULL;", sep='', file=f)
+                    print("\t\t}", file=f)
         if self.children:
             for e in self.children:
                 if e.get('array', False):
@@ -172,7 +180,8 @@ class genclass:
                         print("\t\tso_", e['type'], "_unref(self->", e['name'], ");", sep='', file=f)
         if self.attributes:
             for a in self.attributes:
-                print("\t\tif (self->", a, ") free(self->", a, ");", sep='', file=f)
+                if a['type'] == 'type_string':
+                    print("\t\tif (self->", a['name'], ") free(self->", a['name'], ");", sep='', file=f)
         if self.extends:
             print("\t\tfree(self->base);", file=f)
         print("\t\tfree(self);", file=f)
@@ -203,11 +212,18 @@ class genclass:
         # getters for attributes
         if self.attributes:
             for a in self.attributes:
-                print("char *so_", self.name, "_get_", a, "(so_", self.name, " *self)", sep='', file=f)
-                print("{", file=f)
-                print("\treturn self->", a, ";", sep='', file=f)
-                print("}", file=f)
-                print(file=f)
+                if a['type'] == 'type_string':
+                    print("char *so_", self.name, "_get_", a['name'], "(so_", self.name, " *self)", sep='', file=f)
+                    print("{", file=f)
+                    print("\treturn self->", a['name'], ";", sep='', file=f)
+                    print("}", file=f)
+                    print(file=f)
+                elif a['type'] == 'type_int':
+                    print("int *so_", self.name, "_get_", a['name'], "(so_", self.name, " *self)", sep='', file=f)
+                    print("{", file=f)
+                    print("\treturn self->", a['name'], ";", sep='', file=f)
+                    print("}", file=f)
+                    print(file=f)
 
         # getters for child elements
         if self.children:
@@ -252,18 +268,30 @@ class genclass:
         # setters for attributes
         if self.attributes:
             for a in self.attributes:
-                print("int so_", self.name, "_set_", a, "(so_", self.name, " *self, char *value)", sep='', file=f)
-                print("{", file=f)
-                print("\tchar *new_value = pharmml_strdup(value);", file=f)
-                print("\tif (new_value) {", file=f)
-                print("\t\tfree(self->", a, ");", sep='', file=f)
-                print("\t\tself->", a, " = new_value;", sep='', file=f)
-                print("\t\treturn 0;", file=f)
-                print("\t} else {", file=f)
-                print("\t\treturn 1;", file=f)
-                print("\t}", file=f)
-                print("}", file=f)
-                print(file=f)
+                if a['type'] == 'type_string':
+                    print("int so_", self.name, "_set_", a['name'], "(so_", self.name, " *self, char *value)", sep='', file=f)
+                    print("{", file=f)
+                    print("\tchar *new_value = pharmml_strdup(value);", file=f)
+                    print("\tif (new_value) {", file=f)
+                    print("\t\tfree(self->", a['name'], ");", sep='', file=f)
+                    print("\t\tself->", a['name'], " = new_value;", sep='', file=f)
+                    print("\t\treturn 0;", file=f)
+                    print("\t} else {", file=f)
+                    print("\t\treturn 1;", file=f)
+                    print("\t}", file=f)
+                    print("}", file=f)
+                    print(file=f)
+                elif a['type'] == 'type_int':
+                    print("void so_", self.name, "_set_", a['name'], "(so_", self.name, " *self, int *value)", sep='', file=f)
+                    print("{", file=f)
+                    print("\tif (value) {", file=f)
+                    print("\t\tself->", a['name'], "_number = *value;", sep='', file=f)
+                    print("\t\tself->", a['name'], " = &(self->", a['name'], "_number);", sep='', file=f)
+                    print("\t} else {", file=f)
+                    print("\t\tself->", a['name'], " = value;", sep='', file=f)
+                    print("\t}", file=f)
+                    print("}", file=f)
+                    print(file=f)
 
         # setters for child elements
         if self.children:
@@ -401,8 +429,14 @@ class genclass:
 
         if self.attributes:
             for a in self.attributes:
-                print('\t\tif (self->', a, ")", sep='', file=f)
-                print('\t\t\txmlNewProp(xml, BAD_CAST "', a, '", BAD_CAST self->', a, ");", sep='', file=f)
+                print('\t\tif (self->', a['name'], ") {", sep='', file=f)
+                if a['type'] == 'type_string':
+                    print('\t\t\txmlNewProp(xml, BAD_CAST "', a['name'], '", BAD_CAST self->', a['name'], ");", sep='', file=f)
+                elif a['type'] == 'type_int':
+                    print("\t\t\tchar *attr_string = pharmml_int_to_string(self->", a['name'], "_number);", sep='', file=f)
+                    print('\t\t\txmlNewProp(xml, BAD_CAST "', a['name'], '", BAD_CAST ', "attr_string);", sep='', file=f)
+                    print("\t\t\tfree(attr_string);", file=f)
+                print("\t\t}", file=f)
 
         if self.children:
             for e in self.children:
@@ -632,11 +666,19 @@ class genclass:
                 else:
                     print('\t\t} else if', end='', file=f)
 
-                print(' (strcmp(localname, "', a, '") == 0) {', sep='', file=f)
-                print("\t\t\tself->", a, " = pharmml_strndup(valueBegin, valueEnd - valueBegin);", sep='', file=f)
-                print("\t\t\tif (!self->", a, ") {", sep='', file=f)
-                print("\t\t\t\treturn 1;", file=f)
-                print("\t\t\t}", file=f)
+                print(' (strcmp(localname, "', a['name'], '") == 0) {', sep='', file=f)
+                if a['type'] == 'type_string':
+                    print("\t\t\tself->", a['name'], " = pharmml_strndup(valueBegin, valueEnd - valueBegin);", sep='', file=f)
+                    print("\t\t\tif (!self->", a['name'], ") {", sep='', file=f)
+                    print("\t\t\t\treturn 1;", file=f)
+                    print("\t\t\t}", file=f)
+                elif a['type'] == 'type_int':
+                    print("\t\t\tchar *final_char = (char *) valueEnd;", file=f)
+                    print("\t\t\tchar end_char = *final_char;", file=f)
+                    print("\t\t\t*final_char = '\\0';", file=f)
+                    print("\t\t\tself->", a['name'], "_number = pharmml_string_to_int(valueBegin);", sep='', file=f)
+                    print("\t\t\tself->", a['name'], " = &(self->", a['name'], "_number);", sep='', file=f)
+                    print("\t\t\t*final_char = end_char;", file=f)
 
             print("\t\t}", file=f)
             print("\t}", file=f)
@@ -704,23 +746,30 @@ class genclass:
             if self.attributes:
                 for a in self.attributes:
                     print("/** \\memberof so_", self.name, sep='', file=f)
-                    print(" * Get the value of the ", a, " attribute", sep='', file=f)
+                    print(" * Get the value of the ", a['name'], " attribute", sep='', file=f)
                     print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
-                    print(" * \\return A pointer to the attribute string", file=f)
-                    print(" * \\sa so_", self.name, "_set_", a, sep='', file=f)
+                    print(" * \\return A pointer to the attribute value", file=f)
+                    print(" * \\sa so_", self.name, "_set_", a['name'], sep='', file=f)
                     print(" */", file=f)
 
-                    print("char *so_", self.name, "_get_", a, "(so_", self.name, " *self);", sep='', file=f)
+                    if a['type'] == 'type_string':
+                        print("char *so_", self.name, "_get_", a['name'], "(so_", self.name, " *self);", sep='', file=f)
+                    elif a['type'] == 'type_int':
+                        print("int *so_", self.name, "_get_", a['name'], "(so_", self.name, " *self);", sep='', file=f)
 
                     print("/** \\memberof so_", self.name, sep='', file=f)
-                    print(" * Set the value of the ", a, " attribute", sep='', file=f)
+                    print(" * Set the value of the ", a['name'], " attribute", sep='', file=f)
                     print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
-                    print(" * \\param value - A pointer to the attribute string", file=f)
-                    print(" * \\return 0 for success", file=f)
-                    print(" * \\sa so_", self.name, "_get_", a, sep='', file=f)
+                    print(" * \\param value - A pointer to the attribute value", file=f)
+                    if a['type'] == 'type_string':
+                        print(" * \\return 0 for success", file=f)
+                    print(" * \\sa so_", self.name, "_get_", a['name'], sep='', file=f)
                     print(" */", file=f)
 
-                    print("int so_", self.name, "_set_", a, "(so_", self.name, " *self, char *value);", sep='', file=f)
+                    if a['type'] == 'type_string':
+                        print("int so_", self.name, "_set_", a['name'], "(so_", self.name, " *self, char *value);", sep='', file=f)
+                    elif a['type'] == 'type_int':
+                        print("void so_", self.name, "_set_", a['name'], "(so_", self.name, " *self, int *value);", sep='', file=f)
 
             if self.children:
                 for e in self.children:
@@ -832,7 +881,11 @@ class genclass:
 
             if self.attributes:
                 for a in self.attributes:
-                    print("\tchar *", a, ";", sep='', file=f) 
+                    if a['type'] == 'type_string':
+                        print("\tchar *", a['name'], ";", sep='', file=f) 
+                    elif a['type'] == 'type_int':
+                        print("\tint *", a['name'], ";", sep='', file=f)
+                        print("\tint ", a['name'], "_number;", sep='', file=f)
 
             if self.children:
                 for e in self.children:

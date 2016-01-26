@@ -22,5 +22,6 @@
 #include <so/SOBlock.h>
 #include <so/soext.h>
 #include <so/SOBlock_ext.h>
+#include <pharmml/string.h>
 
 #endif

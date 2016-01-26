@@ -80,31 +80,41 @@ def print_ref_unref(name):
     print("}")
 
 def print_attribute_getter(name, attr):
-    print("SEXP ", common.create_get_name(name, attr, prefix="r_so"), "(SEXP self)", sep='')
+    print("SEXP ", common.create_get_name(name, attr['name'], prefix="r_so"), "(SEXP self)", sep='')
     print("{")
-    print("\tchar *string = ", common.create_get_name(name, attr, prefix="so"), "(R_ExternalPtrAddr(self));", sep='')
+    if attr['type'] == 'type_string': 
+        print("\tchar *value = ", common.create_get_name(name, attr['name'], prefix="so"), "(R_ExternalPtrAddr(self));", sep='')
+    elif attr['type'] == 'type_int':
+        print("\tint *value = ", common.create_get_name(name, attr['name'], prefix="so"), "(R_ExternalPtrAddr(self));", sep='')
     print()
-    print("\tSEXP r_string;")
+    print("\tSEXP result;")
     print()
-    print("\tif (string) {")
-    print("\t\tr_string = PROTECT(NEW_STRING(1));")
-    print("\t\tSET_STRING_ELT(r_string, 0, mkChar(string));")
+    print("\tif (value) {")
+    if attr['type'] == 'type_string':
+        print("\t\tresult = PROTECT(NEW_STRING(1));")
+        print("\t\tSET_STRING_ELT(result, 0, mkChar(value));")
+    elif attr['type'] == 'type_int':
+        print("\t\tresult = PROTECT(NEW_INTEGER(1));")
+        print("\t\tINTEGER(result)[0] = *value;")
     print()
     print("\t\tUNPROTECT(1);")
     print("\t} else {")
-    print("\t\tr_string = R_NilValue;")
+    print("\t\tresult = R_NilValue;")
     print("\t}")
-    print("\treturn r_string;")
+    print("\treturn result;")
     print("}")
 
 def print_attribute_setter(name, attr):
-    print("SEXP " + common.create_set_name(name, attr, prefix="r_so") + "(SEXP self, SEXP string)", sep='')
+    print("SEXP " + common.create_set_name(name, attr['name'], prefix="r_so") + "(SEXP self, SEXP string)", sep='')
     print("{")
-    print("\tchar *c_string = (char *) CHAR(STRING_ELT(string, 0));")
-    print("\tint fail = ", common.create_set_name(name, attr, prefix="so"), "(R_ExternalPtrAddr(self), c_string);", sep="")
-    print("\tif (fail) {")
-    print("\t\terror(\"", common.create_set_name(name, attr, prefix="so"), " failed\");", sep='')
-    print("\t}")
+    if attr['type'] == 'type_string':
+        print("\tchar *c_string = (char *) CHAR(STRING_ELT(string, 0));")
+        print("\tint fail = ", common.create_set_name(name, attr['name'], prefix="so"), "(R_ExternalPtrAddr(self), c_string);", sep="")
+        print("\tif (fail) {")
+        print("\t\terror(\"", common.create_set_name(name, attr['name'], prefix="so"), " failed\");", sep='')
+        print("\t}")
+    elif attr['type'] == 'type_int':
+        print("\tso_", name, "_set_", attr['name'], "(R_ExternalPtrAddr(self), INTEGER(string));", sep='')
     print()
     print("\treturn R_NilValue;")
     print("}")
@@ -240,12 +250,12 @@ def print_wrapper_functions(name, struct):
     print()
 
     for attr in struct.get('attributes', []):
-        print("so_", name, "_get_", attr, " <- function(self) {", sep='')
-        print("\t.Call(\"r_so_", name, "_get_", attr, "\", self)", sep='')
+        print("so_", name, "_get_", attr['name'], " <- function(self) {", sep='')
+        print("\t.Call(\"r_so_", name, "_get_", attr['name'], "\", self)", sep='')
         print("}")
         print()
-        print("so_", name, "_set_", attr, " <- function(self, value) {", sep='')
-        print("\t.Call(\"r_so_", name, "_set_", attr, "\", self, value)", sep='')
+        print("so_", name, "_set_", attr['name'], " <- function(self, value) {", sep='')
+        print("\t.Call(\"r_so_", name, "_set_", attr['name'], "\", self, value)", sep='')
         print("}")
         print()
 
@@ -292,16 +302,22 @@ def print_wrapper_functions(name, struct):
 def print_accessors(name, struct):
     # attributes
     for attr in struct.get('attributes', []):
-        print(attr, "_acc <- function(value)", sep='')
+        print(attr['name'], "_acc <- function(value)", sep='')
         print("{")
         print("\tif (!isnull(.self$.cobj)) {")
         print("\t\tif (missing(value)) {")
-        print("\t\t\tso_", name, "_get_", attr, "(.self$.cobj)", sep='')
+        print("\t\t\tso_", name, "_get_", attr['name'], "(.self$.cobj)", sep='')
         print("\t\t} else {")
 
-        print("\tstopifnot(is.character(value), length(value) == 1)")
+        if attr['type'] == 'type_string':
+            print("\tstopifnot(is.character(value), length(value) == 1)")
+        elif attr['type'] == 'type_int':
+            print("\tif (is(value, \"numeric\")) {")
+            print("\t\tvalue = as.integer(value)")
+            print("\t}")
+            print("\tstopifnot(is(value, \"integer\"), length(value) == 1)")
 
-        print("\t\t\tso_", name, "_set_", attr, "(.self$.cobj, value)", sep='')
+        print("\t\t\tso_", name, "_set_", attr['name'], "(.self$.cobj, value)", sep='')
         print("\t\t}")
         print("\t}")
         print("}")
@@ -383,7 +399,7 @@ def print_classes(name, struct):
     print("so_", name, " = setRefClass(\"so_", name, "\",", sep='')
     print("\tfields=list(")
     for attr in struct.get('attributes', []):
-        print("\t\t", attr, " = ", attr, "_acc,", sep='')
+        print("\t\t", attr['name'], " = ", attr['name'], "_acc,", sep='')
     if 'children' in struct:
         for child in struct['children']:
             print("\t\t", child['name'], " = ", child['name'], "_acc,", sep='')
@@ -449,7 +465,11 @@ def print_documentation(name, struct):
                     print("A \link{so_", child['type'], "} object\\cr", sep='')
         if 'attributes' in struct:
             for attr in struct['attributes']:
-                print("$", attr, " - A character string attribute\\cr", sep='')
+                if attr['type'] == 'type_string':
+                    print("$", attr['name'], " - A character string attribute\\cr", sep='')
+                elif attr['type'] == 'type_int':
+                    print("$", attr['name'], " - An integer attribute\\cr", sep='')
+
         print("}")
     print("\\keyword{so_", name, "}", sep='')
 
