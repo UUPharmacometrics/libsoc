@@ -27,8 +27,18 @@ double pharmml_string_to_double(const char *str)
 char *pharmml_double_to_string(double x)
 {
     size_t needed = snprintf(NULL, 0, "%f", x) + 1;
+    if (needed <= 0) {
+        return NULL;
+    }
     char *buffer = malloc(needed);
-    snprintf(buffer, needed, "%f", x);
+    if (!buffer) {
+        return NULL;
+    }
+    int err = snprintf(buffer, needed, "%f", x);
+    if (err < 0) {
+        free(buffer);
+        buffer = NULL;
+    } 
     return buffer;
 }
 
@@ -40,8 +50,18 @@ int pharmml_string_to_int(const char *str)
 char *pharmml_int_to_string(int x)
 {
     size_t needed = snprintf(NULL, 0, "%d", x) + 1;
+    if (needed <= 0) {
+        return NULL;
+    }
     char *buffer = malloc(needed);
-    snprintf(buffer, needed, "%d", x);
+    if (!buffer) {
+        return NULL;
+    }
+    int err = snprintf(buffer, needed, "%d", x);
+    if (err < 0) {
+        free(buffer);
+        buffer = NULL;
+    }
     return buffer;
 }
 
