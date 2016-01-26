@@ -118,6 +118,7 @@ int so_SO_write(so_SO *self, char *filename, int pretty)
     xmlNewProp(root, BAD_CAST "xmlns:xsi", BAD_CAST "http://www.w3.org/2001/XMLSchema-instance");
     xmlNewProp(root, BAD_CAST "xmlns:ds", BAD_CAST "http://www.pharmml.org/pharmml/0.8/Dataset");
     xmlNewProp(root, BAD_CAST "xmlns:ct", BAD_CAST "http://www.pharmml.org/pharmml/0.8/CommonTypes");
+    xmlNewProp(root, BAD_CAST "xmlns:po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
     xmlNewProp(root, BAD_CAST "xsi:schemaLocation", BAD_CAST "http://www.pharmml.org/so/0.3/StandardisedOutput");
     xmlNewProp(root, BAD_CAST "implementedBy", BAD_CAST "MJS");
     xmlNewProp(root, BAD_CAST "writtenVersion", BAD_CAST "0.3");
