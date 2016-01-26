@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SO xmlns="http://www.pharmml.org/so/0.3/StandardisedOutput" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset" xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes" xsi:schemaLocation="http://www.pharmml.org/so/0.3/StandardisedOutput" implementedBy="MJS" writtenVersion="0.3" id="i1">
+  <SOBlock blkId="pheno">
+    <Estimation>
+      <Predictions>
+        <ds:Definition>
+          <ds:Column columnId="ID" columnType="id" valueType="string" columnNum="1"/>
+          <ds:Column columnId="TIME" columnType="undefined" valueType="real" columnNum="2"/>
+          <ds:Column columnId="PRED" columnType="undefined" valueType="real" columnNum="3"/>
+          <ds:Column columnId="IPRED" columnType="undefined" valueType="real" columnNum="4"/>
+        </ds:Definition>
+        <ds:Table>
+          <ds:Row>
+            <ct:String>58</ct:String>
+            <ct:Real>60.3</ct:Real>
+            <ct:Real>23.469</ct:Real>
+            <ct:Real>31.664</ct:Real>
+          </ds:Row>
+          <ds:Row>
+            <ct:String>59</ct:String>
+            <ct:Real>72.3</ct:Real>
+            <ct:Real>24.573</ct:Real>
+            <ct:Real>33.129</ct:Real>
+          </ds:Row>
+          <ds:Row>
+            <ct:String>60</ct:String>
+            <ct:Real>73.8</ct:Real>
+            <ct:Real>24.42</ct:Real>
+            <ct:Real>32.919</ct:Real>
+          </ds:Row>
+        </ds:Table>
+      </Predictions>
+    </Estimation>
+  </SOBlock>
+</SO>
