@@ -310,12 +310,10 @@ def print_accessors(name, struct):
         print("\t\t} else {")
 
         if attr['type'] == 'type_string':
-            print("\tstopifnot(is.character(value), length(value) == 1)")
+            print("\t\t\tstopifnot(is.character(value), length(value) == 1)")
         elif attr['type'] == 'type_int':
-            print("\tif (is(value, \"numeric\")) {")
-            print("\t\tvalue = as.integer(value)")
-            print("\t}")
-            print("\tstopifnot(is(value, \"integer\"), length(value) == 1)")
+            print("\t\t\tstopifnot(length(value) == 1)")
+            print("\t\t\tvalue = as.integer(value)")
 
         print("\t\t\tso_", name, "_set_", attr['name'], "(.self$.cobj, value)", sep='')
         print("\t\t}")
