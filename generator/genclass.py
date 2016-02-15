@@ -27,6 +27,7 @@ class genclass:
         entry = structure[name]
         self.children = entry.get('children', None)
         self.attributes = entry.get('attributes', None)
+        self.fixed_attributes = entry.get('fixed_attributes', None)
         self.xpath = entry['xpath']
         self.extends = entry.get('extends', None)
         self.named = entry.get('named', None)
@@ -58,7 +59,7 @@ class genclass:
     def create_includes(self):
         f = self.c_file
         print("#include <string.h>", file=f)
-        print("#include <libxml/tree.h>", file=f)
+        print("#include <libxml/xmlwriter.h>", file=f)
         print("#include <pharmml/common_types.h>", file=f)
         print("#include <pharmml/string.h>", file=f)
         print('#include <so/', self.name, '.h>', sep='', file=f)
@@ -400,13 +401,12 @@ class genclass:
 
     def create_xml(self):
         f = self.c_file
-        print("so_xml so_", self.name, "_xml(so_", self.name, " *self", end='', sep='', file=f)
+        print("int so_", self.name, "_xml(so_", self.name, " *self, xmlTextWriterPtr writer", end='', sep='', file=f)
         if self.name in need_name:
             print(", char *element_name", end='', file=f)
         print(")", sep='', file=f)
         print("{", file=f)
-        print("\txmlNodePtr xml = NULL;", file=f)
-        print(file=f)
+        print("\tint rc;", file=f)
 
         if self.children:
             # Check if any sub-element is non-NULL
@@ -416,26 +416,37 @@ class genclass:
             print("self->", self.children[-1]['name'], ") {", sep='', file=f)
 
         if self.extends:
-            print("\t\txml = so_", self.extends, "_xml(self->base, element_name);", sep='', file=f) 
+            print("\t\trc = so_", self.extends, "_xml(self->base, writer, element_name);", sep='', file=f) 
+            print("\t\tif (rc != 0) return rc;", file=f)
         else:
             if self.element_name:
                 name = self.element_name
             else:
                 name = self.name
             if self.name in need_name:
-                print('\t\txml = xmlNewNode(NULL, BAD_CAST element_name);', file=f)
+                print('\t\trc = xmlTextWriterStartElement(writer, BAD_CAST element_name);', sep='', file=f)
+                print('\t\tif (rc < 0) return 1;', file=f)
             else:
-                print('\t\txml = xmlNewNode(NULL, BAD_CAST "', name, '");', sep='', file=f)
+                print('\t\trc = xmlTextWriterStartElement(writer, BAD_CAST "', name, '");', sep='', file=f)
+                print('\t\tif (rc < 0) return 1;', file=f)
+
+        if self.fixed_attributes:
+            for a in self.fixed_attributes:
+                print('\t\trc = xmlTextWriterWriteAttribute(writer, BAD_CAST "', a['name'], '", BAD_CAST "', a['value'], '");', sep='', file=f)
+                print('\t\tif (rc < 0) return 1;', file=f)
 
         if self.attributes:
             for a in self.attributes:
                 print('\t\tif (self->', a['name'], ") {", sep='', file=f)
                 if a['type'] == 'type_string':
-                    print('\t\t\txmlNewProp(xml, BAD_CAST "', a['name'], '", BAD_CAST self->', a['name'], ");", sep='', file=f)
+                    print('\t\t\trc = xmlTextWriterWriteAttribute(writer, BAD_CAST "', a['name'], '", BAD_CAST self->', a['name'], ");", sep='', file=f)
+                    print('\t\t\tif (rc < 0) return 1;', file=f)
                 elif a['type'] == 'type_int':
                     print("\t\t\tchar *attr_string = pharmml_int_to_string(self->", a['name'], "_number);", sep='', file=f)
-                    print('\t\t\txmlNewProp(xml, BAD_CAST "', a['name'], '", BAD_CAST ', "attr_string);", sep='', file=f)
+                    print("\t\t\tif (!attr_string) return 1;", file=f)
+                    print('\t\t\trc = xmlTextWriterWriteAttribute(writer, BAD_CAST "', a['name'], '", BAD_CAST ', "attr_string);", sep='', file=f)
                     print("\t\t\tfree(attr_string);", file=f)
+                    print('\t\t\tif (rc < 0) return 1;', file=f)
                 print("\t\t}", file=f)
 
         if self.children:
@@ -448,35 +459,40 @@ class genclass:
                 is_array = e.get('array', False)
                 if is_array:
                     print("\t\t\tfor (int i = 0; i < self->num_", e['name'], "; i++) {" ,sep='', file=f)
-                    print("\t\t\t\txmlNodePtr ", e['name'], " = so_", e['type'], "_xml(self->", e['name'], "[i]", extra, ");", sep='', file=f)
-                    print("\t\t\t\txmlAddChild(xml, ", e['name'], ");", sep='', file=f)
+                    print("\t\t\t\trc = so_", e['type'], "_xml(self->", e['name'], "[i], writer", extra, ");", sep='', file=f)
+                    print("\t\t\t\tif (rc != 0) return 1;", file=f)
                     print("\t\t\t}", file=f)
                 else:
                     if e['type'] == "type_string" or e['type'] == "type_real" or e['type'] == "type_int":
                         element_name = e['name']
                         if e.get('prefix', False):
                             element_name = e['prefix'] + ":" + element_name
-                        print("\t\t\txmlNodePtr ", e['name'], " = xmlNewNode(NULL, BAD_CAST \"", element_name,  "\");", sep='', file=f)
                         if e['type'] == "type_string":
-                            print("\t\t\txmlAddChild(", e['name'], ", xmlNewText(BAD_CAST self->", e['name'], "));", sep='', file=f)
+                            print("\t\t\trc = xmlTextWriterWriteElement(writer, BAD_CAST \"", element_name, "\", BAD_CAST self->", e['name'], ");", sep='', file=f)
+                            print("\t\t\tif (rc < 0) return 1;", file=f)
                         elif e['type'] == "type_real":
                             print("\t\t\tchar *number_string = pharmml_double_to_string(self->", e['name'], "_number);", sep='', file=f)
-                            print("\t\t\txmlAddChild(", e['name'], ", xmlNewText(BAD_CAST number_string));", sep='', file=f)
-                            print("\t\t\tfree(number_string);", file=f);
+                            print("\t\t\tif (!number_string) return 1;", file=f)
+                            print("\t\t\trc = xmlTextWriterWriteElement(writer, BAD_CAST \"", element_name, "\", BAD_CAST number_string);", sep='', file=f)
+                            print("\t\t\tfree(number_string);", file=f)
+                            print("\t\t\tif (rc < 0) return 1;", file=f)
                         elif e['type'] == "type_int":
                             print("\t\t\tchar *number_string = pharmml_int_to_string(self->", e['name'], "_number);", sep='', file=f)
-                            print("\t\t\txmlAddChild(", e['name'], ", xmlNewText(BAD_CAST number_string));", sep='', file=f)
-                            print("\t\t\tfree(number_string);", file=f);
-                        print("\t\t\txmlAddChild(xml, ", e['name'], ");", sep='', file=f)
+                            print("\t\t\tif (!number_string) return 1;", file=f)
+                            print("\t\t\trc = xmlTextWriterWriteElement(writer, BAD_CAST \"", element_name, "\", BAD_CAST number_string);", sep='', file=f)
+                            print("\t\t\tfree(number_string);", file=f)
+                            print("\t\t\tif (rc < 0) return 1;", file=f)
                     else:
-                        print("\t\t\txmlNodePtr ", e['name'], " = so_", e['type'], "_xml(self->", e['name'], extra, ");", sep='', file=f)
-                        print("\t\t\txmlAddChild(xml, ", e['name'], ");", sep='', file=f)
+                        print("\t\t\trc = so_", e['type'], "_xml(self->", e['name'], ", writer", extra, ");", sep='', file=f)
+                        print("\t\t\tif (rc != 0) return rc;", file=f)
 
                 print("\t\t}", file=f)
 
             print("\t}", file=f)
 
-        print("\treturn xml;", file=f)
+        print("\trc = xmlTextWriterEndElement(writer);", file=f)
+        print("\tif (rc < 0) return 1;", file=f)
+        print("\treturn 0;", file=f)
         print("}", file=f)
         print(file=f)
 
@@ -860,7 +876,6 @@ class genclass:
             print("#define _SO_PRIVATE_", self.name.upper(), "_H", sep='', file=f)
 
             print(file=f)
-            print('#include <so/xml.h>', file=f)
 
             included = [ 'type_string', 'type_real', 'type_int' ]
             if self.children:
@@ -922,7 +937,7 @@ class genclass:
                 extra = ", char *element_name"
             else:
                 extra = ""
-            print("so_xml so_", self.name, "_xml(so_", self.name, " *self", extra, ");", sep='', file=f)
+            print("int so_", self.name, "_xml(so_", self.name, " *self, xmlTextWriterPtr writer", extra, ");", sep='', file=f)
             if self.attributes:
                 print("int so_", self.name, "_init_attributes(so_", self.name, " *self, int nb_attributes, const char **attributes);", sep='', file=f)
             print(file=f)

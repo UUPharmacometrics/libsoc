@@ -17,7 +17,7 @@
 
 #include <stdbool.h>
 #include <libxml/SAX.h>
-#include <libxml/tree.h>
+#include <libxml/xmlwriter.h>
 
 #include <so/Matrix.h>
 #include <so/private/Matrix.h>
@@ -262,33 +262,52 @@ double *so_Matrix_get_data(so_Matrix *self)
     return self->data;
 }
 
-so_xml so_Matrix_xml(so_Matrix *self, char *element_name)
+int so_Matrix_xml(so_Matrix *self, xmlTextWriterPtr writer, char *element_name)
 {
-    xmlNodePtr xml = xmlNewNode(NULL, BAD_CAST element_name);
+    int rc;
 
-    xmlNodePtr def = xmlNewChild(xml, NULL, BAD_CAST "ct:Matrix", NULL);
-    xmlNewProp(def, BAD_CAST "matrixType", BAD_CAST "Any");
+    rc = xmlTextWriterStartElement(writer, BAD_CAST element_name);
+    if (rc < 0) return 1;
+    rc = xmlTextWriterStartElement(writer, BAD_CAST "ct:Matrix");
+    if (rc < 0) return 1;
+    rc = xmlTextWriterWriteAttribute(writer, BAD_CAST "matrixType", BAD_CAST "Any");
+    if (rc < 0) return 1;
 
-    xmlNodePtr rownames = xmlNewChild(def, NULL, BAD_CAST "ct:RowNames", NULL);
+    rc = xmlTextWriterStartElement(writer, BAD_CAST "ct:RowNames");
     for (int i = 0; i < self->numrows; i++) {
-        xmlNewChild(rownames, NULL, BAD_CAST "ct:String", BAD_CAST self->rownames[i]);
+        rc = xmlTextWriterWriteElement(writer, BAD_CAST "ct:String", BAD_CAST self->rownames[i]);
+        if (rc < 0) return 1;
     }
+    rc = xmlTextWriterEndElement(writer);
+    if (rc < 0) return 1;
 
-    xmlNodePtr colnames = xmlNewChild(def, NULL, BAD_CAST "ct:ColumnNames", NULL);
+    rc = xmlTextWriterStartElement(writer, BAD_CAST "ct:ColumnNames");
+    if (rc < 0) return 1;
     for (int i = 0; i < self->numcols; i++) {
-        xmlNewChild(colnames, NULL, BAD_CAST "ct:String", BAD_CAST self->colnames[i]); 
+        rc = xmlTextWriterWriteElement(writer, BAD_CAST "ct:String", BAD_CAST self->colnames[i]);
     }
-
+    rc = xmlTextWriterEndElement(writer);
+    if (rc < 0) return 1;
+    
     for (int row = 0; row < self->numrows; row++) {
-        xmlNodePtr matrix_row = xmlNewChild(def, NULL, BAD_CAST "ct:MatrixRow", NULL);
+        rc = xmlTextWriterStartElement(writer, BAD_CAST "ct:MatrixRow");
+        if (rc < 0) return 1;
         for (int col = 0; col < self->numcols; col++) {
             char *value_string = pharmml_double_to_string(self->data[row * self->numcols + col]);
-            xmlNewChild(matrix_row, NULL, BAD_CAST "ct:Real", BAD_CAST value_string);
+            rc = xmlTextWriterWriteElement(writer, BAD_CAST "ct:Real", BAD_CAST value_string);
+            if (rc < 0) return 1;
             free(value_string);
         }
+        rc = xmlTextWriterEndElement(writer);
+        if (rc < 0) return 1;
     }
 
-    return xml;
+    rc = xmlTextWriterEndElement(writer);
+    if (rc < 0) return 1;
+    xmlTextWriterEndElement(writer);
+    if (rc < 0) return 1;
+    
+    return 0;
 }
 
 int so_Matrix_start_element(so_Matrix *self, const char *localname, int nb_attributes, const char **attributes)

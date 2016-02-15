@@ -12,11 +12,13 @@ include/so/*
 !include/so/Table.h
 !include/so/xml.h
 !include/so/SOBlock_ext.h
+!include/so/SimulationSubType.h
 include/so/private/*
 !include/so/private/column.h
 !include/so/private/estring.h
 !include/so/private/Matrix.h
 !include/so/private/Table.h
+!include/so/private/SimulationSubType.h
 
 libsoc_*.tar.gz
 soc.Rcheck/*

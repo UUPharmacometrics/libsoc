@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <libxml/SAX.h>
+#include <libxml/xmlwriter.h>
 
 #include <so.h>
 #include <so/private/SO.h>
@@ -110,30 +111,32 @@ so_SO *so_SO_read(char *filename)
  */
 int so_SO_write(so_SO *self, char *filename, int pretty)
 {
-    xmlDocPtr doc = xmlNewDoc(BAD_CAST "1.0");
+    int rc;
+    xmlTextWriterPtr writer;
 
-    xmlNodePtr root = (xmlNodePtr) so_SO_xml(self);
-    
-    xmlNewProp(root, BAD_CAST "xmlns", BAD_CAST "http://www.pharmml.org/so/0.3/StandardisedOutput");
-    xmlNewProp(root, BAD_CAST "xmlns:xsi", BAD_CAST "http://www.w3.org/2001/XMLSchema-instance");
-    xmlNewProp(root, BAD_CAST "xmlns:ds", BAD_CAST "http://www.pharmml.org/pharmml/0.8/Dataset");
-    xmlNewProp(root, BAD_CAST "xmlns:ct", BAD_CAST "http://www.pharmml.org/pharmml/0.8/CommonTypes");
-    xmlNewProp(root, BAD_CAST "xmlns:po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
-    xmlNewProp(root, BAD_CAST "xsi:schemaLocation", BAD_CAST "http://www.pharmml.org/so/0.3/StandardisedOutput");
-    xmlNewProp(root, BAD_CAST "implementedBy", BAD_CAST "MJS");
-    xmlNewProp(root, BAD_CAST "writtenVersion", BAD_CAST "0.3");
-
-    xmlDocSetRootElement(doc, root);
-
-    int fail = xmlSaveFormatFileEnc(filename, doc, "UTF-8", pretty);
-
-    xmlFreeDoc(doc);
-
-    if (fail == -1) {
-        return 1;
-    } else {
-        return 0;
+    writer = xmlNewTextWriterFilename(filename, 0);
+    if (!writer) return 1;
+    if (pretty) {
+        rc = xmlTextWriterSetIndent(writer, 1);
+        if (rc < 0) return 1;
+        rc = xmlTextWriterSetIndentString(writer, BAD_CAST "  ");
+        if (rc < 0) return 1;
     }
+
+    rc = xmlTextWriterStartDocument(writer, NULL, "UTF-8", NULL);
+    if (rc < 0) return 1;
+
+    rc = so_SO_xml(self, writer);
+    if (rc != 0) return 1;
+   
+    // Properties must be set AFTER the Element was written. 
+
+    rc = xmlTextWriterEndDocument(writer);
+    if (rc < 0) return 1;
+
+    xmlFreeTextWriter(writer);
+
+    return 0;
 }
 
 /** \memberof so_SO

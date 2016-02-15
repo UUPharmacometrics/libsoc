@@ -19,13 +19,15 @@
 #define _SO_PRIVATE_TABLE_H
 
 #include <so/Table.h>
-#include <so/xml.h>
 #include <so/private/column.h>
 #include <so/ExternalFile.h>
+#include <libxml/xmlwriter.h>
 
 struct so_Table {
     so_Column **columns;
     so_ExternalFile *ExternalFile;
+    int (*superclass_func)(void *, xmlTextWriterPtr writer);
+    void *superclass;
     int write_external_file;
     int numcols;
     int numrows;
@@ -41,7 +43,7 @@ struct so_Table {
     int reference_count;
 };
 
-so_xml so_Table_xml(so_Table *self, char *element_name);
+int so_Table_xml(so_Table *self, xmlTextWriterPtr writer, char *element_name);
 int so_Table_start_element(so_Table *table, const char *localname, int nb_attributes, const char **attributes);
 void so_Table_end_element(so_Table *table, const char *localname);
 int so_Table_characters(so_Table *table, const char *ch, int len);

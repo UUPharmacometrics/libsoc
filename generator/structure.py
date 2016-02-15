@@ -34,6 +34,16 @@ structure = {
             { 'name' : 'id', 'type' : 'type_string' },
             { 'name' : 'metadataFile', 'type' : 'type_string' },
         ],
+        'fixed_attributes' : [
+            { 'name' : "xmlns", 'value' : "http://www.pharmml.org/so/0.3/StandardisedOutput" },
+            { 'name' : "xmlns:xsi", 'value' : "http://www.w3.org/2001/XMLSchema-instance" },
+            { 'name' : "xmlns:ds", 'value' : "http://www.pharmml.org/pharmml/0.8/Dataset" },
+            { 'name' : "xmlns:ct", 'value' : "http://www.pharmml.org/pharmml/0.8/CommonTypes" },
+            { 'name' : "xmlns:po", 'value' : "http://www.pharmml.org/probonto/ProbOnto" },
+            { 'name' : "xsi:schemaLocation", 'value' : "http://www.pharmml.org/so/0.3/StandardisedOutput" },
+            { 'name' : "implementedBy", 'value' : "MJS" },
+            { 'name' : "writtenVersion", 'value' : "0.3" },
+        ],
         'xpath' : 'SO',
         'fields' : [ 'int error;' ]
     },
@@ -237,14 +247,14 @@ structure = {
         ],
         'xpath' : 'SO/SOBlock/Simulation/SimulationBlock'
     },
-    'SimulationSubType' : {
-        'extends' : 'Table',
-        'attributes' : [
-            { 'name' : 'name', 'type' : 'type_string' },
-            { 'name' : 'extFileNo', 'type' : 'type_int' },
-        ],
-        'xpath' : 'SimulationSubType'
-    },
+    #'SimulationSubType' : {
+    #    'extends' : 'Table',
+    #    'attributes' : [
+    #        { 'name' : 'name', 'type' : 'type_string' },
+    #        { 'name' : 'extFileNo', 'type' : 'type_int' },
+    #    ],
+    #    'xpath' : 'SimulationSubType'
+    #},
     'ExternalFile' : {
         'children' : [
             { 'name' : 'Description' , 'type' : 'type_string', 'prefix' : 'ct' },

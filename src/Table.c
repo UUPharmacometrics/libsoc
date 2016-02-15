@@ -20,7 +20,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <libxml/SAX.h>
-#include <libxml/tree.h>
+#include <libxml/xmlwriter.h>
 
 #include <so/Table.h>
 #include <so/private/Table.h>
@@ -394,28 +394,47 @@ void so_Table_set_write_external_file(so_Table *self, int write_external_file)
     self->write_external_file = write_external_file;
 }
 
-so_xml so_Table_xml(so_Table *self, char *element_name)
+int so_Table_xml(so_Table *self, xmlTextWriterPtr writer, char *element_name)
 {
-    xmlNodePtr xml = xmlNewNode(NULL, BAD_CAST element_name);
+    int rc;
+    rc = xmlTextWriterStartElement(writer, BAD_CAST element_name);
+    if (rc < 0) return 1;
+
+    if (self->superclass_func) {
+       rc = (*(self->superclass_func))(self->superclass, writer);
+       if (rc != 0) return rc;
+    }
 
     char temp_colnum[10];
 
     if (self->numcols > 0) {
-        xmlNodePtr def = xmlNewChild(xml, NULL, BAD_CAST "ds:Definition", NULL);
+        rc = xmlTextWriterStartElement(writer, BAD_CAST "ds:Definition");
+        if (rc < 0) return 1;
         for (int i = 0; i < self->numcols; i++) {
-            xmlNodePtr col = xmlNewChild(def, NULL, BAD_CAST "ds:Column", NULL);
-            xmlNewProp(col, BAD_CAST "columnId", BAD_CAST self->columns[i]->columnId);
-            xmlNewProp(col, BAD_CAST "columnType", BAD_CAST pharmml_columnType_to_string(self->columns[i]->columnType));
-            xmlNewProp(col, BAD_CAST "valueType", BAD_CAST pharmml_valueType_to_string(self->columns[i]->valueType));
+            rc = xmlTextWriterStartElement(writer, BAD_CAST "ds:Column");
+            if (rc < 0) return 1;
+            rc = xmlTextWriterWriteAttribute(writer, BAD_CAST "columnId", BAD_CAST self->columns[i]->columnId);
+            if (rc < 0) return 1;
+            rc = xmlTextWriterWriteAttribute(writer, BAD_CAST "columnType", BAD_CAST pharmml_columnType_to_string(self->columns[i]->columnType));
+            if (rc < 0) return 1;
+            rc = xmlTextWriterWriteAttribute(writer, BAD_CAST "valueType", BAD_CAST pharmml_valueType_to_string(self->columns[i]->valueType));
+            if (rc < 0) return 1;
+
             snprintf(temp_colnum, 10, "%d", i + 1);
-            xmlNewProp(col, BAD_CAST "columnNum", BAD_CAST temp_colnum);
+            rc = xmlTextWriterWriteAttribute(writer, BAD_CAST "columnNum", BAD_CAST temp_colnum);
+            if (rc < 0) return 1;
+            rc = xmlTextWriterEndElement(writer);
+            if (rc < 0) return 1;
         }
+        rc = xmlTextWriterEndElement(writer);
+        if (rc < 0) return 1;
     }
 
     if (!self->ExternalFile) {
-        xmlNodePtr tab = xmlNewChild(xml, NULL, BAD_CAST "ds:Table", NULL);
+        rc = xmlTextWriterStartElement(writer, BAD_CAST "ds:Table");
+        if (rc < 0) return 1;
         for (int i = 0; i < self->numrows; i++) {
-            xmlNodePtr row = xmlNewChild(tab, NULL, BAD_CAST "ds:Row", NULL);
+            rc = xmlTextWriterStartElement(writer, BAD_CAST "ds:Row");
             for (int j = 0; j < self->numcols; j++) {
                 char *value_string;
                 char *special_string = NULL;
@@ -445,23 +464,31 @@ so_xml so_Table_xml(so_Table *self, char *element_name)
                 if (self->columns[j]->valueType == PHARMML_VALUETYPE_BOOLEAN) {
                     bool *ptr = (bool *) self->columns[j]->column;
                     if (ptr[i]) {
-                        xmlNewChild(row, NULL, BAD_CAST "ct:True", NULL);
+                        rc = xmlTextWriterWriteElement(writer, BAD_CAST "ct:True", NULL);
+                        if (rc < 0) return 1;
                     } else {
-                        xmlNewChild(row, NULL, BAD_CAST "ct:False", NULL);
+                        rc = xmlTextWriterWriteElement(writer, BAD_CAST "ct:False", NULL);
+                        if (rc < 0) return 1;
                     }
                 } else if (special_string) {
-                    xmlNewChild(row, NULL, BAD_CAST special_string, NULL);
+                    rc = xmlTextWriterWriteElement(writer, BAD_CAST special_string, NULL);
+                    if (rc < 0) return 1;
                 } else {
-                    xmlNewChild(row, NULL, BAD_CAST pharmml_valueType_to_element(self->columns[j]->valueType), BAD_CAST value_string);
+                    rc = xmlTextWriterWriteElement(writer, BAD_CAST pharmml_valueType_to_element(self->columns[j]->valueType), BAD_CAST value_string);
                     if (self->columns[j]->valueType == PHARMML_VALUETYPE_REAL || self->columns[j]->valueType == PHARMML_VALUETYPE_INT) {
                         free(value_string);
                     }
+                    if (rc < 0) return 1;
                 }
             }
+            rc = xmlTextWriterEndElement(writer);
+            if (rc < 0) return 1;
         }
+        rc = xmlTextWriterEndElement(writer);
+        if (rc < 0) return 1;
     } else {
-        xmlNodePtr ext = so_ExternalFile_xml(self->ExternalFile, "ds:ExternalFile");
-        xmlAddChild(xml, ext);
+        rc = so_ExternalFile_xml(self->ExternalFile, writer, "ds:ExternalFile");
+        if (rc) return rc;
 
         if (self->write_external_file) {
             char *delimiter_string;
@@ -513,7 +540,10 @@ so_xml so_Table_xml(so_Table *self, char *element_name)
         }
     }
 
-    return xml;
+    rc = xmlTextWriterEndElement(writer);
+    if (rc < 0) return 1;
+
+    return 0;
 }
 
 int so_Table_start_element(so_Table *table, const char *localname, int nb_attributes, const char **attributes)

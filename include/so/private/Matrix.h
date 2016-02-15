@@ -18,7 +18,7 @@
 #ifndef _SO_PRIVATE_MATRIX_H
 #define _SO_PRIVATE_MATRIX_H
 
-#include <so/xml.h>
+#include <libxml/xmlwriter.h>
 
 struct so_Matrix {
     double *data;
@@ -37,7 +37,7 @@ struct so_Matrix {
     int reference_count;
 };
 
-so_xml so_Matrix_xml(so_Matrix *self, char *element_name);
+int so_Matrix_xml(so_Matrix *self, xmlTextWriterPtr writer, char *element_name);
 int so_Matrix_start_element(so_Matrix *self, const char *localname, int nb_attributes, const char **attributes);
 void so_Matrix_end_element(so_Matrix *self, const char *localname);
 int so_Matrix_characters(so_Matrix *self, const char *ch, int len);
