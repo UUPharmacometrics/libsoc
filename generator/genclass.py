@@ -876,6 +876,8 @@ class genclass:
             print("#define _SO_PRIVATE_", self.name.upper(), "_H", sep='', file=f)
 
             print(file=f)
+            print("#include <libxml/xmlwriter.h>", file=f)
+            print(file=f)
 
             included = [ 'type_string', 'type_real', 'type_int' ]
             if self.children:
