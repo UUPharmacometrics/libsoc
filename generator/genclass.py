@@ -113,17 +113,17 @@ class genclass:
         if self.attributes:
             for attr in self.attributes:
                 if attr['type'] == "type_string":
-                    print("\t\tdest->", attr['name'], " = pharmml_strdup(self->", attr['name'], ");", sep='', file=f)
-                    print("\t\tif (!dest->", attr['name'], ") {", sep='', file=f)
-                    print("\t\t\tso_", self.name, "_free(dest);", sep='', file=f)
-                    print("\t\t\treturn NULL;", file=f)
+                    print("\t\tif (self->", attr['name'], ") {", sep='', file=f)
+                    print("\t\t\tdest->", attr['name'], " = pharmml_strdup(self->", attr['name'], ");", sep='', file=f)
+                    print("\t\t\tif (!dest->", attr['name'], ") {", sep='', file=f)
+                    print("\t\t\t\tso_", self.name, "_free(dest);", sep='', file=f)
+                    print("\t\t\t\treturn NULL;", file=f)
+                    print("\t\t\t}", file=f)
                     print("\t\t}", file=f)
                 elif attr['type'] == "type_int":
                     print("\t\tif (self->", attr['name'], ") {", sep='', file=f)
                     print("\t\t\tdest->", attr['name'], "_number = self->", attr['name'], "_number;", sep='', file=f)
                     print("\t\t\tdest->", attr['name'], " = &(dest->", attr['name'], "_number);", sep='', file=f)
-                    print("\t\t} else {", file=f)
-                    print("\t\t\tdest->", attr['name'], " = NULL;", sep='', file=f)
                     print("\t\t}", file=f)
         if self.children:
             for e in self.children:
@@ -143,6 +143,11 @@ class genclass:
                     print("\t\t\t\t\treturn NULL;", file=f)
                     print("\t\t\t\t}", file=f)
                     print("\t\t\t}", file=f)
+                    print("\t\t}", file=f)
+                elif e['type'] == 'type_int' or e['type'] == 'type_real':
+                    print("\t\tif (self->", e['name'], ") {", sep='', file=f)
+                    print("\t\t\tdest->", e['name'], "_number = self->", e['name'], "_number;", sep='', file=f)
+                    print("\t\t\tdest->", e['name'], " = &(dest->", e['name'], "_number);", sep='', file=f)
                     print("\t\t}", file=f)
                 else:
                     print("\t\tif (self->", e['name'], ") {", sep='', file=f)
@@ -272,6 +277,10 @@ class genclass:
                 if a['type'] == 'type_string':
                     print("int so_", self.name, "_set_", a['name'], "(so_", self.name, " *self, char *value)", sep='', file=f)
                     print("{", file=f)
+                    print("\tif (!value) {", file=f)
+                    print("\t\tself->", a['name'], " = value;", sep='', file=f)
+                    print("\t\treturn 0;", file=f)
+                    print("\t}", file=f)
                     print("\tchar *new_value = pharmml_strdup(value);", file=f)
                     print("\tif (new_value) {", file=f)
                     print("\t\tfree(self->", a['name'], ");", sep='', file=f)
@@ -301,6 +310,10 @@ class genclass:
                     if e['type'] == "type_string":
                         print("int so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, char *value)", sep='', file=f)
                         print("{", file=f)
+                        print("\tif (!value) {", file=f)
+                        print("\t\tself->", e['name'], " = value;", sep='', file=f)
+                        print("\t\treturn 0;", file=f)
+                        print("\t}", file=f)
                         print("\tchar *new_value = pharmml_strdup(value);", file=f)
                         print("\tif (new_value) {", file=f)
                         print("\t\tfree(self->", e['name'], ");", sep='', file=f)
@@ -314,15 +327,23 @@ class genclass:
                     elif e['type'] == "type_real":
                         print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, double *value)", sep='', file=f)
                         print("{", file=f)
-                        print("\tself->", e['name'], "_number = *value;", sep='', file=f)
-                        print("\tself->", e['name'], " = &(self->", e['name'], "_number);", sep='', file=f)
+                        print("\tif (value) {", file=f)
+                        print("\t\tself->", e['name'], "_number = *value;", sep='', file=f)
+                        print("\t\tself->", e['name'], " = &(self->", e['name'], "_number);", sep='', file=f)
+                        print("\t} else {", file=f)
+                        print("\t\tself->", e['name'], " = value;", sep='', file=f)
+                        print("\t}", file=f)
                         print("}", file=f)
                         print(file=f)
                     elif e['type'] == "type_int":
                         print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, int *value)", sep='', file=f)
                         print("{", file=f)
-                        print("\tself->", e['name'], "_number = *value;", sep='', file=f)
-                        print("\tself->", e['name'], " = &(self->", e['name'], "_number);", sep='', file=f)
+                        print("\tif (value) {", file=f)
+                        print("\t\tself->", e['name'], "_number = *value;", sep='', file=f)
+                        print("\t\tself->", e['name'], " = &(self->", e['name'], "_number);", sep='', file=f)
+                        print("\t} else {", file=f)
+                        print("\t\tself->", e['name'], " = value;", sep='', file=f)
+                        print("\t}", file=f)
                         print("}", file=f)
                         print(file=f)
                     else:
