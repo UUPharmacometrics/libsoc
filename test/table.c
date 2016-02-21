@@ -4,6 +4,44 @@
 #include <stdlib.h>
 #include <so.h>
 
+void test_new_table()
+{ 
+    so_Table *table = so_Table_new();
+    assert(so_Table_get_number_of_columns(table) == 0);
+
+    so_Table_set_number_of_rows(table, 2);
+    assert(so_Table_get_number_of_rows(table) == 2);
+
+    double data[2] = { 2.14 , 3 };
+
+    so_Table_new_column(table, "myCol", PHARMML_COLTYPE_DV, PHARMML_VALUETYPE_REAL, data);
+
+    assert(strcmp(so_Table_get_columnId(table, 0), "myCol") == 0);
+    assert(so_Table_get_columnType(table, 0) == PHARMML_COLTYPE_DV);
+    assert(so_Table_get_valueType(table, 0) == PHARMML_VALUETYPE_REAL);
+
+    double *my_data = (double *) so_Table_get_column_from_number(table, 0);
+    assert(my_data[0] == 2.14);
+    assert(my_data[1] == 3);
+    my_data = (double *) so_Table_get_column_from_number(table, 1);
+    assert(my_data == NULL);
+
+    my_data = (double *) so_Table_get_column_from_name(table, "myCol");
+    assert(my_data[0] == 2.14);
+    assert(my_data[1] == 3);
+    my_data = (double *) so_Table_get_column_from_name(table, "noext");
+    assert(my_data == NULL);
+
+    so_Table_set_columnId(table, 0, "nextCol");
+    assert(strcmp(so_Table_get_columnId(table, 0), "nextCol") == 0);
+    so_Table_set_columnId(table, 1, "nonsense");  // Does not crash
+    so_Table_set_columnType(table, 0, PHARMML_COLTYPE_SS);
+    assert(so_Table_get_columnType(table, 0) == PHARMML_COLTYPE_SS);
+    so_Table_set_columnType(table, 1, PHARMML_COLTYPE_IDV); // Does not crash
+    so_Table_set_valueType(table, 0, PHARMML_VALUETYPE_INT);
+    assert(so_Table_get_valueType(table, 0) == PHARMML_VALUETYPE_INT);
+}
+
 void main()
 {
     so_SO *so = so_SO_read("data/table1.SO.xml");    
@@ -42,6 +80,10 @@ void main()
     assert(time[0] == 60.3);
     assert(time[1] == 72.3);
     assert(time[2] == 73.8);
+
+    so_SO_free(so);
+
+    test_new_table();
 
     printf("table PASS\n");
 }
