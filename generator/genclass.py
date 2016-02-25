@@ -509,10 +509,10 @@ class genclass:
 
                 print("\t\t}", file=f)
 
+            print("\t\trc = xmlTextWriterEndElement(writer);", file=f)
+            print("\t\tif (rc < 0) return 1;", file=f)
             print("\t}", file=f)
 
-        print("\trc = xmlTextWriterEndElement(writer);", file=f)
-        print("\tif (rc < 0) return 1;", file=f)
         print("\treturn 0;", file=f)
         print("}", file=f)
         print(file=f)
