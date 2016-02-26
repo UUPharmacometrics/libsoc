@@ -21,8 +21,10 @@ import common
 from structure import need_name
 
 class genclass:
-    def __init__(self, name, structure):
+    def __init__(self, name, structure, prefix):
         self.name = name
+        self.prefix = prefix
+        self.class_name = self.prefixed_symbol(self.name)
         self.structure = structure
         entry = structure[name]
         self.children = entry.get('children', None)
@@ -33,6 +35,10 @@ class genclass:
         self.named = entry.get('named', None)
         self.element_name = entry.get('element_name', None)
         self.fields = entry.get('fields', None)
+
+    def prefixed_symbol(self, name):
+        # prefix a symbol with the namespace prefix
+        return self.prefix + "_" + name
 
     def create_code(self):
         with open(self.name + ".c", "w") as f:
@@ -68,13 +74,13 @@ class genclass:
 
     def create_new(self):
         f = self.c_file
-        print("so_", self.name, " *so_", self.name, "_new()", sep='', file=f)
+        print(self.class_name, " *", self.class_name, "_new()", sep='', file=f)
         print("{", file=f);
-        print("\tso_", self.name, " *object = calloc(sizeof(so_", self.name, "), 1);", sep='', file=f)
+        print("\t", self.class_name, " *object = calloc(sizeof(", self.class_name, "), 1);", sep='', file=f)
         print("\tif (object) {", file=f)
         print("\t\tobject->reference_count = 1;", file=f)
         if self.extends:
-            print("\t\tobject->base = so_", self.extends, "_new();", sep='', file=f)
+            print("\t\tobject->base = ", self.prefix_symbol(self.extends), "_new();", sep='', file=f)
             print("\t\tif (!object->base) {", file=f)
             print("\t\t\tfree(object);", file=f)
             print("\t\t\tobject = NULL;", file=f)
@@ -100,14 +106,14 @@ class genclass:
             return result
 
         f = self.c_file
-        print("so_", self.name, " *so_", self.name, "_copy(so_", self.name, " *self)", sep='', file=f)
+        print(self.class_name, " *", self.class_name, "_copy(", self.class_name, " *self)", sep='', file=f)
         print("{", file=f)
-        print("\tso_", self.name, " *dest = so_", self.name, "_new();", sep='', file=f)
+        print("\t", self.class_name, " *dest = ", self.class_name, "_new();", sep='', file=f)
         print("\tif (dest) {", file=f)
         if self.extends:
-            print("\t\tdest->base = so_", self.extends, "_copy(self->base);", sep='', file=f)
+            print("\t\tdest->base = ", self.prefix_symbol(self.extends), "_copy(self->base);", sep='', file=f)
             print("\t\tif (!dest->base) {", file=f)
-            print("\t\t\tso_", self.name, "_free(dest);", sep='', file=f)
+            print("\t\t\t", self.class_name, "_free(dest);", sep='', file=f)
             print("\t\t\treturn NULL;", file=f)
             print("\t\t}", file=f)
         if self.attributes:
@@ -131,7 +137,7 @@ class genclass:
                     print("\t\tif (self->num_", e['name'], ") {", sep='', file=f)
                     print("\t\t\tdest->", e['name'], " = calloc(self->num_", e['name'], " * sizeof(so_", e['type'], " *), 1);", sep='', file=f)
                     print("\t\t\tif (!dest->", e['name'], ") {", sep='', file=f)
-                    print("\t\t\t\tso_", self.name, "_free(dest);", sep='', file=f)
+                    print("\t\t\t\t", self.class_name, "_free(dest);", sep='', file=f)
                     print("\t\t\t\treturn NULL;", file=f)
                     print("\t\t\t}", file=f)
                     print("\t\t\tdest->num_", e['name'], " = self->num_", e['name'], ";", sep='', file=f)
@@ -139,7 +145,7 @@ class genclass:
                     # Should not need check for NULL here
                     print("\t\t\t\tdest->", e['name'], "[i] = ", copy_type(e['type'], e['name'], array=True), sep='', file=f)
                     print("\t\t\t\tif (!dest->", e['name'], "[i]) {", sep='', file=f)
-                    print("\t\t\t\t\tso_", self.name, "_free(dest);", sep='', file=f)
+                    print("\t\t\t\t\t", self.class_name, "_free(dest);", sep='', file=f)
                     print("\t\t\t\t\treturn NULL;", file=f)
                     print("\t\t\t\t}", file=f)
                     print("\t\t\t}", file=f)
@@ -153,7 +159,7 @@ class genclass:
                     print("\t\tif (self->", e['name'], ") {", sep='', file=f)
                     print("\t\t\tdest->", e['name'], " = ", copy_type(e['type'], e['name']), sep='', file=f)
                     print("\t\t\tif (!dest->", e['name'], ") {", sep='', file=f)
-                    print("\t\t\t\tso_", self.name, "_free(dest);", sep='', file=f)
+                    print("\t\t\t\t", self.class_name, "_free(dest);", sep='', file=f)
                     print("\t\t\t\treturn NULL;", file=f)
                     print("\t\t\t}", file=f)
                     print("\t\t}", file=f)
@@ -165,7 +171,7 @@ class genclass:
 
     def create_free(self):
         f = self.c_file
-        print("void so_", self.name, "_free(so_", self.name, " *self)", sep='', file=f)
+        print("void ", self.class_name, "_free(", self.class_name, " *self)", sep='', file=f)
         print("{", file=f)
         print("\tif (self) {", file=f)
 
@@ -197,17 +203,17 @@ class genclass:
 
     def create_ref_unref(self):
         f = self.c_file
-        print("void so_", self.name, "_ref(so_", self.name, " *self)", sep='', file=f)
+        print("void ", self.class_name, "_ref(", self.class_name, " *self)", sep='', file=f)
         print("{", file=f)
         print("\tself->reference_count++;", file=f)
         print("}", file=f)
         print(file=f)
-        print("void so_", self.name, "_unref(so_", self.name, " *self)", sep='', file=f)
+        print("void ", self.class_name, "_unref(", self.class_name, " *self)", sep='', file=f)
         print("{", file=f)
         print("\tif (self) {", file=f)
         print("\t\tself->reference_count--;", file=f)
         print("\t\tif (!self->reference_count) {", file=f)
-        print("\t\t\tso_", self.name, "_free(self);", sep='', file=f)
+        print("\t\t\t", self.class_name, "_free(self);", sep='', file=f)
         print("\t\t}", file=f)
         print("\t}", file=f)
         print("}", file=f)
@@ -219,13 +225,13 @@ class genclass:
         if self.attributes:
             for a in self.attributes:
                 if a['type'] == 'type_string':
-                    print("char *so_", self.name, "_get_", a['name'], "(so_", self.name, " *self)", sep='', file=f)
+                    print("char *", self.class_name, "_get_", a['name'], "(", self.class_name, " *self)", sep='', file=f)
                     print("{", file=f)
                     print("\treturn self->", a['name'], ";", sep='', file=f)
                     print("}", file=f)
                     print(file=f)
                 elif a['type'] == 'type_int':
-                    print("int *so_", self.name, "_get_", a['name'], "(so_", self.name, " *self)", sep='', file=f)
+                    print("int *", self.class_name, "_get_", a['name'], "(", self.class_name, " *self)", sep='', file=f)
                     print("{", file=f)
                     print("\treturn self->", a['name'], ";", sep='', file=f)
                     print("}", file=f)
@@ -241,13 +247,13 @@ class genclass:
                         return_type = "int *"
                     else:
                         return_type = "double *"
-                    print(return_type, "so_", self.name, "_get_", e['name'], "(so_", self.name, " *self)", sep='', file=f)
+                    print(return_type, self.class_name, "_get_", e['name'], "(", self.class_name, " *self)", sep='', file=f)
                     print("{", file=f)
                     print("\treturn self->", e['name'], ";", sep='', file=f)
                     print("}", file=f)
                     print(file=f)
                 else:
-                    print("so_", e['type'], " *so_", self.name, "_get_", e['name'], "(so_", self.name,  " *self", sep='', end='', file=f)
+                    print("so_", e['type'], " *", self.class_name, "_get_", e['name'], "(", self.class_name,  " *self", sep='', end='', file=f)
                     if e.get('array', False):
                         print(", int number)", file=f)
                     else:
@@ -263,7 +269,7 @@ class genclass:
             # get_number_of_ for arrays
             for e in self.children:
                 if e.get('array', False):
-                    print("int so_", self.name, "_get_number_of_", e['name'], "(so_", self.name, " *self)", sep='', file=f)
+                    print("int ", self.class_name, "_get_number_of_", e['name'], "(", self.class_name, " *self)", sep='', file=f)
                     print("{", file=f)
                     print("\treturn self->num_", e['name'], ";", sep='', file=f)
                     print("}", file=f)
@@ -275,7 +281,7 @@ class genclass:
         if self.attributes:
             for a in self.attributes:
                 if a['type'] == 'type_string':
-                    print("int so_", self.name, "_set_", a['name'], "(so_", self.name, " *self, char *value)", sep='', file=f)
+                    print("int ", self.class_name, "_set_", a['name'], "(", self.class_name, " *self, char *value)", sep='', file=f)
                     print("{", file=f)
                     print("\tif (!value) {", file=f)
                     print("\t\tself->", a['name'], " = value;", sep='', file=f)
@@ -292,7 +298,7 @@ class genclass:
                     print("}", file=f)
                     print(file=f)
                 elif a['type'] == 'type_int':
-                    print("void so_", self.name, "_set_", a['name'], "(so_", self.name, " *self, int *value)", sep='', file=f)
+                    print("void ", self.class_name, "_set_", a['name'], "(", self.class_name, " *self, int *value)", sep='', file=f)
                     print("{", file=f)
                     print("\tif (value) {", file=f)
                     print("\t\tself->", a['name'], "_number = *value;", sep='', file=f)
@@ -308,7 +314,7 @@ class genclass:
             for e in self.children:
                 if not e.get('array', False):       # No setters for arrays
                     if e['type'] == "type_string":
-                        print("int so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, char *value)", sep='', file=f)
+                        print("int ", self.class_name, "_set_", e['name'], "(", self.class_name, " *self, char *value)", sep='', file=f)
                         print("{", file=f)
                         print("\tif (!value) {", file=f)
                         print("\t\tself->", e['name'], " = value;", sep='', file=f)
@@ -325,7 +331,7 @@ class genclass:
                         print("}", file=f)
                         print(file=f)
                     elif e['type'] == "type_real":
-                        print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, double *value)", sep='', file=f)
+                        print("void ", self.class_name, "_set_", e['name'], "(", self.class_name, " *self, double *value)", sep='', file=f)
                         print("{", file=f)
                         print("\tif (value) {", file=f)
                         print("\t\tself->", e['name'], "_number = *value;", sep='', file=f)
@@ -336,7 +342,7 @@ class genclass:
                         print("}", file=f)
                         print(file=f)
                     elif e['type'] == "type_int":
-                        print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, int *value)", sep='', file=f)
+                        print("void ", self.class_name, "_set_", e['name'], "(", self.class_name, " *self, int *value)", sep='', file=f)
                         print("{", file=f)
                         print("\tif (value) {", file=f)
                         print("\t\tself->", e['name'], "_number = *value;", sep='', file=f)
@@ -347,7 +353,7 @@ class genclass:
                         print("}", file=f)
                         print(file=f)
                     else:
-                        print("void so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, ", "so_", e['type'], " *value)", sep='', file=f)
+                        print("void ", self.class_name, "_set_", e['name'], "(", self.class_name, " *self, ", "so_", e['type'], " *value)", sep='', file=f)
                         print("{", file=f)
                         print("\tso_", e['type'], "_unref(self->", e['name'], ");", sep='', file=f)
                         print("\tself->", e['name'], " = value;", sep='', file=f)
@@ -360,7 +366,7 @@ class genclass:
             for e in self.children:
                 if e['type'] != "type_string" and e['type'] != "type_real" and e['type'] != "type_int":
                     is_array = e.get('array', False)
-                    print("so_", e['type'], " *so_", self.name, "_create_", e['name'], "(so_", self.name, " *self)", sep='', file=f)
+                    print("so_", e['type'], " *", self.class_name, "_create_", e['name'], "(", self.class_name, " *self)", sep='', file=f)
                     print("{", file=f)
                     print("\tso_", e['type'], " *obj = so_", e['type'], "_new(", sep='', end='', file=f)
                     if e['type'] in need_name:
@@ -392,7 +398,7 @@ class genclass:
         if self.children:
             for e in self.children:
                 if e.get('array', False):
-                    print("int so_", self.name, "_add_", e['name'], "(so_", self.name, " *self, so_", e['type'], " *child)", sep='', file=f)
+                    print("int ", self.class_name, "_add_", e['name'], "(", self.class_name, " *self, so_", e['type'], " *child)", sep='', file=f)
                     print("{", file=f)
                     print("\tso_", e['type'], " **new_array = realloc(self->", e['name'], ", (self->num_", e['name'], " + 1) * sizeof(so_", e['type'], " *));", sep='', file=f)
                     print("\tif (!new_array) {", file=f)
@@ -407,12 +413,12 @@ class genclass:
 
     def create_get_set_base(self):
         f = self.c_file
-        print("so_", self.extends, " *so_", self.name, "_get_base(so_", self.name, " *self)", sep='', file=f)
+        print(self.prefix_symbol(self.extends), " *", self.class_name, "_get_base(", self.class_name, " *self)", sep='', file=f)
         print("{", file=f)
         print("\treturn self->base;", file=f)
         print("}", file=f)
         print(file=f)
-        print("int so_", self.name, "_set_base(so_", self.name, " *self, so_", self.extends, " *value)", sep='', file=f)
+        print("int ", self.class_name, "_set_base(", self.class_name, " *self, ", self.prefix_symbol(self.extends), " *value)", sep='', file=f)
         print("{", file=f)
         print("\tso_", self.extends, "_unref(value);", sep='', file=f)
         print("\tself->base = value;", file=f) 
@@ -422,7 +428,7 @@ class genclass:
 
     def create_xml(self):
         f = self.c_file
-        print("int so_", self.name, "_xml(so_", self.name, " *self, xmlTextWriterPtr writer", end='', sep='', file=f)
+        print("int ", self.class_name, "_xml(", self.class_name, " *self, xmlTextWriterPtr writer", end='', sep='', file=f)
         if self.name in need_name:
             print(", char *element_name", end='', file=f)
         print(")", sep='', file=f)
@@ -519,7 +525,7 @@ class genclass:
 
     def create_start(self):
         f = self.c_file
-        print("int so_", self.name, "_start_element(so_", self.name, " *self, const char *localname, int nb_attributes, const char **attributes)", sep='', file=f)
+        print("int ", self.class_name, "_start_element(", self.class_name, " *self, const char *localname, int nb_attributes, const char **attributes)", sep='', file=f)
         print("{", file=f)
 
         if self.children:
@@ -559,7 +565,7 @@ class genclass:
                             print(e['name'], '"', sep='', end='', file=f)
                         print(");", sep='', file=f)
                     else:
-                        print("\t\tso_", e['type'], " *", e['name'], " = so_", self.name, "_create_", e['name'], "(self);", sep='', file=f)
+                        print("\t\tso_", e['type'], " *", e['name'], " = ", self.class_name, "_create_", e['name'], "(self);", sep='', file=f)
                     print("\t\tif (!", e['name'], ") {", sep='', file=f)
                     print("\t\t\treturn 1;", file=f)
                     print("\t\t}", file=f)
@@ -571,13 +577,13 @@ class genclass:
                             print("\t\t\treturn 1;", file=f)
                             print("\t\t}", file=f)
                             if e.get('array', False):
-                                print("\t\tfail = so_", self.name, "_add_", e['name'], "(self, ", e['name'], ");", sep='', file=f)
+                                print("\t\tfail = ", self.class_name, "_add_", e['name'], "(self, ", e['name'], ");", sep='', file=f)
                                 print("\t\tif (fail) {", file=f)
                                 print("\t\t\tso_", e['type'], "_free(", e['name'], ");", sep='', file=f)
                                 print("\t\t\treturn 1;", file=f)
                                 print("\t\t}", file=f)
                             else:
-                                print("\t\tso_", self.name, "_set_", e['name'], "(self, ", e['name'], ");", sep='', file=f)
+                                print("\t\t", self.class_name, "_set_", e['name'], "(self, ", e['name'], ");", sep='', file=f)
                 print("\t\tself->in_", e['name'], " = 1;", sep='', file=f)
                 print("\t}", end='', file=f)
 
@@ -602,7 +608,7 @@ class genclass:
 
     def create_end(self):
         f = self.c_file
-        print("void so_", self.name, "_end_element(so_", self.name, " *self, const char *localname)", sep='', file=f)
+        print("void ", self.class_name, "_end_element(", self.class_name, " *self, const char *localname)", sep='', file=f)
         print("{", file=f)
 
         if self.children:
@@ -639,7 +645,7 @@ class genclass:
 
     def create_characters(self):
         f = self.c_file
-        print("int so_", self.name, "_characters(so_", self.name, " *self, const char *ch, int len)", sep='', file=f)
+        print("int ", self.class_name, "_characters(", self.class_name, " *self, const char *ch, int len)", sep='', file=f)
         print("{", file=f)
 
         if self.children:
@@ -686,7 +692,7 @@ class genclass:
         f = self.c_file
         if self.attributes:
             print(file=f)
-            print("int so_", self.name, "_init_attributes(so_", self.name, " *self, int nb_attributes, const char **attributes)", sep='', file=f)
+            print("int ", self.class_name, "_init_attributes(", self.class_name, " *self, int nb_attributes, const char **attributes)", sep='', file=f)
             print("{", file=f)
             print("\tunsigned int index = 0;", file=f)
             print("\tfor (int i = 0; i < nb_attributes; i++, index += 5) {", file=f)
@@ -742,77 +748,77 @@ class genclass:
                 print("#include <so/", self.extends, ".h>", sep='', file=f)
 
             print(file=f)
-            print("/** \\struct so_", self.name, sep='', file=f)
+            print("/** \\struct ", self.class_name, sep='', file=f)
             print("\t \\brief A structure representing an", self.structure[self.name]['xpath'], "element", file=f)
             print("*/", file=f)
 
-            print("typedef struct so_", self.name, " so_", self.name, ";", sep='', file=f)
+            print("typedef struct ", self.class_name, " ", self.class_name, ";", sep='', file=f)
             print(file=f)
 
             # function prototypes
-            print("/** \\memberof so_", self.name, sep='', file=f)
-            print(" * Create a new empty so_", self.name, " structure.", sep='', file=f)
+            print("/** \\memberof ", self.class_name, sep='', file=f)
+            print(" * Create a new empty ", self.class_name, " structure.", sep='', file=f)
             print(" * \\return A pointer to the newly created struct or NULL if memory allocation failed", file=f)
-            print(" * \\sa so_", self.name, "_copy, so_", self.name, "_free", sep='', file=f)
+            print(" * \\sa ", self.class_name, "_copy, ", self.class_name, "_free", sep='', file=f)
             print(" */", file=f)
             
-            print("so_", self.name, " *so_", self.name, "_new();", sep='', file=f)
+            print(self.class_name, " *", self.class_name, "_new();", sep='', file=f)
 
-            print("/** \\memberof so_", self.name, sep='', file=f)
-            print(" * Create a copy of a so_", self.name, " structure.", sep='', file=f)
+            print("/** \\memberof ", self.class_name, sep='', file=f)
+            print(" * Create a copy of a ", self.class_name, " structure.", sep='', file=f)
             print(" * \\return A pointer to the newly created struct or NULL if memory allocation failed", file=f)
-            print(" * \\sa so_", self.name, "_new", sep='', file=f)
+            print(" * \\sa ", self.class_name, "_new", sep='', file=f)
             print(" */", file=f)
 
-            print("so_", self.name, " *so_", self.name, "_copy(so_", self.name, " *self);", sep='', file=f)
+            print(self.class_name, " *", self.class_name, "_copy(", self.class_name, " *self);", sep='', file=f)
 
-            print("/** \\memberof so_", self.name, sep='', file=f)
-            print(" * Free all memory associated with a so_", self.name, " structure and its children.", sep='', file=f)
+            print("/** \\memberof ", self.class_name, sep='', file=f)
+            print(" * Free all memory associated with a ", self.class_name, " structure and its children.", sep='', file=f)
             print(" * \\param self - a pointer to the structure to free", file=f)
-            print(" * \\sa so_", self.name, "_new", sep='', file=f)
+            print(" * \\sa ", self.class_name, "_new", sep='', file=f)
             print(" */", file=f)
 
-            print("void so_", self.name, "_free(so_", self.name, " *self);", sep='', file=f)
+            print("void ", self.class_name, "_free(", self.class_name, " *self);", sep='', file=f)
 
-            print("void so_", self.name, "_ref(so_", self.name, " *self);", sep='', file=f)
-            print("void so_", self.name, "_unref(so_", self.name, " *self);", sep='', file=f)
+            print("void ", self.class_name, "_ref(", self.class_name, " *self);", sep='', file=f)
+            print("void ", self.class_name, "_unref(", self.class_name, " *self);", sep='', file=f)
             if self.extends:
-                print("so_", self.extends, " *so_", self.name, "_get_base(so_", self.name, " *self);", sep='', file=f)
-                print("int so_", self.name, "_set_base(so_", self.name, " *self, so_", self.extends, " *value);", sep='', file=f)
+                print("so_", self.extends, " *", self.class_name, "_get_base(", self.class_name, " *self);", sep='', file=f)
+                print("int ", self.class_name, "_set_base(", self.class_name, " *self, so_", self.extends, " *value);", sep='', file=f)
 
             if self.attributes:
                 for a in self.attributes:
-                    print("/** \\memberof so_", self.name, sep='', file=f)
+                    print("/** \\memberof ", self.class_name, sep='', file=f)
                     print(" * Get the value of the ", a['name'], " attribute", sep='', file=f)
-                    print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
+                    print(" * \\param self - pointer to a ", self.class_name, sep='', file=f)
                     print(" * \\return A pointer to the attribute value", file=f)
-                    print(" * \\sa so_", self.name, "_set_", a['name'], sep='', file=f)
+                    print(" * \\sa ", self.class_name, "_set_", a['name'], sep='', file=f)
                     print(" */", file=f)
 
                     if a['type'] == 'type_string':
-                        print("char *so_", self.name, "_get_", a['name'], "(so_", self.name, " *self);", sep='', file=f)
+                        print("char *", self.class_name, "_get_", a['name'], "(", self.class_name, " *self);", sep='', file=f)
                     elif a['type'] == 'type_int':
-                        print("int *so_", self.name, "_get_", a['name'], "(so_", self.name, " *self);", sep='', file=f)
+                        print("int *", self.class_name, "_get_", a['name'], "(", self.class_name, " *self);", sep='', file=f)
 
-                    print("/** \\memberof so_", self.name, sep='', file=f)
+                    print("/** \\memberof ", self.class_name, sep='', file=f)
                     print(" * Set the value of the ", a['name'], " attribute", sep='', file=f)
-                    print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
+                    print(" * \\param self - pointer to a ", self.class_name, sep='', file=f)
                     print(" * \\param value - A pointer to the attribute value", file=f)
                     if a['type'] == 'type_string':
                         print(" * \\return 0 for success", file=f)
-                    print(" * \\sa so_", self.name, "_get_", a['name'], sep='', file=f)
+                    print(" * \\sa ", self.class_name, "_get_", a['name'], sep='', file=f)
                     print(" */", file=f)
 
                     if a['type'] == 'type_string':
-                        print("int so_", self.name, "_set_", a['name'], "(so_", self.name, " *self, char *value);", sep='', file=f)
+                        print("int ", self.class_name, "_set_", a['name'], "(", self.class_name, " *self, char *value);", sep='', file=f)
                     elif a['type'] == 'type_int':
-                        print("void so_", self.name, "_set_", a['name'], "(so_", self.name, " *self, int *value);", sep='', file=f)
+                        print("void ", self.class_name, "_set_", a['name'], "(", self.class_name, " *self, int *value);", sep='', file=f)
 
             if self.children:
                 for e in self.children:
-                    print("/** \\memberof so_", self.name, sep='', file=f)
+                    print("/** \\memberof ", self.class_name, sep='', file=f)
                     print(" * Get the", e['name'], "element", file=f)
-                    print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
+                    print(" * \\param self - pointer to a ", self.class_name, sep='', file=f)
                     if e.get("array", False):
                         print(" * \\param number - An index to the specific element", file=f)
                     if e['type'] == "type_string":
@@ -821,7 +827,7 @@ class genclass:
                         print(" * \\return A pointer to the value of", e['name'], "or NULL if no value is present.", file=f)
                     else:
                         print(" * \\return A pointer to the structure representing the", e['name'], "element", file=f)
-                    print(" * \\sa so_", self.name, "_set_", e['name'], sep='', file=f)
+                    print(" * \\sa ", self.class_name, "_set_", e['name'], sep='', file=f)
                     print(" */", file=f)
 
                     if e['type'] == "type_string":
@@ -832,19 +838,19 @@ class genclass:
                         return_type = "int *"
                     else:
                         return_type = "so_" + e['type'] + " *"
-                    print(return_type, "so_", self.name, "_get_", e['name'], "(so_", self.name, " *self", sep='', end='', file=f)
+                    print(return_type, self.class_name, "_get_", e['name'], "(", self.class_name, " *self", sep='', end='', file=f)
                     if e.get("array", False):
                         print(", int number", end='', file=f)
                     print(");", file=f)
 
                     # _get_number_of_ for arrays
                     if e.get('array', False):
-                        print("/** \\memberof so_", self.name, sep='', file=f)
+                        print("/** \\memberof ", self.class_name, sep='', file=f)
                         print(" * Get the number of", e['name'], "currently contained in the", self.name, "structure", file=f)
-                        print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
+                        print(" * \\param self - pointer to a ", self.class_name, sep='', file=f)
                         print(" * \\return The number of ", e['name'], "s", sep='', file=f)
                         print(" */", file=f)
-                        print("int so_", self.name, "_get_number_of_", e['name'], "(so_", self.name, " *self);", sep='', file=f)
+                        print("int ", self.class_name, "_get_number_of_", e['name'], "(", self.class_name, " *self);", sep='', file=f)
 
                 for e in self.children:
                     if not e.get('array', False):   # No setters for arrays
@@ -860,31 +866,31 @@ class genclass:
                         else:
                             man_type = "so_" + e['type']
                             param_type = man_type + " *"
-                        print("/** \\memberof so_", self.name, sep='', file=f)
+                        print("/** \\memberof ", self.class_name, sep='', file=f)
                         print(" * Set the ", e['name'], " element", sep='', file=f)
-                        print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
+                        print(" * \\param self - pointer to a ", self.class_name, sep='', file=f)
                         if e['type'] == "type_real" or e['type'] == "type_int":
                             print(" * \\param value - A pointer to the value to set or NULL to not include this element.", sep='', file=f)
                         else:
                             print(" * \\param value - A pointer to a \\a ", man_type, " to set.", sep='', file=f)
                         if return_type == "int":
                             print(" * \\return 0 for success", file=f)
-                        print(" * \\sa so_", self.name, "_get_", e['name'], sep='', file=f)
+                        print(" * \\sa ", self.class_name, "_get_", e['name'], sep='', file=f)
                         print(" */", file=f)
 
-                        print(return_type, " so_", self.name, "_set_", e['name'], "(so_", self.name, " *self, ", param_type, "value);", sep='', file=f)
+                        print(return_type, " ", self.class_name, "_set_", e['name'], "(", self.class_name, " *self, ", param_type, "value);", sep='', file=f)
 
                 for e in self.children:
                     if e['type'] != "type_string" and e['type'] != "type_real" and e['type'] != "type_int":
-                        print("/** \\memberof so_", self.name, sep='', file=f)
-                        print(" * Create a new ", e['name'], " element and insert it into the so_", self.name, sep='', file=f)
-                        print(" * \\param self - pointer to a so_", self.name, sep='', file=f)
+                        print("/** \\memberof ", self.class_name, sep='', file=f)
+                        print(" * Create a new ", e['name'], " element and insert it into the ", self.class_name, sep='', file=f)
+                        print(" * \\param self - pointer to a ", self.class_name, sep='', file=f)
                         print(" * \\return A pointer to the newly created structure or NULL if memory allocation failed", file=f)
                         print(" */", file=f)
 
-                        print("so_", e['type'], " *so_", self.name, "_create_", e['name'], "(so_", self.name, " *self);", sep='', file=f)
+                        print("so_", e['type'], " *", self.class_name, "_create_", e['name'], "(", self.class_name, " *self);", sep='', file=f)
                         if e.get('array', False):
-                            print("int so_", self.name, "_add_", e['name'], "(so_", self.name, " *self, so_", e['type'], " *child);", sep='', file=f)
+                            print("int ", self.class_name, "_add_", e['name'], "(", self.class_name, " *self, so_", e['type'], " *child);", sep='', file=f)
 
             print(file=f)
             print("#endif", file=f)
@@ -912,7 +918,7 @@ class genclass:
                 print("#include <so/private/", self.extends, ".h>", sep='', file=f)
 
             print(file=f)
-            print("struct so_", self.name, " {", sep='', file=f)
+            print("struct ", self.class_name, " {", sep='', file=f)
 
             if self.extends:
                 print("\tso_", self.extends, " *base;", sep='', file=f)
@@ -953,16 +959,16 @@ class genclass:
             print("};", file=f)
      
             print(file=f)
-            print("int so_", self.name, "_start_element(so_", self.name, " *self, const char *localname, int nb_attributes, const char **attributes);", sep='', file=f)
-            print("void so_", self.name, "_end_element(so_", self.name, " *self, const char *localname);", sep='', file=f)
-            print("int so_", self.name, "_characters(so_", self.name, " *self, const char *ch, int len);", sep='', file=f)
+            print("int ", self.class_name, "_start_element(", self.class_name, " *self, const char *localname, int nb_attributes, const char **attributes);", sep='', file=f)
+            print("void ", self.class_name, "_end_element(", self.class_name, " *self, const char *localname);", sep='', file=f)
+            print("int ", self.class_name, "_characters(", self.class_name, " *self, const char *ch, int len);", sep='', file=f)
             if self.name in need_name:
                 extra = ", char *element_name"
             else:
                 extra = ""
-            print("int so_", self.name, "_xml(so_", self.name, " *self, xmlTextWriterPtr writer", extra, ");", sep='', file=f)
+            print("int ", self.class_name, "_xml(", self.class_name, " *self, xmlTextWriterPtr writer", extra, ");", sep='', file=f)
             if self.attributes:
-                print("int so_", self.name, "_init_attributes(so_", self.name, " *self, int nb_attributes, const char **attributes);", sep='', file=f)
+                print("int ", self.class_name, "_init_attributes(", self.class_name, " *self, int nb_attributes, const char **attributes);", sep='', file=f)
             print(file=f)
             print("#endif", file=f)
         os.chdir("..")
