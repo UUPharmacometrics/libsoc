@@ -22,7 +22,7 @@ import os
 import sys
 import shutil
 import common
-from structure import structure, need_name
+from structure import structure, need_name, namespaces
 from genclass import genclass
 
 if len(sys.argv) > 1 and sys.argv[1] == "clean":
@@ -48,10 +48,14 @@ for name in structure:
     if 'extends' in structure[name]:
         need_name.append(name)
 
+# Create the namespaces hash
+for name in structure:
+    namespaces[name] = structure[name]['namespace']
+
 # Create code and headers
 for name in structure:
     os.chdir("gen")
-    genc = genclass(name, structure)
+    genc = genclass(name, structure, namespaces)
     genc.create_code()
     os.chdir("../include/so")
     genc.create_headers()

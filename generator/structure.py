@@ -23,6 +23,13 @@ need_name = [
     'Table', 'Matrix', 'ExternalFile', 'SimulationSubType'
 ]
 
+namespaces = {
+    'Table' : 'so',
+    'Matrix' : 'so',
+    'ExternalFile' : 'so',
+    'SimulationSubType' : 'so',
+}
+
 structure = {
     'SO' : {
         'children' : [
