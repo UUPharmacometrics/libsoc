@@ -21,12 +21,12 @@ import common
 from structure import need_name
 
 class genclass:
-    def __init__(self, name, structure, prefix):
+    def __init__(self, name, structure):
         self.name = name
-        self.prefix = prefix
-        self.class_name = self.prefixed_symbol(self.name)
         self.structure = structure
         entry = structure[name]
+        self.namespace = entry['namespace']
+        self.class_name = self.prefixed_symbol(self.name)
         self.children = entry.get('children', None)
         self.attributes = entry.get('attributes', None)
         self.fixed_attributes = entry.get('fixed_attributes', None)
@@ -38,7 +38,7 @@ class genclass:
 
     def prefixed_symbol(self, name):
         # prefix a symbol with the namespace prefix
-        return self.prefix + "_" + name
+        return self.namespace + "_" + name
 
     def create_code(self):
         with open(self.name + ".c", "w") as f:

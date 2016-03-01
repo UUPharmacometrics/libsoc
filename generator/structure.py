@@ -45,7 +45,8 @@ structure = {
             { 'name' : "writtenVersion", 'value' : "0.3" },
         ],
         'xpath' : 'SO',
-        'fields' : [ 'int error;' ]
+        'fields' : [ 'int error;' ],
+        'namespace' : 'so'
     },
     'PharmMLRef' : {
         'children' : [
@@ -55,7 +56,8 @@ structure = {
             { 'name' : 'name', 'type' : 'type_string' },
             { 'name' : 'id', 'type' : 'type_string' },
         ],
-        'xpath' : 'SO/PharmMLRef'
+        'xpath' : 'SO/PharmMLRef',
+        'namespace' : 'so'
     },
     'SOBlock' : {
         'children' : [
@@ -70,20 +72,23 @@ structure = {
         'attributes' : [
             { 'name' : 'blkId', 'type' : 'type_string' },
         ],
-        'xpath' : 'SO/SOBlock'
+        'xpath' : 'SO/SOBlock',
+        'namespace' : 'so'
     },
     'ToolSettings' : {
         'children' : [
             { 'name' : 'File', 'type' : 'ExternalFile', 'array' : True },
         ],
-        'xpath' : 'SO/SOBlock/ToolSettings'
+        'xpath' : 'SO/SOBlock/ToolSettings',
+        'namespace' : 'so'
     },
     'RawResults' : {
         'children' : [
             { 'name' : 'DataFile', 'type' : 'Table', 'array' : True },
             { 'name' : 'GraphicsFile', 'type' : 'ExternalFile', 'array' : True },
         ],
-        'xpath' : 'SO/SOBlock/RawResults'
+        'xpath' : 'SO/SOBlock/RawResults',
+        'namespace' : 'so'
     },
     'TaskInformation' : {
         'children' : [
@@ -93,7 +98,8 @@ structure = {
             { 'name' : 'NumberChains', 'type' : 'type_int' },
             { 'name' : 'NumberIterations', 'type' : 'type_int' },
         ],
-        'xpath' : 'SO/SOBlock/TaskInformation'
+        'xpath' : 'SO/SOBlock/TaskInformation',
+        'namespace' : 'so'
     },
     'Message' : {
         'children' : [
@@ -105,7 +111,8 @@ structure = {
         'attributes' : [
             { 'name' : 'type', 'type' : 'type_string' },
         ],
-        'xpath' : 'SO/SOBlock/TaskInformation/Message'
+        'xpath' : 'SO/SOBlock/TaskInformation/Message',
+        'namespace' : 'so'
     },
     'Estimation' : {
         'children' : [
@@ -116,7 +123,8 @@ structure = {
             { 'name' : 'Predictions', 'type' : 'Table' },
             { 'name' : 'OFMeasures', 'type' : 'OFMeasures' },
         ],
-        'xpath' : 'SO/SOBlock/Estimation'
+        'xpath' : 'SO/SOBlock/Estimation',
+        'namespace' : 'so'
     },
     'PopulationEstimates' : {
         'children' : [
@@ -124,7 +132,8 @@ structure = {
             { 'name' : 'Bayesian', 'type' : 'Bayesian' },
             { 'name' : 'OtherMethod', 'type' : 'OtherMethod' }
         ],
-        'xpath' : 'SO/SOBlock/Estimation/PopulationEstimates'
+        'xpath' : 'SO/SOBlock/Estimation/PopulationEstimates',
+        'namespace' : 'so'
     },
     'OtherMethod' : {
         'children' : [
@@ -134,7 +143,8 @@ structure = {
         'attributes' : [
             { 'name': 'method', 'type' : 'type_string' },
         ],
-        'xpath' : 'SO/SOBlock/Estimation/PopulationEstimates/OtherMethod'
+        'xpath' : 'SO/SOBlock/Estimation/PopulationEstimates/OtherMethod',
+        'namespace' : 'so'
     },
     'Bayesian' : {
         'children' : [
@@ -142,7 +152,8 @@ structure = {
             { 'name' : 'PosteriorMedian', 'type' : 'Table' },
             { 'name' : 'PosteriorMode', 'type' : 'Table' }
         ],
-        'xpath' : 'SO/SOBlock/Estimation/PopulationEstimates/Bayesian'
+        'xpath' : 'SO/SOBlock/Estimation/PopulationEstimates/Bayesian',
+        'namespace' : 'so'
     },
     'PrecisionPopulationEstimates' : {
         'children' : [
@@ -150,7 +161,8 @@ structure = {
             { 'name' : 'Bayesian', 'type' : 'Bayesian_PPE' },
             { 'name' : 'OtherMethod', 'type' : 'OtherMethod_PPE' },
         ],
-        'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates'
+        'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates',
+        'namespace' : 'so'
     },
     'OtherMethod_PPE' : {
         'children' : [
@@ -161,7 +173,8 @@ structure = {
             { 'name' : 'AsymptoticCI', 'type' : 'Table' },
             { 'name' : 'PercentilesCI', 'type' : 'Table' },
         ],
-        'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates/OtherMethod'
+        'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates/OtherMethod',
+        'namespace' : 'so'
     },
     'Bayesian_PPE' : {
         'element_name' : 'Bayesian',
@@ -169,7 +182,8 @@ structure = {
             { 'name' : 'StandardDeviationPosterior', 'type' : 'Table' },
             { 'name' : 'PercentilesCI', 'type' : 'Table' },
         ],
-        'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates/Bayesian'
+        'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates/Bayesian',
+        'namespace' : 'so'
     },
     'MLE' : {
         'children' : [
@@ -181,7 +195,8 @@ structure = {
             { 'name' : 'AsymptoticCI', 'type' : 'Table' },
             { 'name' : 'ConditionNumber', 'type' : 'type_real' },
         ],
-        'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates/MLE' 
+        'xpath' : 'SO/SOBlock/Estimation/PrecisionPopulationEstimates/MLE', 
+        'namespace' : 'so'
     },
     'IndividualEstimates' : {
         'children' : [
@@ -189,7 +204,8 @@ structure = {
             { 'name' : 'RandomEffects', 'type' : 'RandomEffects_IE' },
             { 'name' : 'EtaShrinkage', 'type' : 'Table' },
         ],
-        'xpath' : 'SO/SOBlock/Estimation/IndividualEstimates'
+        'xpath' : 'SO/SOBlock/Estimation/IndividualEstimates',
+        'namespace' : 'so'
     },
     'Estimates' : {
         'children' : [
@@ -198,7 +214,8 @@ structure = {
             { 'name' : 'Mode', 'type' : 'Table' },
             { 'name' : 'Samples', 'type' : 'Table' },
         ],
-        'xpath' : 'SO/SOBlock/Estimation/IndividualEstimates/Estimates'
+        'xpath' : 'SO/SOBlock/Estimation/IndividualEstimates/Estimates',
+        'namespace' : 'so'
     },
     'RandomEffects_IE' : {
         'element_name' : 'RandomEffects',
@@ -208,14 +225,16 @@ structure = {
             { 'name' : 'EffectMode', 'type' : 'Table' },
             { 'name' : 'Samples', 'type' : 'Table' },
         ],
-        'xpath' : 'SO/SOBlock/Estimation/IndividualEstimates/RandomEffects'
+        'xpath' : 'SO/SOBlock/Estimation/IndividualEstimates/RandomEffects',
+        'namespace' : 'so'
     },
     'Residuals' : {
         'children' : [
             { 'name' : 'ResidualTable', 'type' : 'Table' },
             { 'name' : 'EpsShrinkage', 'type' : 'Table' }
         ],
-        'xpath' : 'SO/SOBlock/Estimation/Residuals'
+        'xpath' : 'SO/SOBlock/Estimation/Residuals',
+        'namespace' : 'so'
     },
     'OFMeasures' : {
         'children' : [
@@ -224,13 +243,15 @@ structure = {
             { 'name' : 'Deviance', 'type' : 'type_real' },
             { 'name' : 'IndividualContribtoLL', 'type' : 'Table' },
         ],
-        'xpath' : 'SO/SOBlock/Estimation/OFMeasures'
+        'xpath' : 'SO/SOBlock/Estimation/OFMeasures',
+        'namespace' : 'so'
     },
     'Simulation' : {
         'children' : [
             { 'name' : 'SimulationBlock', 'type' : 'SimulationBlock', 'array' : True },
         ],
-        'xpath' : 'SO/SOBlock/Simulation'
+        'xpath' : 'SO/SOBlock/Simulation',
+        'namespace' : 'so'
     },
     'SimulationBlock' : {
         'children' : [
@@ -245,7 +266,8 @@ structure = {
         'attributes' : [
             { 'name' : 'replicate', 'type' : 'type_int' },
         ],
-        'xpath' : 'SO/SOBlock/Simulation/SimulationBlock'
+        'xpath' : 'SO/SOBlock/Simulation/SimulationBlock',
+        'namespace' : 'so'
     },
     #'SimulationSubType' : {
     #    'extends' : 'Table',
@@ -253,7 +275,8 @@ structure = {
     #        { 'name' : 'name', 'type' : 'type_string' },
     #        { 'name' : 'extFileNo', 'type' : 'type_int' },
     #    ],
-    #    'xpath' : 'SimulationSubType'
+    #    'xpath' : 'SimulationSubType',
+    #    'namespace' : 'so'
     #},
     'ExternalFile' : {
         'children' : [
@@ -266,14 +289,16 @@ structure = {
         'attributes' : [
             { 'name' : 'oid', 'type' : 'type_string' },
         ],
-        'xpath' : 'ExternalFile'
+        'xpath' : 'ExternalFile',
+        'namespace' : 'so'
     },
     'MissingData' : {
         'attributes' : [
             { 'name' : 'dataCode', 'type' : 'type_string' },
             { 'name' : 'missingDataType', 'type' : 'type_string' },
         ],
-        'xpath' : 'MissingData'
+        'xpath' : 'MissingData',
+        'namespace' : 'so'
     },
     'OptimalDesign' : {
         'children' : [
@@ -282,7 +307,8 @@ structure = {
         'attributes' : [
             { 'name' : 'type', 'type' : 'type_string' },
         ],
-        'xpath' : 'SO/SOBlock/OptimalDesign'
+        'xpath' : 'SO/SOBlock/OptimalDesign',
+        'namespace' : 'so'
     },
     'OptimalDesignBlock' : {
         'children' : [
@@ -297,14 +323,16 @@ structure = {
         'attributes' : [
             { 'name' : 'blockNumber', 'type' : 'type_int' },
         ],
-        'xpath' : 'SO/SOBlock/OptimalDesign/OptimalDesignBlock'
+        'xpath' : 'SO/SOBlock/OptimalDesign/OptimalDesignBlock',
+        'namespace' : 'so'
     },
     'ModelDiagnostic' : {
         'children' : [
             { 'name' : 'DiagnosticPlotsStructuralModel', 'type' : 'DiagnosticPlotsStructuralModel' },
             { 'name' : 'DiagnosticPlotsIndividualParams', 'type' : 'Table' },
         ],
-        'xpath' : 'SO/SOBlock/ModelDiagnostic'
+        'xpath' : 'SO/SOBlock/ModelDiagnostic',
+        'namespace' : 'so'
     },
     'DiagnosticPlotsStructuralModel' : {
         'children' : [
@@ -312,13 +340,15 @@ structure = {
             { 'name' : 'IndivPredictionVsObserv', 'type' : 'Table' },
             { 'name' : 'VPC', 'type' : 'Table' },
         ],
-        'xpath' : 'SO/SOBlock/ModelDiagnostic/DiagnosticPlotsStructuralModel'
+        'xpath' : 'SO/SOBlock/ModelDiagnostic/DiagnosticPlotsStructuralModel',
+        'namespace' : 'so'
     },
     'IndivFits' : {
         'children' : [
             { 'name' : 'ObservationTable', 'type' : 'Table' },
             { 'name' : 'PredictionTable', 'type' : 'Table' },
         ],
-        'xpath' : 'SO/SOBlock/ModelDiagnostic/DiagnosticPlotsStructuralModel/IndivFits'
+        'xpath' : 'SO/SOBlock/ModelDiagnostic/DiagnosticPlotsStructuralModel/IndivFits',
+        'namespace' : 'so'
     },
 }
