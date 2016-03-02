@@ -372,6 +372,7 @@ structure = {
 	    { 'name' : 'xmlns:mdef', 'value' : 'http://www.pharmml.org/pharmml/0.8/ModelDefinition' },
 	    { 'name' : 'xmlns:mstep', 'value' : 'http://www.pharmml.org/pharmml/0.8/ModellingSteps' },
             { 'name' : 'xmlns:design', 'value' : 'http://www.pharmml.org/pharmml/0.8/TrialDesign' },
+            { 'name' : "writtenVersion", 'value' : "0.8" },
          ],
         'children' : [
             { 'name' : 'Name', 'type' : 'type_string', 'prefix' : 'ct' },
