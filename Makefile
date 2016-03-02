@@ -1,8 +1,11 @@
-GEN_SRCS := $(wildcard gen/*.c)
-OBJS := $(GEN_SRCS:.c=.o)
-OBJS_NODIR := $(notdir $(OBJS))
-CODE := soext.c SOBlock_ext.c Table.c column.c common_types.c Matrix.c string.c SimulationSubType.c
-CODEOBJS := $(CODE:.c=.o)
+SOC_GENSRCS := Bayesian.c Bayesian_PPE.c DiagnosticPlotsStructuralModel.c Estimates.c Estimation.c ExternalFile.c IndivFits.c IndividualEstimates.c \
+	Message.c MissingData.c MLE.c ModelDiagnostic.c OFMeasures.c OptimalDesignBlock.c OptimalDesign.c OtherMethod.c OtherMethod_PPE.c PharmMLRef.c \
+	PopulationEstimates.c PrecisionPopulationEstimates.c RandomEffects_IE.c RawResults.c Residuals.c SimulationBlock.c Simulation.c \
+	SOBlock.c SO.c TaskInformation.c ToolSettings.c
+SOC_GENOBJS := $(SOC_GENSRCS:.c=.o)
+
+SOC_SRCS := soext.c SOBlock_ext.c Table.c column.c common_types.c Matrix.c string.c SimulationSubType.c
+SOC_OBJS := $(SOC_SRCS:.c=.o)
 
 CC := gcc
 CFLAGS := -std=c99 -Wall -pedantic -c -g -fpic -I. -Iinclude `xml2-config --cflags`
@@ -12,8 +15,8 @@ LIBS := -lxml2
 
 VPATH := gen
 
-libsoc.so: $(OBJS_NODIR) $(CODEOBJS)
-	$(CC) -shared -o libsoc.so $(OBJS_NODIR) soext.o SOBlock_ext.o Table.o column.o common_types.o Matrix.o string.o SimulationSubType.o $(LIBS) -std=c99 -pedantic
+libsoc.so: $(SOC_GENOBJS) $(SOC_OBJS)
+	$(CC) -shared -o libsoc.so $(SOC_GENOBJS) $(SOC_OBJS) $(LIBS) -std=c99 -pedantic
 
 
 soext.o: src/soext.c include/so/soext.h 
@@ -85,6 +88,7 @@ clean:
 R:
 	cd generator; python3 R.py
 	cp -r include R/src/
+	#$(addprefix gen/, $(SOC_GENSRCS))
 	for FILE in $$(find src/ -name "*.c"); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
 	for FILE in $$(find gen/ -name "*.c"); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
 	R CMD build R
