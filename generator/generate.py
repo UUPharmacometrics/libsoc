@@ -57,6 +57,6 @@ for name in structure:
     os.chdir("gen")
     genc = genclass(name, structure, namespaces)
     genc.create_code()
-    os.chdir("../include/so")
+    os.chdir("../include/" + namespaces[name])
     genc.create_headers()
     os.chdir("../..")

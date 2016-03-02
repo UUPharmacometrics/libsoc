@@ -44,4 +44,8 @@ doxygen_sqlite3.db
 html/*
 latex/*
 
+libpharmmlc.so
+include/pharmml/*
+!include/pharmml/PharmML_ext.h
+
 *.swp

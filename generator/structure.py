@@ -358,4 +358,26 @@ structure = {
         'xpath' : 'SO/SOBlock/ModelDiagnostic/DiagnosticPlotsStructuralModel/IndivFits',
         'namespace' : 'so'
     },
+
+   
+    # PharmML
+    'PharmML' : {
+        'fixed_attributes' : [
+            { 'name' : 'xmlns', 'value' : 'http://www.pharmml.org/pharmml/0.8/PharmML' },
+	    { 'name' : 'xmlns:xsi', 'value' : 'http://www.w3.org/2001/XMLSchema-instance' }, 
+            { 'name' : 'xsi:schemaLocation', 'value' : 'http://www.pharmml.org/pharmml/0.8/PharmML' },
+            { 'name' : 'xmlns:math', 'value' : 'http://www.pharmml.org/pharmml/0.8/Maths' },
+	    { 'name' : 'xmlns:ct', 'value' : 'http://www.pharmml.org/pharmml/0.8/CommonTypes' },
+            { 'name' : 'xmlns:ds', 'value' : 'http://www.pharmml.org/pharmml/0.8/Dataset' },
+	    { 'name' : 'xmlns:mdef', 'value' : 'http://www.pharmml.org/pharmml/0.8/ModelDefinition' },
+	    { 'name' : 'xmlns:mstep', 'value' : 'http://www.pharmml.org/pharmml/0.8/ModellingSteps' },
+            { 'name' : 'xmlns:design', 'value' : 'http://www.pharmml.org/pharmml/0.8/TrialDesign' },
+         ],
+        'children' : [
+            { 'name' : 'Name', 'type' : 'type_string', 'prefix' : 'ct' },
+        ],
+        'fields' : [ 'int error;' ],
+        'xpath' : 'PharmML',
+        'namespace' : 'pharmml'
+    },
 }

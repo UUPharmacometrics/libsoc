@@ -69,8 +69,8 @@ class genclass:
         print("#include <libxml/xmlwriter.h>", file=f)
         print("#include <pharmml/common_types.h>", file=f)
         print("#include <pharmml/string.h>", file=f)
-        print('#include <so/', self.name, '.h>', sep='', file=f)
-        print('#include <so/private/', self.name, '.h>', sep='', file=f)
+        print('#include <', self.namespace, '/', self.name, '.h>', sep='', file=f)
+        print('#include <', self.namespace, '/private/', self.name, '.h>', sep='', file=f)
         print(file=f)
 
     def create_new(self):
@@ -733,8 +733,8 @@ class genclass:
         with open(self.name + ".h", "w") as f:
             common.output_file = f
             common.print_license_string()
-            print("#ifndef _SO_", self.name.upper(), "_H", sep='', file=f)
-            print("#define _SO_", self.name.upper(), "_H", sep='', file=f)
+            print("#ifndef _", self.namespace.upper(), "_", self.name.upper(), "_H", sep='', file=f)
+            print("#define _", self.namespace.upper(), "_", self.name.upper(), "_H", sep='', file=f)
             print(file=f)
 
             included = [ 'type_string', 'type_real', 'type_int' ]
@@ -742,11 +742,11 @@ class genclass:
                 for e in self.children:
                     if e['type'] not in included:
                         included.append(e['type'])
-                        print('#include <so/', e['type'], '.h>', sep='', file=f)
+                        print('#include <', self.namespaces[e['type']], '/', e['type'], '.h>', sep='', file=f)
 
             if self.extends and self.extends not in included:
                 included.append(self.extends)
-                print("#include <so/", self.extends, ".h>", sep='', file=f)
+                print("#include <", self.namespaces[self.extends], "/", self.extends, ".h>", sep='', file=f)
 
             print(file=f)
             print("/** \\struct ", self.class_name, sep='', file=f)
@@ -900,8 +900,8 @@ class genclass:
         with open(self.name + ".h", "w") as f:
             common.output_file = f
             common.print_license_string()
-            print("#ifndef _SO_PRIVATE_", self.name.upper(), "_H", sep='', file=f)
-            print("#define _SO_PRIVATE_", self.name.upper(), "_H", sep='', file=f)
+            print("#ifndef _", self.namespace.upper(), "_PRIVATE_", self.name.upper(), "_H", sep='', file=f)
+            print("#define _", self.namespace.upper(), "_PRIVATE_", self.name.upper(), "_H", sep='', file=f)
 
             print(file=f)
             print("#include <libxml/xmlwriter.h>", file=f)
@@ -912,11 +912,11 @@ class genclass:
                 for e in self.children:
                     if e['type'] not in included:
                         included.append(e['type'])
-                        print('#include <so/private/', e['type'], '.h>', sep='', file=f)
+                        print('#include <', self.namespaces[e['type']], '/private/', e['type'], '.h>', sep='', file=f)
 
             if self.extends and self.extends not in included:
                 included.append(self.extends)
-                print("#include <so/private/", self.extends, ".h>", sep='', file=f)
+                print("#include <", self.namespaces[self.extends], '/private/', self.extends, ".h>", sep='', file=f)
 
             print(file=f)
             print("struct ", self.class_name, " {", sep='', file=f)
