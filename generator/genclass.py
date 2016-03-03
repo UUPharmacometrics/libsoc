@@ -36,6 +36,11 @@ class genclass:
         self.element_name = entry.get('element_name', None)
         self.fields = entry.get('fields', None)
         self.namespaces = namespaces
+        self.prefix = entry.get('prefix', None)
+        if self.prefix:
+            self.prefix += ":"
+        else:
+            self.prefix = ""
 
     def prefix_class(self, name):
         # prefix a class name with the namespace prefix
@@ -444,9 +449,6 @@ class genclass:
                 items_to_test += self.attributes
             # Check if any sub-element is non-NULL
             print("\tif (", end='', file=f) 
-            #for e in self.children[:-1]:
-            #    print("self->", e['name'], ' || ', sep='', end='', file=f)
-            #print("self->", self.children[-1]['name'], ") {", sep='', file=f)
             for e in items_to_test[:-1]:
                 print("self->", e['name'], ' || ', sep='', end='', file=f)
             print("self->", items_to_test[-1]['name'], ") {", sep='', file=f)
@@ -463,7 +465,7 @@ class genclass:
                 print('\t\trc = xmlTextWriterStartElement(writer, BAD_CAST element_name);', sep='', file=f)
                 print('\t\tif (rc < 0) return 1;', file=f)
             else:
-                print('\t\trc = xmlTextWriterStartElement(writer, BAD_CAST "', name, '");', sep='', file=f)
+                print('\t\trc = xmlTextWriterStartElement(writer, BAD_CAST "', self.prefix, name, '");', sep='', file=f)
                 print('\t\tif (rc < 0) return 1;', file=f)
 
         if self.fixed_attributes:

@@ -427,19 +427,33 @@ structure = {
         'children' : [
             { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
             { 'name' : 'Name', 'type' : 'type_string', 'prefix' : 'ct' },
-            #{ 'name' : 'ParentLevel', 'type' : 'ParentLevel' },
+            { 'name' : 'ParentLevel', 'type' : 'ParentLevel' },
         ],
         'xpath' : 'PharmML/ModelDefinition/VariabilityModel/Level',
         'namespace' : 'pharmml'
     },
-    #'ParentLevel' : {
-    #    'attributes' : [
-    #        { 'name' : 'id', 'type' : 'type_string' },
-    #    ],
-    #    'children' : [
-    #        { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
-    #        { 'name' : 'SymbRef', 'type' : 'type_string', 'prefix' : 'ct' },
-
-
-    #},
+    'ParentLevel' : {
+        'attributes' : [
+            { 'name' : 'id', 'type' : 'type_string' },
+        ],
+        'children' : [
+            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'SymbRef', 'type' : 'SymbRef' },
+        ],
+        'xpath' : 'PharmML/ModelDefinition/VariabilityModel/Level/ParentLevel',
+        'namespace' : 'pharmml'
+    },
+    'SymbRef' : {
+        'attributes' : [
+            { 'name' : 'id', 'type' : 'type_string' },
+            { 'name' : 'blkIdRef', 'type' : 'type_string' },
+            { 'name' : 'symbIdRef', 'type' : 'type_string' },
+        ],
+        'children' : [
+            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+        ],
+        'xpath' : 'SymbRef',
+        'prefix' : 'ct',
+        'namespace' : 'pharmml'
+    },
 }
