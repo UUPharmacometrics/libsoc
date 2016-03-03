@@ -377,6 +377,7 @@ structure = {
         'children' : [
             { 'name' : 'Name', 'type' : 'type_string', 'prefix' : 'ct' },
             { 'name' : 'IndependentVariable', 'type' : 'IndependentVariable', 'array' : True },
+            { 'name' : 'ModelDefinition', 'type' : 'ModelDefinition' },
         ],
         'fields' : [ 'int error;' ],
         'xpath' : 'PharmML',
@@ -393,4 +394,52 @@ structure = {
         'xpath' : 'PharmML/IndependentVariable',
         'namespace' : 'pharmml'
     },
+    'ModelDefinition' : {
+        'fixed_attributes' : [
+            { 'name' : 'xmlns', 'value' : 'http://www.pharmml.org/pharmml/0.8/ModelDefinition' }
+        ],
+        'children' : [
+            { 'name' : 'VariabilityModel', 'type' : 'VariabilityModel', 'array' : True },
+        ],
+        'xpath' : 'PharmML/ModelDefinition',
+        'namespace' : 'pharmml'
+    },
+    'VariabilityModel' : {
+        'attributes' : [
+            { 'name' : 'id', 'type' : 'type_string' },
+            { 'name' : 'blkId', 'type' : 'type_string' },
+            { 'name' : 'type', 'type' : 'type_string' }
+        ],
+        'children' : [
+            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'Name', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'Level', 'type' : 'Level', 'array' : True },
+        ],
+        'xpath' : 'PharmML/ModelDefinition/VariabilityModel',
+        'namespace' : 'pharmml'
+    },
+    'Level' : {
+        'attributes' : [
+            { 'name' : 'id', 'type' : 'type_string' },
+            { 'name' : 'referenceLevel', 'type' : 'type_string' },
+            { 'name' : 'symbId', 'type' : 'type_string' }
+        ],
+        'children' : [
+            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'Name', 'type' : 'type_string', 'prefix' : 'ct' },
+            #{ 'name' : 'ParentLevel', 'type' : 'ParentLevel' },
+        ],
+        'xpath' : 'PharmML/ModelDefinition/VariabilityModel/Level',
+        'namespace' : 'pharmml'
+    },
+    #'ParentLevel' : {
+    #    'attributes' : [
+    #        { 'name' : 'id', 'type' : 'type_string' },
+    #    ],
+    #    'children' : [
+    #        { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+    #        { 'name' : 'SymbRef', 'type' : 'type_string', 'prefix' : 'ct' },
+
+
+    #},
 }
