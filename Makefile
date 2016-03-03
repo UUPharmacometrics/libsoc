@@ -7,7 +7,7 @@ SOC_GENOBJS := $(SOC_GENSRCS:.c=.o)
 SOC_SRCS := soext.c SOBlock_ext.c Table.c column.c common_types.c Matrix.c string.c SimulationSubType.c
 SOC_OBJS := $(SOC_SRCS:.c=.o)
 
-PHARMML_GENSRCS := PharmML.c string.c common_types.c
+PHARMML_GENSRCS := PharmML.c IndependentVariable.c string.c common_types.c
 PHARMML_GENOBJS := $(PHARMML_GENSRCS:.c=.o)
 PHARMML_SRCS := PharmML_ext.c
 PHARMML_OBJS := $(PHARMML_SRCS:.c=.o)

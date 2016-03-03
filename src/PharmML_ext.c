@@ -36,7 +36,7 @@ void pharmml_PharmML_on_start_element(void *ctx, const xmlChar *localname, const
     char *name = (char *) localname;
     pharmml_PharmML *pharmml = (pharmml_PharmML *) ctx;
     if (strcmp("PharmML", name) == 0) {
-        pharmml->error = pharmml_PharmML_start_element(pharmml, name, nb_attributes, (const char **) attributes);
+        ;//pharmml->error = pharmml_PharmML_start_element(pharmml, name, nb_attributes, (const char **) attributes);
         //pharmml_PharmML_init_attributes(pharmml, nb_attributes, (const char **) attributes);
     } else {
         pharmml->error = pharmml_PharmML_start_element(pharmml, name, nb_attributes, (const char **) attributes);

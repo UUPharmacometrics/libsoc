@@ -376,9 +376,21 @@ structure = {
          ],
         'children' : [
             { 'name' : 'Name', 'type' : 'type_string', 'prefix' : 'ct' },
+            { 'name' : 'IndependentVariable', 'type' : 'IndependentVariable', 'array' : True },
         ],
         'fields' : [ 'int error;' ],
         'xpath' : 'PharmML',
+        'namespace' : 'pharmml'
+    },
+    'IndependentVariable' : {
+        'attributes' : [
+            { 'name' : 'id', 'type' : 'type_string' },
+            { 'name' : 'symbId', 'type' : 'type_string' },
+        ],
+        'children' : [
+            { 'name' : 'Description', 'type' : 'type_string', 'prefix' : 'ct' },
+        ],
+        'xpath' : 'PharmML/IndependentVariable',
         'namespace' : 'pharmml'
     },
 }

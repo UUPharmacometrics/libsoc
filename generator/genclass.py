@@ -436,12 +436,20 @@ class genclass:
         print("{", file=f)
         print("\tint rc;", file=f)
 
-        if self.children:
+        if self.children or self.attributes:
+            items_to_test = []
+            if self.children:
+                items_to_test += self.children
+            if self.attributes:
+                items_to_test += self.attributes
             # Check if any sub-element is non-NULL
             print("\tif (", end='', file=f) 
-            for e in self.children[:-1]:
+            #for e in self.children[:-1]:
+            #    print("self->", e['name'], ' || ', sep='', end='', file=f)
+            #print("self->", self.children[-1]['name'], ") {", sep='', file=f)
+            for e in items_to_test[:-1]:
                 print("self->", e['name'], ' || ', sep='', end='', file=f)
-            print("self->", self.children[-1]['name'], ") {", sep='', file=f)
+            print("self->", items_to_test[-1]['name'], ") {", sep='', file=f)
 
         if self.extends:
             print("\t\trc = ", self.prefix_class(self.extends), "_xml(self->base, writer, element_name);", sep='', file=f) 
