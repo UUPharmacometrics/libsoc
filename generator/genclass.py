@@ -526,6 +526,7 @@ class genclass:
 
                 print("\t\t}", file=f)
 
+        if self.children or self.attributes:
             print("\t\trc = xmlTextWriterEndElement(writer);", file=f)
             print("\t\tif (rc < 0) return 1;", file=f)
             print("\t}", file=f)
