@@ -66,10 +66,12 @@ doc:
 .PHONY: utils
 utils:
 	cd utils; $(CC) sotool.c -osotool `xml2-config --libs --cflags`
+	cd utils; $(CC) pharmmltool.c -opharmmltool `xml2-config --libs --cflags`
 
 .PHONY: install_utils
 install_utils:
 	cp utils/sotool /usr/bin
+	cp utils/pharmmltool /usr/bin
 	mkdir -p /usr/share/libsoc
 	cp -rf utils/schema/* /usr/share/libsoc
 
@@ -93,6 +95,7 @@ clean:
 	rm -f fortran/libsoc.f03
 	rm -f fortran/test
 	rm -f utils/sotool
+	rm -f utils/pharmmltool
 
 .PHONY: R
 R:
