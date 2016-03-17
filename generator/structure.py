@@ -276,15 +276,52 @@ structure = {
         'xpath' : 'SO/SOBlock/Simulation/SimulationBlock',
         'namespace' : 'so'
     },
-    #'SimulationSubType' : {
-    #    'extends' : 'Table',
-    #    'attributes' : [
-    #        { 'name' : 'name', 'type' : 'type_string' },
-    #        { 'name' : 'extFileNo', 'type' : 'type_int' },
-    #    ],
-    #    'xpath' : 'SimulationSubType',
-    #    'namespace' : 'so'
-    #},
+    'SimulationSubType' : {
+        'extends' : 'Table',
+        'attributes' : [
+            { 'name' : 'name', 'type' : 'type_string' },
+            { 'name' : 'extFileNo', 'type' : 'type_int' },
+        ],
+        'xpath' : 'SimulationSubType',
+        'namespace' : 'so',
+        'xml_injection' : '''
+int so_SimulationSubType_subclass_xml(void *this, xmlTextWriterPtr writer)
+{
+    so_SimulationSubType *self = (so_SimulationSubType *) this;
+    int rc;
+
+    if (self->name) {
+        rc = xmlTextWriterWriteAttribute(writer, BAD_CAST "name", BAD_CAST self->name);
+        if (rc < 0) return 1;
+    }
+    if (self->extFileNo) {
+        char *attr_string = pharmml_int_to_string(self->extFileNo_number);
+        if (!attr_string) return 1;
+        rc = xmlTextWriterWriteAttribute(writer, BAD_CAST "extFileNo", BAD_CAST attr_string);
+        free(attr_string);
+        if (rc < 0) return 1;
+    }
+
+    return 0;
+}
+
+
+int so_SimulationSubType_xml(so_SimulationSubType *self, xmlTextWriterPtr writer, char *element_name)
+{
+	int rc;
+    self->base->superclass_func = &so_SimulationSubType_subclass_xml;
+    self->base->superclass = (void *) self;
+
+    rc = so_Table_xml(self->base, writer, element_name);
+    if (rc != 0) return rc;
+
+	return 0;
+}
+'''
+
+
+
+    },
     'ExternalFile' : {
         'children' : [
             { 'name' : 'Description' , 'type' : 'type_string', 'prefix' : 'ct' },

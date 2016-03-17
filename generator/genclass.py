@@ -41,6 +41,7 @@ class genclass:
             self.prefix += ":"
         else:
             self.prefix = ""
+        self.xml_injection = entry.get('xml_injection', None)
 
     def prefix_class(self, name):
         # prefix a class name with the namespace prefix
@@ -86,7 +87,7 @@ class genclass:
         print("\tif (object) {", file=f)
         print("\t\tobject->reference_count = 1;", file=f)
         if self.extends:
-            print("\t\tobject->base = ", self.prefix_symbol(self.extends), "_new();", sep='', file=f)
+            print("\t\tobject->base = ", self.prefix_class(self.extends), "_new();", sep='', file=f)
             print("\t\tif (!object->base) {", file=f)
             print("\t\t\tfree(object);", file=f)
             print("\t\t\tobject = NULL;", file=f)
@@ -117,7 +118,7 @@ class genclass:
         print("\t", self.class_name, " *dest = ", self.class_name, "_new();", sep='', file=f)
         print("\tif (dest) {", file=f)
         if self.extends:
-            print("\t\tdest->base = ", self.prefix_symbol(self.extends), "_copy(self->base);", sep='', file=f)
+            print("\t\tdest->base = ", self.prefix_class(self.extends), "_copy(self->base);", sep='', file=f)
             print("\t\tif (!dest->base) {", file=f)
             print("\t\t\t", self.class_name, "_free(dest);", sep='', file=f)
             print("\t\t\treturn NULL;", file=f)
@@ -419,12 +420,12 @@ class genclass:
 
     def create_get_set_base(self):
         f = self.c_file
-        print(self.prefix_symbol(self.extends), " *", self.class_name, "_get_base(", self.class_name, " *self)", sep='', file=f)
+        print(self.prefix_class(self.extends), " *", self.class_name, "_get_base(", self.class_name, " *self)", sep='', file=f)
         print("{", file=f)
         print("\treturn self->base;", file=f)
         print("}", file=f)
         print(file=f)
-        print("int ", self.class_name, "_set_base(", self.class_name, " *self, ", self.prefix_symbol(self.extends), " *value)", sep='', file=f)
+        print("int ", self.class_name, "_set_base(", self.class_name, " *self, ", self.prefix_class(self.extends), " *value)", sep='', file=f)
         print("{", file=f)
         print("\t", self.prefix_class(self.extends), "_unref(value);", sep='', file=f)
         print("\tself->base = value;", file=f) 
@@ -434,6 +435,9 @@ class genclass:
 
     def create_xml(self):
         f = self.c_file
+        if self.xml_injection:
+            print(self.xml_injection, file=f)
+            return
         print("int ", self.class_name, "_xml(", self.class_name, " *self, xmlTextWriterPtr writer", end='', sep='', file=f)
         if self.name in need_name:
             print(", char *element_name", end='', file=f)

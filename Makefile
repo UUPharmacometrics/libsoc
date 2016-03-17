@@ -1,10 +1,10 @@
 SOC_GENSRCS := Bayesian.c Bayesian_PPE.c DiagnosticPlotsStructuralModel.c Estimates.c Estimation.c ExternalFile.c IndivFits.c IndividualEstimates.c \
 	Message.c MissingData.c MLE.c ModelDiagnostic.c OFMeasures.c OptimalDesignBlock.c OptimalDesign.c OtherMethod.c OtherMethod_PPE.c PharmMLRef.c \
-	PopulationEstimates.c PrecisionPopulationEstimates.c RandomEffects_IE.c RawResults.c Residuals.c SimulationBlock.c Simulation.c \
+	PopulationEstimates.c PrecisionPopulationEstimates.c RandomEffects_IE.c RawResults.c Residuals.c SimulationBlock.c Simulation.c SimulationSubType.c \
 	SOBlock.c SO.c TaskInformation.c ToolSettings.c
 SOC_GENOBJS := $(SOC_GENSRCS:.c=.o)
 
-SOC_SRCS := soext.c SOBlock_ext.c Table.c column.c common_types.c Matrix.c string.c SimulationSubType.c
+SOC_SRCS := soext.c SOBlock_ext.c Table.c column.c common_types.c Matrix.c string.c
 SOC_OBJS := $(SOC_SRCS:.c=.o)
 
 PHARMML_GENSRCS := PharmML.c IndependentVariable.c ModelDefinition.c VariabilityModel.c Level.c ParentLevel.c SymbRef.c string.c common_types.c
@@ -46,9 +46,6 @@ string.o: src/string.c include/pharmml/string.h
 
 Matrix.o: src/Matrix.c include/so/Matrix.h include/so/private/Matrix.h 
 	$(CC) $(CFLAGS) src/Matrix.c
-
-SimulationSubType.o: src/SimulationSubType.c include/so/private/SimulationSubType.h 
-	$(CC) $(CFLAGS) src/SimulationSubType.c
 
 PharmML_ext.o: src/PharmML_ext.c include/pharmml/PharmML_ext.h
 	$(CC) $(CFLAGS) src/PharmML_ext.c
@@ -101,11 +98,8 @@ clean:
 R:
 	cd generator; python3 R.py
 	cp -r include R/src/
-	#$(addprefix gen/, $(SOC_GENSRCS))
 	for FILE in $(addprefix gen/, $(SOC_GENSRCS)); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
-	#for FILE in $$(find src/ -name "*.c"); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
 	for FILE in $(addprefix src/, $(SOC_SRCS)); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
-	#for FILE in $$(find gen/ -name "*.c"); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
 	R CMD build R
 
 #Fetch and compile R package dependencies for windows
