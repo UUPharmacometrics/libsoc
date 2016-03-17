@@ -475,42 +475,43 @@ def print_documentation(name, struct):
 os.chdir("../R/src")
 
 for name in structure:
-    with open("gen-" + name + ".c", "w") as f:
+    if structure[name]['namespace'] == 'so':
+        with open("gen-" + name + ".c", "w") as f:
 
-        sys.stdout = f
-        print_includes()
-        print()
-        print_new(name)
-        print()
-        print_copy(name)
-        print()
-        print_free(name)
-        print()
-        print_ref_unref(name)
-        print()
+            sys.stdout = f
+            print_includes()
+            print()
+            print_new(name)
+            print()
+            print_copy(name)
+            print()
+            print_free(name)
+            print()
+            print_ref_unref(name)
+            print()
 
-        if 'extends' in structure[name]:
-            child = { 'name' : 'base', 'type' : structure[name]['extends'] }
-            print_get_child(name, child)
-            print_set_child(name, child)
-        if 'children' in structure[name]:
-            for child in structure[name]['children']:
+            if 'extends' in structure[name]:
+                child = { 'name' : 'base', 'type' : structure[name]['extends'] }
                 print_get_child(name, child)
-                print()
-                if child.get('array', False):
-                    print_get_number_of(name, child['name'], child['type'])
-                    print_add_child(name, child['name'], child['type'])
-                else:
-                    print_set_child(name, child)
+                print_set_child(name, child)
+            if 'children' in structure[name]:
+                for child in structure[name]['children']:
+                    print_get_child(name, child)
                     print()
-                print_create_child(name, child['name'], child['type'])
-                print()
+                    if child.get('array', False):
+                        print_get_number_of(name, child['name'], child['type'])
+                        print_add_child(name, child['name'], child['type'])
+                    else:
+                        print_set_child(name, child)
+                        print()
+                    print_create_child(name, child['name'], child['type'])
+                    print()
 
-        for attr in structure[name].get('attributes', []):
-            print_attribute_getter(name, attr)
-            print()
-            print_attribute_setter(name, attr)
-            print()
+            for attr in structure[name].get('attributes', []):
+                print_attribute_getter(name, attr)
+                print()
+                print_attribute_setter(name, attr)
+                print()
 
 
 # Generate R part of binding
@@ -521,16 +522,18 @@ with open("../NAMESPACE", "w") as ns:
     print("export(so_SO_read)", file=ns)
 
 for name in structure:
-    with open("gen-" + name + ".R", "w") as f:
-        sys.stdout = f
+    if structure[name]['namespace'] == 'so':
+        with open("gen-" + name + ".R", "w") as f:
+            sys.stdout = f
 
-        print_wrapper_functions(name, structure[name])
-        print_accessors(name, structure[name])
-        print_classes(name, structure[name])
+            print_wrapper_functions(name, structure[name])
+            print_accessors(name, structure[name])
+            print_classes(name, structure[name])
 
 # Print the class documentation
 os.chdir("../man")
 for name in structure:
-    with open(name + ".Rd", "w") as f:
-        sys.stdout = f
-        print_documentation(name, structure[name])
+    if structure[name]['namespace'] == 'so':
+        with open(name + ".Rd", "w") as f:
+            sys.stdout = f
+            print_documentation(name, structure[name])

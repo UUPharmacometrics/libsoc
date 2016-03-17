@@ -102,8 +102,10 @@ R:
 	cd generator; python3 R.py
 	cp -r include R/src/
 	#$(addprefix gen/, $(SOC_GENSRCS))
-	for FILE in $$(find src/ -name "*.c"); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
-	for FILE in $$(find gen/ -name "*.c"); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
+	for FILE in $(addprefix gen/, $(SOC_GENSRCS)); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
+	#for FILE in $$(find src/ -name "*.c"); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
+	for FILE in $(addprefix src/, $(SOC_SRCS)); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
+	#for FILE in $$(find gen/ -name "*.c"); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
 	R CMD build R
 
 #Fetch and compile R package dependencies for windows
