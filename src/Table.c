@@ -703,8 +703,10 @@ void so_Table_end_element(so_Table *table, const char *localname)
 
 int so_Table_characters(so_Table *table, const char *ch, int len)
 {
+    int fail = 0;
+
     if (table->in_externalfile) {
-		int fail = so_ExternalFile_characters(table->ExternalFile, ch, len);
+		fail = so_ExternalFile_characters(table->ExternalFile, ch, len);
 		if (fail) return 1;
     }
 
@@ -714,11 +716,12 @@ int so_Table_characters(so_Table *table, const char *ch, int len)
     char saved = str[len];
 
     if (table->in_real || table->in_int || table->in_string) {
+        if (table->current_column - 1 >= table->numcols) {   // Too many columns in this SO
+            return 1;
+        }
         column = table->columns[table->current_column - 1];
         str[len] = '\0';
     }
-
-    int fail = 0;
 
     if (table->in_real) {
         double real = pharmml_string_to_double(str);

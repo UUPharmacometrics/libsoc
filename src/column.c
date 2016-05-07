@@ -76,6 +76,9 @@ void so_Column_set_valueType(so_Column *col, pharmml_valueType valueType)
 
 int so_Column_add_real(so_Column *col, double real)
 {
+    if (col->valueType != PHARMML_VALUETYPE_REAL) {
+        return 1;
+    }
     int new_used_memory = col->used_memory + sizeof(double);
     if (col->alloced_memory < new_used_memory) {
         int new_alloced_memory = col->alloced_memory + 256;
@@ -95,6 +98,9 @@ int so_Column_add_real(so_Column *col, double real)
 
 int so_Column_add_int(so_Column *col, int integer)
 {
+    if (col->valueType != PHARMML_VALUETYPE_INT) {
+        return 1;
+    }
     int new_used_memory = col->used_memory + sizeof(int);
     if (col->alloced_memory < new_used_memory) {
         int new_alloced_memory = col->alloced_memory + 256;
@@ -114,6 +120,9 @@ int so_Column_add_int(so_Column *col, int integer)
 
 int so_Column_add_string(so_Column *col, char *str)
 {
+    if (col->valueType != PHARMML_VALUETYPE_STRING) {
+        return 1;
+    }
     char *copy = pharmml_strdup(str);
     if (!copy) {
         return 1;
