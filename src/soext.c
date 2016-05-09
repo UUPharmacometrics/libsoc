@@ -39,7 +39,10 @@ void so_SO_on_start_element(void *ctx, const xmlChar *localname, const xmlChar *
     if (strcmp("SO", name) == 0) {
         so_SO_init_attributes(so, nb_attributes, (const char **) attributes);
     } else {
-        so->error = so_SO_start_element(so, name, nb_attributes, (const char **) attributes);
+        int fail = so_SO_start_element(so, name, nb_attributes, (const char **) attributes);
+        if (fail) {     // FIXME: should possibly abort here
+            so->error = fail;
+        }
     }
 }
 
@@ -53,7 +56,10 @@ void so_SO_on_end_element(void *ctx, const xmlChar *localname, const xmlChar *pr
 void so_SO_on_characters(void *ctx, const xmlChar *ch, int len)
 {
     so_SO *so = (so_SO *) ctx;
-    so->error = so_SO_characters(so, (const char *) ch, len);
+    int fail = so_SO_characters(so, (const char *) ch, len);
+    if (fail) {         // FIXME: should possibly abort here
+        so->error = fail;
+    }
 }
 
 void error_func(void *ctx, const char *msg, ...)
@@ -85,20 +91,20 @@ so_SO *so_SO_read(char *filename)
 
     int err = xmlSAXUserParseFile(&sax_handler, so, filename); 
 
-    if (!err) 
-        return so;
-    else {
+    if (so->error) {
+        so_SO_free(so);
+        last_error = "SO read error";
+        return NULL;
+    }
+
+    if (err) { 
         so_SO_free(so);
         xmlError *error = xmlGetLastError();
         last_error = error->message;
         return NULL;
     }
 
-    if (so->error) {
-        so_SO_free(so);
-        last_error = "Memory allocation error";
-        return NULL;
-    }
+    return so;
 }
 
 /** \memberof so_SO
