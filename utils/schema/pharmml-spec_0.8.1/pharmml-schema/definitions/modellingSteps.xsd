@@ -21,7 +21,7 @@ permissions and limitations under the License.
     xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
     xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
     xmlns:design="http://www.pharmml.org/pharmml/0.8/TrialDesign"
-    targetNamespace="http://www.pharmml.org/pharmml/0.8/ModellingSteps" version="0.8"
+    targetNamespace="http://www.pharmml.org/pharmml/0.8/ModellingSteps" version="0.8.1"
     elementFormDefault="qualified" attributeFormDefault="unqualified">
 
     <!-- 
@@ -43,6 +43,23 @@ permissions and limitations under the License.
     <!--
         Simple types
         -->
+    <xs:simpleType name="FIMtypeType">
+        <xs:annotation>
+            <xs:documentation>
+                Type specifying the types of FIM. 
+            </xs:documentation>
+        </xs:annotation>
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="ct:SymbolIdType">
+                    <xs:enumeration value="P"/>
+                    <xs:enumeration value="I"/>
+                    <xs:enumeration value="B"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+    
     <xs:simpleType name="OptimalDesignOpTypeType">
         <xs:annotation>
             <xs:documentation>
@@ -516,7 +533,7 @@ permissions and limitations under the License.
                         </xs:annotation>
                     </xs:element>
                 </xs:sequence>
-                <xs:attribute name="order" type="xs:positiveInteger" use="required">
+                <xs:attribute name="order" type="xs:int" use="required">
                     <xs:annotation>
                         <xs:documentation>
                             Specifies the order of the operation.
@@ -559,7 +576,7 @@ permissions and limitations under the License.
                         </xs:annotation>
                     </xs:element>
                 </xs:sequence>
-                <xs:attribute name="order" type="xs:positiveInteger" use="required">
+                <xs:attribute name="order" type="xs:int" use="required">
                     <xs:annotation>
                         <xs:documentation>
                             Specifies the order of the operation.
@@ -603,7 +620,7 @@ permissions and limitations under the License.
                         </xs:annotation>
                     </xs:element>
                 </xs:sequence>
-                <xs:attribute name="order" type="xs:positiveInteger" use="required">
+                <xs:attribute name="order" type="xs:int" use="required">
                     <xs:annotation>
                         <xs:documentation>
                             Specifies the order of the operation.
@@ -725,6 +742,8 @@ permissions and limitations under the License.
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
                 <xs:sequence>
+                    <xs:element name="SoftwareSettings" minOccurs="0" maxOccurs="unbounded" type="msteps:SoftwareSettingsType"/>
+                    <xs:element name="OutputFile" minOccurs="0" maxOccurs="unbounded" type="ds:ExternalFileType"/>
                     <xs:element name="TargetToolReference" minOccurs="0" type="msteps:TargetToolReferenceType"/>
                     <xs:element name="ExternalDataSetReference" minOccurs="0" type="msteps:ExternalDataSetReferenceType"/>
                     <xs:element name="InterventionsReference" minOccurs="0" type="msteps:InterventionsReferenceType"/>
@@ -822,13 +841,9 @@ permissions and limitations under the License.
         </xs:annotation>
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
-                <xs:choice>
-                    <xs:element ref="ct:Matrix"/>
-                    <xs:element name="File" type="ds:ExternalFileType"/>
-                </xs:choice>
-                <xs:attribute name="symbId" type="ct:SymbolIdType" use="required">
+                <xs:attribute name="type" type="msteps:FIMtypeType" use="required">
                     <xs:annotation>
-                        <xs:documentation>The symbol id for thei FIM.</xs:documentation>
+                        <xs:documentation>The type of FIM.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
             </xs:extension>
@@ -1072,6 +1087,12 @@ permissions and limitations under the License.
                 <xs:sequence>
                     <xs:element name="TargetToolReference" minOccurs="0" type="msteps:TargetToolReferenceType"/>
                     
+                    <xs:element name="ParametersToEstimate" minOccurs="0" type="msteps:ToEstimateType">
+                        <xs:annotation>
+                            <xs:documentation>Specified the parameters of the model to be estimated.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    
                     <xs:element name="OptimiseOn" minOccurs="0" type="msteps:OptimiseOnType">
                         <xs:annotation>
                             <xs:documentation>Item to be optimised on, overwrite desing spaces.</xs:documentation>
@@ -1103,8 +1124,9 @@ permissions and limitations under the License.
                             <xs:documentation>Compute info specification.</xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                    <xs:element name="SoftwareSettings" minOccurs="0" type="msteps:SoftwareSettingsType"/>
-                    
+                                        
+                    <xs:element name="SoftwareSettings" minOccurs="0" maxOccurs="unbounded" type="msteps:SoftwareSettingsType"/>
+
                     <xs:element maxOccurs="unbounded" name="Operation" type="msteps:OptimalDesignOperationType">
                         <xs:annotation>
                             <xs:documentation>
@@ -1112,6 +1134,8 @@ permissions and limitations under the License.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:element>
+                    
+                    <xs:element name="OutputFile" minOccurs="0" maxOccurs="unbounded" type="ds:ExternalFileType"/>
                     
                 </xs:sequence>
                 <xs:attributeGroup ref="ct:OidDefnGroup"/>

@@ -21,7 +21,7 @@ permissions and limitations under the License.
     xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
     xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
     targetNamespace="http://www.pharmml.org/pharmml/0.8/Dataset" 
-    version="0.8" elementFormDefault="qualified">
+    version="0.8.1" elementFormDefault="qualified">
     
     <xs:import namespace="http://www.pharmml.org/pharmml/0.8/Maths"
         schemaLocation="http://www.pharmml.org/pharmml/0.8/Maths"/>
@@ -441,13 +441,19 @@ permissions and limitations under the License.
                         inconsistencies.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
-
+                
+                <xs:attribute name="level" type="xs:string" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>Optional attribute to identify var level in SO.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                
                 <xs:attribute name="valueType" type="ds:ColumnValueTypeType" use="required">
                     <xs:annotation>
                         <xs:documentation>The column number in the reosurce to use for this column.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
-                <xs:attribute name="columnNum" type="xs:positiveInteger" use="required">
+                <xs:attribute name="columnNum" type="xs:int" use="required">
                     <xs:annotation>
                         <xs:documentation>The column number in the reosurce to use for this column.</xs:documentation>
                     </xs:annotation>
@@ -469,7 +475,7 @@ permissions and limitations under the License.
                         <xs:documentation>The type of the header.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
-                <xs:attribute name="rowNumber" type="xs:positiveInteger" use="required">
+                <xs:attribute name="rowNumber" type="xs:int" use="required">
                     <xs:annotation>
                         <xs:documentation>The row number for this header.</xs:documentation>
                     </xs:annotation>
@@ -513,7 +519,7 @@ permissions and limitations under the License.
                         </xs:annotation>
                     </xs:element>
                 </xs:choice>
-                <xs:attribute name="order" type="xs:positiveInteger" use="required">
+                <xs:attribute name="order" type="xs:int" use="required">
                     <xs:annotation>
                         <xs:documentation>
                             Specifies the order of the header rows.
@@ -550,7 +556,7 @@ permissions and limitations under the License.
                                     <xs:documentation>Reference to the symbol to map the column data to.</xs:documentation>
                                 </xs:annotation>
                             </xs:element>
-                            <xs:element name="Piecewise" minOccurs="0" type="math:PiecewiseType">
+                            <xs:element minOccurs="0" ref="math:Piecewise">
                                 <xs:annotation>
                                     <xs:documentation>Defines a piecewise expression - for conditional mapping.</xs:documentation>
                                 </xs:annotation>
@@ -637,7 +643,7 @@ permissions and limitations under the License.
                         <xs:documentation>ID referencing a Symbol in the model.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
-                <xs:attribute name="admNumber" type="xs:integer" use="optional">
+                <xs:attribute name="admNumber" type="xs:int" use="optional">
                     <xs:annotation>
                         <xs:documentation>Number referencing adm/type macro attribute.</xs:documentation>
                     </xs:annotation>
@@ -681,6 +687,7 @@ permissions and limitations under the License.
                     <xs:enumeration value="ssPeriod"/>
                     <xs:enumeration value="time"/>
                     <xs:enumeration value="undefined"/>
+                    <xs:enumeration value="varLevel"/>
                     <!-- SO related -->
                     <xs:enumeration value="indivParameter"/>
                     <xs:enumeration value="popParameter"/>
@@ -689,10 +696,11 @@ permissions and limitations under the License.
                     <xs:enumeration value="statPrecision"/>
                     <xs:enumeration value="strataVariable"/>
                     <xs:enumeration value="structParameter"/>
-                    <xs:enumeration value="varParameter_var"/>
-                    <xs:enumeration value="varParameter_stdev"/>
-                    <xs:enumeration value="varParameter_cov"/>
-                    <xs:enumeration value="varParameter_corr"/>
+                    <xs:enumeration value="varParameter"/>
+                    <xs:enumeration value="variance"/>
+                    <xs:enumeration value="stdev"/>
+                    <xs:enumeration value="covariance"/>
+                    <xs:enumeration value="correlation"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:list>

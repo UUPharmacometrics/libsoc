@@ -21,7 +21,7 @@ permissions and limitations under the License.
     xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths" 
     xmlns:distrib="http://www.uncertml.org/3.0"
     xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
-    targetNamespace="http://www.pharmml.org/pharmml/0.8/ModelDefinition" version="0.8"
+    targetNamespace="http://www.pharmml.org/pharmml/0.8/ModelDefinition" version="0.8.1"
     elementFormDefault="qualified" attributeFormDefault="unqualified">
 
     <!--
@@ -1310,9 +1310,9 @@ permissions and limitations under the License.
                 <xs:choice>
                     <xs:element name="UncertML" type="mdef:UncertMLType"/>
                     <xs:element ref="po:ProbOnto"/>
-                    <xs:element name="Piecewise" type="math:PiecewiseType">
+                    <xs:element minOccurs="0" ref="math:Piecewise">
                         <xs:annotation>
-                            <xs:documentation>Defines a piecewise expression.</xs:documentation>
+                            <xs:documentation>Defines a piecewise expression - for conditional mapping.</xs:documentation>
                         </xs:annotation>
                     </xs:element>
                 </xs:choice>

@@ -23,7 +23,7 @@ permissions and limitations under the License.
     xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
     xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
     xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
-    version="0.3">
+    version="0.3.1">
     
     <xs:import namespace="http://www.pharmml.org/pharmml/0.8/CommonTypes"
         schemaLocation="http://www.pharmml.org/pharmml/0.8/CommonTypes"/>
@@ -440,21 +440,7 @@ permissions and limitations under the License.
         </xs:complexContent>
     </xs:complexType>
     
-    <xs:complexType name="PrecisionEstimatesPercentileType">
-        <xs:annotation>
-            <xs:documentation>Combined type for other population estimates</xs:documentation>
-        </xs:annotation>
-        <xs:complexContent>
-            <xs:extension base="ct:PharmMLRootType">
-                <xs:sequence>
-                    <xs:element name="PrecisionEstimates" type="ds:DataSetType"/>
-                    <xs:element name="Percentiles" type="ds:DataSetType"/>
-                    <xs:element name="PosteriorDistribution" minOccurs="0" type="so:SOTableDistribType"/>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-    
+
     <xs:complexType name="IndividualEstimatesType">
         <xs:annotation>
             <xs:documentation>Type defining the individual estimates.</xs:documentation>
@@ -596,7 +582,7 @@ permissions and limitations under the License.
         <xs:complexContent>
             <xs:extension base="ds:DataSetType">
                 <xs:attribute name="name" use="optional" type="xs:string"/>
-                <xs:attribute name="extFileNo" use="optional" type="xs:integer"/>
+                <xs:attribute name="extFileNo" use="optional" type="xs:int"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -617,7 +603,7 @@ permissions and limitations under the License.
                     <xs:element name="Dosing" minOccurs="0" maxOccurs="unbounded" type="so:SimulationSubType"/>
                     <xs:element name="RawResultsFile" minOccurs="0" type="ds:ExternalFileType"/>
                 </xs:sequence>
-                <xs:attribute name="replicate" type="xs:integer"/>
+                <xs:attribute name="replicate" type="xs:int"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -700,7 +686,7 @@ permissions and limitations under the License.
                     <xs:element name="SimulatedData" minOccurs="0" type="ds:ExternalFileType"/>
                     <xs:element name="Design" minOccurs="0" type="ds:ExternalFileType"/>
                 </xs:sequence>
-                <xs:attribute name="blockNumber" type="xs:integer"/>
+                <xs:attribute name="blockNumber" type="xs:int"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

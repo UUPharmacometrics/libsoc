@@ -21,7 +21,7 @@ permissions and limitations under the License.
     xmlns:distrib="http://www.uncertml.org/3.0"
     xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
     xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths"
-    version="0.8" 
+    version="0.8.1" 
     elementFormDefault="qualified" attributeFormDefault="unqualified">
     
     <xs:import namespace="http://www.pharmml.org/pharmml/0.8/Maths"
@@ -151,7 +151,7 @@ permissions and limitations under the License.
         <xs:annotation>
             <xs:documentation>Defines the Markov order attribute type.</xs:documentation>
         </xs:annotation>
-        <xs:restriction base="xs:integer"/>        
+        <xs:restriction base="xs:int"/>        
     </xs:simpleType>
     <xs:simpleType name="SymbolIdType">
         <xs:annotation>
@@ -203,7 +203,7 @@ permissions and limitations under the License.
             <xs:documentation>Integer value.</xs:documentation>
         </xs:annotation>
         <xs:simpleContent>
-            <xs:extension base="xs:integer">
+            <xs:extension base="xs:int">
                 <xs:attributeGroup ref="ct:RootAttributesGroup"/>
             </xs:extension>
         </xs:simpleContent>
@@ -371,7 +371,7 @@ permissions and limitations under the License.
                     <xs:element ref="math:Naryop"/>
                     <xs:element ref="math:Binop"/>
                     <xs:element ref="math:Uniop"/>
-                    <xs:element name="Piecewise" type="math:PiecewiseType"/>
+                    <xs:element ref="math:Piecewise"/>
                     <xs:element ref="math:FunctionCall"/>
                     <xs:element ref="ct:Sum"/>
                     <xs:element ref="ct:Product"/>
@@ -508,9 +508,14 @@ permissions and limitations under the License.
                 <xs:sequence>
                     <xs:element minOccurs="0" ref="ct:Symbol"/>
                 </xs:sequence>
-                <xs:attribute name="symbId" type="ct:SymbolIdType" use="required">
+                <xs:attribute name="symbId" type="ct:SymbolIdType">
                     <xs:annotation>
                         <xs:documentation>The symbol id used to define the variable.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="symbIdRef" type="ct:SymbolIdType">
+                    <xs:annotation>
+                        <xs:documentation>The symbol reference for this variable - used for assignments of previously declared (derivative) variables.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
             </xs:extension>
@@ -531,7 +536,7 @@ permissions and limitations under the License.
                         </xs:annotation>
                     </xs:element>
                 </xs:sequence>
-                <xs:attribute name="symbolType" type="ct:SymbolTypeType" use="required">
+                <xs:attribute name="symbolType" type="ct:SymbolTypeType" use="optional">
                     <xs:annotation>
                         <xs:documentation>The type of the variable.</xs:documentation>
                     </xs:annotation>
@@ -690,7 +695,7 @@ permissions and limitations under the License.
                         </xs:annotation>
                     </xs:element>
                 </xs:sequence>
-                <xs:attribute name="symbolType" type="ct:SymbolTypeType" use="required" fixed="real">
+                <xs:attribute name="symbolType" type="ct:SymbolTypeType" use="optional" fixed="real">
                     <xs:annotation>
                         <xs:documentation>The symbol type of a derivative variable is always set to be a real.</xs:documentation>
                     </xs:annotation>
@@ -960,12 +965,12 @@ permissions and limitations under the License.
                         <xs:documentation>The default off-diagonal value.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
-                <xs:attribute name="numbCols" type="xs:integer">
+                <xs:attribute name="numbCols" type="xs:int">
                     <xs:annotation>
                         <xs:documentation>The number of columns.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
-                <xs:attribute name="numbRows" type="xs:integer">
+                <xs:attribute name="numbRows" type="xs:int">
                     <xs:annotation>
                         <xs:documentation>The number of rows.</xs:documentation>
                     </xs:annotation>
@@ -1161,12 +1166,12 @@ permissions and limitations under the License.
                         <xs:documentation>The default off-diagonal value.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
-                <xs:attribute name="numbCols" type="xs:integer">
+                <xs:attribute name="numbCols" type="xs:int">
                     <xs:annotation>
                         <xs:documentation>The number of columns.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
-                <xs:attribute name="numbRows" type="xs:integer">
+                <xs:attribute name="numbRows" type="xs:int">
                     <xs:annotation>
                         <xs:documentation>The number of rows.</xs:documentation>
                     </xs:annotation>
@@ -1427,7 +1432,7 @@ permissions and limitations under the License.
                         </xs:element>
                     </xs:choice>
                 </xs:choice>
-                <xs:attribute name="length" type="xs:integer">
+                <xs:attribute name="length" type="xs:int">
                     <xs:annotation>
                         <xs:documentation>The length of the vector - optional.</xs:documentation>
                     </xs:annotation>

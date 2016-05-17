@@ -18,9 +18,10 @@ permissions and limitations under the License.
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     targetNamespace="http://www.pharmml.org/pharmml/0.8/Maths"
     xmlns:math="http://www.pharmml.org/pharmml/0.8/Maths" elementFormDefault="qualified"
-    attributeFormDefault="unqualified" version="0.8"
+    attributeFormDefault="unqualified" version="0.8.1"
     xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes"
     xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
+    xmlns:design="http://www.pharmml.org/pharmml/0.8/TrialDesign"
     xmlns:po="http://www.pharmml.org/probonto/ProbOnto"
     xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition">
     
@@ -35,6 +36,9 @@ permissions and limitations under the License.
     
     <xs:import namespace="http://www.pharmml.org/probonto/ProbOnto" 
         schemaLocation="http://www.pharmml.org/probonto/ProbOnto"/>
+    
+    <xs:import namespace="http://www.pharmml.org/pharmml/0.8/TrialDesign"
+        schemaLocation="http://www.pharmml.org/pharmml/0.8/TrialDesign"/>
     
     
     <xs:complexType name="ProbabilityFctType">
@@ -264,6 +268,7 @@ permissions and limitations under the License.
                             <xs:enumeration value="factorial"/>
                             <xs:enumeration value="factln"/>
                             <xs:enumeration value="gammaln"/>
+                            <xs:enumeration value="gamma"/>
                             <xs:enumeration value="log"/>
                             <xs:enumeration value="log2"/>
                             <xs:enumeration value="log10"/>
@@ -417,10 +422,15 @@ permissions and limitations under the License.
             <xs:documentation>The schema type defining statement(s) in a conditional statement.</xs:documentation>
         </xs:annotation>
         <xs:complexContent>
-            <xs:extension base="math:ExprType">
+            <xs:extension base="ct:PharmMLRootType">
                 <xs:sequence>
                     <xs:element ref="math:Condition"/>
                     <xs:choice maxOccurs="unbounded">
+                        <xs:element maxOccurs="unbounded" minOccurs="0" ref="ct:CommonVariable">
+                            <xs:annotation>
+                                <xs:documentation>A variable definition.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
                         <xs:element minOccurs="0" name="ConditionalStatement" type="math:ConditionalStatementType"/>
                         <xs:element maxOccurs="unbounded" minOccurs="0" ref="ct:AssignStatement"/>
                         <xs:element maxOccurs="unbounded" minOccurs="0" ref="mdef:CommonParameterElement"/>
@@ -435,8 +445,13 @@ permissions and limitations under the License.
             <xs:documentation>The schema type defining statement(s) in a conditional statement.</xs:documentation>
         </xs:annotation>
         <xs:complexContent>
-            <xs:extension base="math:ExprType">
+            <xs:extension base="ct:PharmMLRootType">
                 <xs:choice maxOccurs="unbounded">
+                    <xs:element maxOccurs="unbounded" minOccurs="0" ref="ct:CommonVariable">
+                        <xs:annotation>
+                            <xs:documentation>A variable definition.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="ConditionalStatement" type="math:ConditionalStatementType"/>
                         <xs:element maxOccurs="unbounded" minOccurs="0" ref="ct:AssignStatement"/>
@@ -530,6 +545,7 @@ permissions and limitations under the License.
                         <xs:element ref="ct:MatrixSelector"/>
                         <xs:element ref="mdef:Probability"/>
                         <xs:element name="Realisation" type="mdef:RealisationType"/>
+                        <xs:element ref="design:Stage"/>
                     </xs:choice>
                     <xs:choice>
                         <xs:annotation>
@@ -560,6 +576,7 @@ permissions and limitations under the License.
                         <xs:element ref="ct:MatrixSelector"/>
                         <xs:element ref="mdef:Probability"/>
                         <xs:element name="Realisation" type="mdef:RealisationType"/>
+                        <xs:element ref="design:Stage"/>
                     </xs:choice>
                 </xs:sequence>
                 <xs:attribute name="op" use="required">
@@ -756,4 +773,5 @@ permissions and limitations under the License.
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
+    <xs:element name="Piecewise" type="math:PiecewiseType"/>
 </xs:schema>

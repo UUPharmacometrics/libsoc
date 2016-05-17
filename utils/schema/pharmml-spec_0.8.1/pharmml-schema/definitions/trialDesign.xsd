@@ -21,7 +21,7 @@ permissions and limitations under the License.
     xmlns:maths="http://www.pharmml.org/pharmml/0.8/Maths"
     xmlns:mdef="http://www.pharmml.org/pharmml/0.8/ModelDefinition"
     xmlns:ds="http://www.pharmml.org/pharmml/0.8/Dataset"
-    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes" version="0.8"
+    xmlns:ct="http://www.pharmml.org/pharmml/0.8/CommonTypes" version="0.8.1"
     elementFormDefault="qualified" attributeFormDefault="unqualified">
     <xs:annotation>
         <xs:documentation>
@@ -755,7 +755,7 @@ permissions and limitations under the License.
         <xs:complexContent>
             <xs:extension base="ct:PharmMLRootType">
                 <xs:choice>
-                    <xs:element name="IndividualCovariates" minOccurs="0" type="design:IndividualCovariatesType">
+                    <xs:element name="IndividualCovariates" minOccurs="0" maxOccurs="unbounded" type="design:IndividualCovariatesType">
                         <xs:annotation>
                             <xs:documentation>
                                 Defines the covariates of the study.
@@ -1010,6 +1010,20 @@ permissions and limitations under the License.
                             </xs:annotation>
                         </xs:element>
                     </xs:choice>
+                    <xs:element name="StageDefinition" minOccurs="0" type="design:StageDefinitionType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="StageDefinitionType">
+        <xs:annotation>
+            <xs:documentation>Stage definition type.</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="ct:PharmMLRootType">
+                <xs:sequence>
+                    <xs:element ref="maths:LogicBinop"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -1472,7 +1486,7 @@ permissions and limitations under the License.
     <!--
         Elements
         -->
-
+    <xs:element name="Stage"/>
     <xs:element abstract="true" name="DosingRegimen" type="design:DosingRegimenType">
         <xs:annotation>
             <xs:documentation>

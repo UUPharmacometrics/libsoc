@@ -27,7 +27,7 @@ void usage()
 
 void validate(const char *xmlPath)
 {
-    if (xmlLoadCatalog("/usr/share/libsoc/pharmml-spec_0.8/pharmml-schema/definitions/xmlCatalog.xml") != 0) {
+    if (xmlLoadCatalog("/usr/share/libsoc/pharmml-spec_0.8.1/pharmml-schema/definitions/xmlCatalog.xml") != 0) {
         printf("Error when loading catalog\n");
         exit(5);
     }
@@ -37,7 +37,7 @@ void validate(const char *xmlPath)
     xmlSchemaPtr schema = NULL;
     xmlSchemaValidCtxtPtr validCtxt = NULL;
 
-    parserCtxt = xmlSchemaNewParserCtxt("/usr/share/libsoc/pharmml-spec_0.8/pharmml-schema/definitions/pharmml.xsd");
+    parserCtxt = xmlSchemaNewParserCtxt("/usr/share/libsoc/pharmml-spec_0.8.1/pharmml-schema/definitions/pharmml.xsd");
 
     if (parserCtxt == NULL) {
         fprintf(stderr, "Could not create XSD schema parsing context.\n");
