@@ -45,6 +45,7 @@ latex/*
 
 libpharmmlc.so
 include/pharmml/*
+!include/pharmml/private
 !include/pharmml/PharmML_ext.h
 
 *.swp
