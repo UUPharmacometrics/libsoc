@@ -38,6 +38,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "clean":
 
 try:
     os.makedirs("../gen")
+    os.makedirs("../include/pharmml/private")
 except:
     pass
 
