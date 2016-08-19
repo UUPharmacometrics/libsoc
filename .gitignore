@@ -37,7 +37,6 @@ fortran/libsoc.mod
 fortran/test
 
 utils/sotool
-utils/pharmmltool
 
 doxygen_sqlite3.db
 html/*
