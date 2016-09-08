@@ -7,11 +7,6 @@ SOC_GENOBJS := $(SOC_GENSRCS:.c=.o)
 SOC_SRCS := soext.c SOBlock_ext.c Table.c column.c common_types.c Matrix.c string.c
 SOC_OBJS := $(SOC_SRCS:.c=.o)
 
-PHARMML_GENSRCS := PharmML.c IndependentVariable.c ModelDefinition.c VariabilityModel.c Level.c ParentLevel.c SymbRef.c string.c common_types.c
-PHARMML_GENOBJS := $(PHARMML_GENSRCS:.c=.o)
-PHARMML_SRCS := PharmML_ext.c
-PHARMML_OBJS := $(PHARMML_SRCS:.c=.o)
-
 CC := gcc
 CFLAGS := -std=c99 -Wall -pedantic -c -g -fpic -I. -Iinclude `xml2-config --cflags`
 #CFLAGS := -std=c99 -pedantic -c -g -fpic -I. -Iinclude
@@ -22,9 +17,6 @@ VPATH := gen
 
 libsoc.so: $(SOC_GENOBJS) $(SOC_OBJS)
 	$(CC) -shared -o libsoc.so $(SOC_GENOBJS) $(SOC_OBJS) $(LIBS) -std=c99 -pedantic
-
-libpharmmlc.so: $(PHARMML_GENOBJS) $(PHARMML_OBJS)
-	$(CC) -shared -o libpharmmlc.so $(PHARMML_GENOBJS) $(PHARMML_OBJS) $(LIBS) -std=c99 -pedantic
 
 soext.o: src/soext.c include/so/soext.h 
 	$(CC) $(CFLAGS) src/soext.c
@@ -46,9 +38,6 @@ string.o: src/string.c include/pharmml/string.h
 
 Matrix.o: src/Matrix.c include/so/Matrix.h include/so/private/Matrix.h 
 	$(CC) $(CFLAGS) src/Matrix.c
-
-PharmML_ext.o: src/PharmML_ext.c include/pharmml/PharmML_ext.h
-	$(CC) $(CFLAGS) src/PharmML_ext.c
 
 gen/%.o: gen/%.c include/so/%.h include/so/private/%.h
 	$(CC) $(CFLAGS) $<
@@ -90,7 +79,6 @@ clean:
 	rm -f fortran/libsoc.f03
 	rm -f fortran/test
 	rm -f utils/sotool
-	rm -f utils/pharmmltool
 
 .PHONY: R
 R:
