@@ -372,27 +372,17 @@ int so_SimulationSubType_xml(so_SimulationSubType *self, xmlTextWriterPtr writer
     },
     'ModelDiagnostic' : {
         'children' : [
-            { 'name' : 'DiagnosticPlotsStructuralModel', 'type' : 'DiagnosticPlotsStructuralModel' },
-            { 'name' : 'DiagnosticPlotsIndividualParams', 'type' : 'Table' },
+            { 'name' : 'DiagnosticStructuralModel', 'type' : 'DiagnosticStructuralModel' },
         ],
         'xpath' : 'SO/SOBlock/ModelDiagnostic',
         'namespace' : 'so'
     },
-    'DiagnosticPlotsStructuralModel' : {
+    'DiagnosticStructuralModel' : {
         'children' : [
-            { 'name' : 'IndivFits', 'type' : 'IndivFits' },
-            { 'name' : 'IndivPredictionVsObserv', 'type' : 'Table' },
+            { 'name' : 'IndivObservationPrediction', 'type' : 'Table' },
             { 'name' : 'VPC', 'type' : 'Table' },
         ],
-        'xpath' : 'SO/SOBlock/ModelDiagnostic/DiagnosticPlotsStructuralModel',
-        'namespace' : 'so'
-    },
-    'IndivFits' : {
-        'children' : [
-            { 'name' : 'ObservationTable', 'type' : 'Table' },
-            { 'name' : 'PredictionTable', 'type' : 'Table' },
-        ],
-        'xpath' : 'SO/SOBlock/ModelDiagnostic/DiagnosticPlotsStructuralModel/IndivFits',
+        'xpath' : 'SO/SOBlock/ModelDiagnostic/DiagnosticStructuralModel',
         'namespace' : 'so'
     },
 }
