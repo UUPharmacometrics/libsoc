@@ -67,7 +67,7 @@ clean:
 	rm -f R/src/static-*
 	rm -f R/src/gen-*
 	rm -f R/R/gen-*
-	rm -rf soc.Rcheck
+	rm -rf libsoc.Rcheck
 	rm -f R/NAMESPACE
 	rm -rf html/
 	rm -rf latex/

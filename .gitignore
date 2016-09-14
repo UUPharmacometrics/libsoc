@@ -19,7 +19,7 @@ include/so/private/*
 !include/so/private/Table.h
 
 libsoc_*.tar.gz
-soc.Rcheck/*
+libsoc.Rcheck/*
 R/R/gen-*
 R/src/gen-*
 R/src/static-*
