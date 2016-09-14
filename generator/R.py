@@ -295,7 +295,7 @@ def print_wrapper_functions(name, struct):
             print()
             if child['type'] != "type_string" and child['type'] != "type_real" and child['type'] != "type_int":
                 print("so_", name, "_create_", child['name'], " <- function(self) {", sep='')
-                print("\t.Call(\"r_so_", name, "_create_", child['name'], "\", self, value)", sep='')
+                print("\t.Call(\"r_so_", name, "_create_", child['name'], "\", self)", sep='')
                 print("}")
                 print()
 
