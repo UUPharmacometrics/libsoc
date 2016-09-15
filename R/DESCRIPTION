@@ -6,6 +6,8 @@ Author: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
 Maintainer: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
 Depends:
     R (>= 2.14.1)
+Imports:
+    methods
 Description: A package to handle PharmML standardized output (SO) xml files.
     SO files can be created, read, manipulated and written through a
     data binding from the XML structure to a tree structure of R objects.

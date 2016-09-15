@@ -519,6 +519,7 @@ os.chdir("../R")
 
 with open("../NAMESPACE", "w") as ns:
     print("useDynLib(libsoc)", file=ns)
+    print("import(methods)", file=ns)
     print("export(so_SO_read)", file=ns)
 
 for name in structure:
