@@ -139,6 +139,15 @@ def print_add_child(name, child, cls):
     print("\treturn(R_NilValue);")
     print("}")
 
+def print_remove_child(name, child, cls):
+    print("SEXP r_so_", name, "_remove_", child, "(SEXP self, SEXP index)", sep='')
+    print("{")
+    print("\tint fail = so_", name, "_remove_", child, "(R_ExternalPtrAddr(self), INTEGER(index)[0]);", sep='')
+    print("\tif (fail) {")
+    print("\t\terror(\"Failed to remove ", child, " from ", name, "\");", sep='') 
+    print("\t}")
+    print("}")
+
 def print_get_child(name, child):
     print("SEXP ", common.create_get_name(name, child['name'], prefix="r_so"), "(SEXP self", sep ='', end='')
     if child.get("array", False):
@@ -287,6 +296,9 @@ def print_wrapper_functions(name, struct):
                 print("}")
                 print("so_", name, "_add_", child['name'], " <- function(self, value) {", sep='')
                 print("\t.Call(\"r_so_", name, "_add_", child['name'], "\", self, value)", sep='')
+                print("}")
+                print("so_", name, "_remove_", child['name'], " <- function(self, index) {", sep='')
+                print("\t.Call(\"r_so_", name, "_remove_", child['name'], "\", self, index)", sep='')
                 print("}")
             else:
                 print("so_", name, "_set_", child['name'], " <- function(self, value) {", sep='')
@@ -501,6 +513,7 @@ for name in structure:
                     if child.get('array', False):
                         print_get_number_of(name, child['name'], child['type'])
                         print_add_child(name, child['name'], child['type'])
+                        print_remove_child(name, child['name'], child['type'])
                     else:
                         print_set_child(name, child)
                         print()

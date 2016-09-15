@@ -418,6 +418,36 @@ class genclass:
                     print("}", file=f)
                     print(file=f)
 
+                    print("int ", self.class_name, "_remove_", e['name'], "(", self.class_name, " *self, int index)", sep='', file=f)
+                    print("{", file=f)
+                    print("\tint size = self->num_", e['name'], ";", sep='', file=f)
+                    print("\tif (index >= size) {", file=f)
+                    print("\t\treturn 0;", file=f)
+                    print("\t}", file=f)
+                    print("\tif (size == 1) {", file=f)
+                    print("\t\tfree(self->", e['name'], ");", sep='', file=f)
+                    print("\t\tself->", e['name'], " = NULL;", sep='', file=f)
+                    print("\t\treturn 0;", file=f)
+                    print("\t}", file=f);
+                    print("\t", self.prefix_class(e['type']), " *final = self->", e['name'], "[size - 1];", sep='', file=f)
+                    print("\t", self.prefix_class(e['type']), " *remove = self->", e['name'], "[index];", sep='', file=f)
+                    print("\t", self.prefix_class(e['type']), " **new_array = realloc(self->", e['name'], ", (self->num_", e['name'], " - 1) * sizeof(", self.prefix_class(e['type']), " *));", sep='', file=f)
+                    print("\tif (!new_array) {", file=f)
+                    print("\t\treturn 1;", file=f)
+                    print("\t}", file=f)
+                    print("\tself->num_", e['name'], "--;", sep='', file=f)
+                    print("\tif (final == remove) {", file=f)
+                    print("\t\treturn 0;", file=f)
+                    print("\t}", file=f)
+                    print("\tfor (int i = index; i < size - 3; i++) {", file=f)
+                    print("\t\tself->", e['name'], "[i] = self->", e['name'], "[i + 1];", sep='', file=f)
+                    print("\t}", file=f)
+                    print("\tself->", e['name'], "[size - 2] = final;", sep='', file=f)
+                    print("\t", self.prefix_class(e['type']), "_unref(remove);", sep='', file=f)
+                    print("\treturn 0;", file=f)
+                    print("}", file=f)
+                    print(file=f)
+
     def create_get_set_base(self):
         f = self.c_file
         print(self.prefix_class(self.extends), " *", self.class_name, "_get_base(", self.class_name, " *self)", sep='', file=f)
@@ -907,6 +937,8 @@ class genclass:
                         print(self.prefix_class(e['type']), " *", self.class_name, "_create_", e['name'], "(", self.class_name, " *self);", sep='', file=f)
                         if e.get('array', False):
                             print("int ", self.class_name, "_add_", e['name'], "(", self.class_name, " *self, ", self.prefix_class(e['type']), " *child);", sep='', file=f)
+                            print("int ", self.class_name, "_remove_", e['name'], "(", self.class_name, " *self, int index);", sep='', file=f)
+
 
             print(file=f)
             print("#endif", file=f)
