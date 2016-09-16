@@ -386,13 +386,13 @@ def print_accessors(name, struct):
             print("\t\t} else {")
 
             R_type = get_R_type(child['type'])
-            if child['type'] == 'Table' or child['type'] == 'Matrix' or child['type'] == 'type_string' or child['type'] == 'type_real' or child['type'] == 'type_int':
+            if child.get('array', False):
+                pass
+            elif child['type'] == 'Table' or child['type'] == 'Matrix' or child['type'] == 'type_string' or child['type'] == 'type_real' or child['type'] == 'type_int':
                 print("\t\t\tif (!is(value, \"", R_type,"\")) {", sep='')
                 print("\t\t\t\tstop(\"object must be of type '", R_type, "'\")", sep='')
                 print("\t\t\t}")
                 print("\t\t\tso_", name, "_set_", child['name'], "(.self$.cobj, value)", sep='')
-            elif child.get('array', False):
-                pass
             else:
                 print("\t\t\tif (!is(value, \"", R_type,"\")) {", sep='')
                 print("\t\t\t\tstop(\"object must be of type '", R_type, "'\")", sep='')
@@ -439,6 +439,9 @@ def print_classes(name, struct):
                 print("\t\tadd_", child['name'], " = function(value) {", sep='')
                 print("\t\t\tso_", name, "_add_", child['name'], "(.self$.cobj, value$.cobj)", sep='')
                 print("\t\t\tinvisible(so_", child['type'], "_ref(value$.cobj))", sep='')
+                print("\t\t},")
+                print("\t\tremove_", child['name'], " = function(value, index) {", sep='')
+                print("\t\t\tinvisible(so_", name, "_remove_", child['name'], "(.self$.cobj, index))", sep='')
                 print("\t\t}", end='')
     print()
     print("\t)")
