@@ -51,6 +51,12 @@ SEXP r_so_SO_write(SEXP so, SEXP filename, SEXP pretty)
     return ret;
 }
 
+SEXP r_so_Table_ref(SEXP self)
+{
+    so_Table_ref(R_ExternalPtrAddr(self));
+    return R_NilValue;
+}
+
 SEXP r_so_Table_free(SEXP self)
 {
     so_Table_free(R_ExternalPtrAddr(self));

@@ -31,6 +31,10 @@ so_SO_write <- function(self, filename, pretty) {
     .Call("r_so_SO_write", self, filename, pretty)
 }
 
+so_Table_ref <- function(self) {
+    .Call("r_so_Table_ref", self)
+}
+
 so_Table_free <- function(self) {
     .Call("r_so_Table_free", self)
 }
