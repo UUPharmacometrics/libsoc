@@ -25,4 +25,7 @@ Maintainer: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
 }
 \keyword{package}
 \examples{
+file <- system.file("extdata", "pheno.SO.xml",  package="libsoc")
+so <- so_SO_read(file)
+estimates <- so$SOBlock[[1]]$Estimation$PopulationEstimates$MLE
 }
