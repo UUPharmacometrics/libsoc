@@ -1,2 +1,0 @@
-PKG_LIBS=-lxml2
-PKG_CFLAGS=-Iinclude -I/usr/include/libxml2
