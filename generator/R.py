@@ -127,12 +127,15 @@ def print_get_number_of(name, child, cls):
     print("\treturn r_int;")
     print("}")
 
-def print_add_child(name, child, cls):
-    print("SEXP r_so_", name, "_add_", child, "(SEXP self, SEXP child)", sep='')
+def print_add_child(name, child):
+    print("SEXP r_so_", name, "_add_", child['name'], "(SEXP self, SEXP child)", sep='')
     print("{")
-    print("\tint fail = so_", name, "_add_", child, "(R_ExternalPtrAddr(self), R_ExternalPtrAddr(child));", sep='')
+    if child['type'] == 'Table':
+        print("\tint fail = so_", name, "_add_", child['name'], "(R_ExternalPtrAddr(self), df2table(child));", sep='')
+    else:
+        print("\tint fail = so_", name, "_add_", child['name'], "(R_ExternalPtrAddr(self), R_ExternalPtrAddr(child));", sep='')
     print("\tif (fail) {")
-    print("\t\terror(\"Failed to add ", child, " to ", name, "\");", sep='') 
+    print("\t\terror(\"Failed to add ", child['name'], " to ", name, "\");", sep='') 
     print("\t}")
     print("\treturn(R_NilValue);")
     print("}")
@@ -436,8 +439,11 @@ def print_classes(name, struct):
             if child.get('array', False):
                 print(",")
                 print("\t\tadd_", child['name'], " = function(value) {", sep='')
-                print("\t\t\tso_", name, "_add_", child['name'], "(.self$.cobj, value$.cobj)", sep='')
-                print("\t\t\tinvisible(so_", child['type'], "_ref(value$.cobj))", sep='')
+                if child['type'] == 'Table':
+                    print("\t\t\tinvisible(so_", name, "_add_", child['name'], "(.self$.cobj, value))", sep='')
+                else:
+                    print("\t\t\tso_", name, "_add_", child['name'], "(.self$.cobj, value$.cobj)", sep='')
+                    print("\t\t\tinvisible(so_", child['type'], "_ref(value$.cobj))", sep='')
                 print("\t\t},")
                 print("\t\tremove_", child['name'], " = function(value, index) {", sep='')
                 print("\t\t\tinvisible(so_", name, "_remove_", child['name'], "(.self$.cobj, index))", sep='')
@@ -543,7 +549,7 @@ for name in structure:
                     print()
                     if child.get('array', False):
                         print_get_number_of(name, child['name'], child['type'])
-                        print_add_child(name, child['name'], child['type'])
+                        print_add_child(name, child)
                         print_remove_child(name, child['name'], child['type'])
                     else:
                         print_set_child(name, child)
