@@ -407,6 +407,7 @@ int so_SimulationSubType_xml(so_SimulationSubType *self, xmlTextWriterPtr writer
     'ModelDiagnostic' : {
         'children' : [
             { 'name' : 'DiagnosticStructuralModel', 'type' : 'DiagnosticStructuralModel' },
+            { 'name' : 'DiagnosticIndividualParams', 'type' : 'DiagnosticIndividualParams' },
         ],
         'xpath' : 'SO/SOBlock/ModelDiagnostic',
         'namespace' : 'so'
@@ -417,6 +418,15 @@ int so_SimulationSubType_xml(so_SimulationSubType *self, xmlTextWriterPtr writer
             { 'name' : 'VPC', 'type' : 'Table' },
         ],
         'xpath' : 'SO/SOBlock/ModelDiagnostic/DiagnosticStructuralModel',
+        'namespace' : 'so'
+    },
+    'DiagnosticIndividualParams' : {
+        'children' : [
+            { 'name' : 'RandomEffects', 'type' : 'Table' },
+            { 'name' : 'IndivParamsCovariates', 'type' : 'Table' },
+            { 'name' : 'DistributionIndivParams', 'type' : 'Table' },
+        ],
+        'xpath' : 'SO/SOBlock/ModelDiagnostic/DiagnosticIndividualParams',
         'namespace' : 'so'
     },
 }

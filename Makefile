@@ -1,4 +1,4 @@
-SOC_GENSRCS := Bayesian.c Bayesian_PPE.c DiagnosticStructuralModel.c Estimates.c Estimation.c ExternalFile.c IndividualEstimates.c \
+SOC_GENSRCS := Bayesian.c Bayesian_PPE.c DiagnosticIndividualParams.c DiagnosticStructuralModel.c Estimates.c Estimation.c ExternalFile.c IndividualEstimates.c \
 	InformationCriteria.c Message.c MissingData.c MLE.c ModelDiagnostic.c OFMeasures.c OptimalDesignBlock.c OptimalDesign.c OtherMethod.c \
    	OtherMethod_PPE.c PharmMLRef.c PopulationEstimates.c PrecisionIndividualEstimates.c PrecisionPopulationEstimates.c RandomEffects_IE.c \
    	RawResults.c Residuals.c SimulationBlock.c Simulation.c SimulationSubType.c SOBlock.c SO.c TargetToolMessages.c TaskInformation.c ToolSettings.c
