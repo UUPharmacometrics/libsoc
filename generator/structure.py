@@ -49,7 +49,7 @@ structure = {
             { 'name' : "xmlns:po", 'value' : "http://www.pharmml.org/probonto/ProbOnto" },
             { 'name' : "xsi:schemaLocation", 'value' : "http://www.pharmml.org/so/0.3/StandardisedOutput" },
             { 'name' : "implementedBy", 'value' : "MJS" },
-            { 'name' : "writtenVersion", 'value' : "0.3" },
+            { 'name' : "writtenVersion", 'value' : "0.3.1" },
         ],
         'xpath' : 'SO',
         'fields' : [ 'int error;' ],
