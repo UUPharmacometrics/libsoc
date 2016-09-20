@@ -271,6 +271,7 @@ structure = {
             { 'name' : 'Likelihood', 'type' : 'type_real' },
             { 'name' : 'LogLikelihood', 'type' : 'type_real' },
             { 'name' : 'Deviance', 'type' : 'type_real' },
+            { 'name' : 'ToolObjFunction', 'type' : 'type_real' },
             { 'name' : 'IndividualContribtoLL', 'type' : 'Table' },
             { 'name' : 'InformationCriteria', 'type' : 'InformationCriteria' },
         ],
