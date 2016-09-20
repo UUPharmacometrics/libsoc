@@ -457,6 +457,8 @@ def print_documentation(name, struct):
     print("}")
     print("\\section{Methods}{")
     print("so_", name, "$new() - Create a new empty so_", name, " object", sep='')
+    if name == 'SO':        # Special case for write method
+        print("so_", name, "$write(filename, pretty=TRUE) - Write an SO to file. Set pretty to FALSE to not get pretty printed xml", sep='')
     if 'children' in struct:
         for child in struct['children']:
             if child.get('array', False):
