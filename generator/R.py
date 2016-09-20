@@ -456,14 +456,14 @@ def print_documentation(name, struct):
     print("\tReference Class for the ", struct['xpath'], " element of a PharmML-SO data structure", sep='') 
     print("}")
     print("\\section{Methods}{")
-    print("so_", name, "$new() - Create a new empty so_", name, " object", sep='')
+    print("so_", name, "$new() - Create a new empty so_", name, " object\\cr", sep='')
     if name == 'SO':        # Special case for write method
-        print("so_", name, "$write(filename, pretty=TRUE) - Write an SO to file. Set pretty to FALSE to not get pretty printed xml", sep='')
+        print("so_", name, "$write(filename, pretty=TRUE) - Write an SO to file. Set pretty to FALSE to not get pretty printed xml\\cr", sep='')
     if 'children' in struct:
         for child in struct['children']:
             if child.get('array', False):
-                print("so_", name, "$add_", child['name'], "(object) - Add a ", child['name'], sep='')
-                print("so_", name, "$remove_", child['name'], "(object, i) - Remove the ", child['name'], " having index i", sep='')
+                print("so_", name, "$add_", child['name'], "(object) - Add a ", child['name'], "\\cr", sep='')
+                print("so_", name, "$remove_", child['name'], "(object, i) - Remove the ", child['name'], " having index i\\cr", sep='')
     print("}")
     if 'children' in struct or 'attributes' in struct:
         print("\\section{Fields}{")
