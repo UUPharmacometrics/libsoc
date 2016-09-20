@@ -11,4 +11,7 @@ Imports:
 Description: Handle PharmML standardized output (SO) XML files.
     SO files can be created, read, manipulated and written through a
     data binding from the XML structure to a tree structure of R objects.
+URL: https://github.com/rikardn/libsoc
+BugReports: https://github.com/rikardn/libsoc/issues
 License: LGPL-3
+Copyright: 2015-2016 Rikard Nordgren
