@@ -126,11 +126,34 @@ structure = {
             { 'name' : 'PopulationEstimates', 'type' : 'PopulationEstimates' },
             { 'name' : 'PrecisionPopulationEstimates', 'type' : 'PrecisionPopulationEstimates' },
             { 'name' : 'IndividualEstimates', 'type' : 'IndividualEstimates' },
+            { 'name' : 'PrecisionIndividualEstimates', 'type' : 'PrecisionIndividualEstimates' },
             { 'name' : 'Residuals', 'type' : 'Residuals' },
             { 'name' : 'Predictions', 'type' : 'Table' },
             { 'name' : 'OFMeasures', 'type' : 'OFMeasures' },
+            { 'name' : 'TargetToolMessages', 'type' : 'TargetToolMessages' },
         ],
         'xpath' : 'SO/SOBlock/Estimation',
+        'namespace' : 'so'
+    },
+    'PrecisionIndividualEstimates' : {
+        'children' : [
+            { 'name' : 'StandardDeviation', 'type' : 'Table' },
+            { 'name' : 'PercentilesCI', 'type' : 'Table' },
+        ],
+        'xpath' : 'SO/SOBlock/Estimation/PrecisionIndividualEstimates',
+        'namespace' : 'so'
+    },
+    'TargetToolMessages' : {
+        'children' : [
+            { 'name' : 'Termination', 'type' : 'type_string' },
+            { 'name' : 'Warnings', 'type' : 'type_string' },
+            { 'name' : 'Errors', 'type' : 'type_string' },
+            { 'name' : 'ElapsedTime', 'type' : 'type_real' },
+            { 'name' : 'OutputFilePath', 'type' : 'ExternalFile' },
+            { 'name' : 'ChainsNumber', 'type' : 'type_real' },
+            { 'name' : 'IterationNumber', 'type' : 'type_real' },
+        ],
+        'xpath' : 'SO/SOBlock/Estimation/TargetToolMessages',
         'namespace' : 'so'
     },
     'PopulationEstimates' : {
@@ -266,6 +289,7 @@ structure = {
             { 'name' : 'IndivParameters', 'type' : 'SimulationSubType', 'array' : True },
             { 'name' : 'RandomEffects', 'type' : 'SimulationSubType', 'array' : True },
             { 'name' : 'Covariates', 'type' : 'SimulationSubType', 'array' : True },
+            { 'name' : 'Regressors', 'type' : 'SimulationSubType', 'array' : True },
             { 'name' : 'PopulationParameters', 'type' : 'SimulationSubType', 'array' : True },
             { 'name' : 'Dosing', 'type' : 'SimulationSubType', 'array' : True },
             { 'name' : 'RawResultsFile', 'type' : 'ExternalFile' },
