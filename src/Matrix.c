@@ -294,6 +294,7 @@ int so_Matrix_xml(so_Matrix *self, xmlTextWriterPtr writer, char *element_name)
         if (rc < 0) return 1;
         for (int col = 0; col < self->numcols; col++) {
             char *value_string = pharmml_double_to_string(self->data[row * self->numcols + col]);
+            if (!value_string) return 1;
             rc = xmlTextWriterWriteElement(writer, BAD_CAST "ct:Real", BAD_CAST value_string);
             if (rc < 0) return 1;
             free(value_string);
