@@ -457,6 +457,11 @@ def print_documentation(name, struct):
     print("}")
     print("\\section{Methods}{")
     print("so_", name, "$new() - Create a new empty so_", name, " object", sep='')
+    if 'children' in struct:
+        for child in struct['children']:
+            if child.get('array', False):
+                print("so_", name, "$add_", child['name'], "(object) - Add a ", child['name'], sep='')
+                print("so_", name, "$remove_", child['name'], "(object, i) - Remove the ", child['name'], " having index i", sep='')
     print("}")
     if 'children' in struct or 'attributes' in struct:
         print("\\section{Fields}{")
@@ -464,17 +469,35 @@ def print_documentation(name, struct):
             for child in struct['children']:
                 print("$", child['name'], " - ", sep='', end='')
                 if child['type'] == 'Table':
-                    print("A data.frame\\cr")
+                    if child.get('array', False):
+                        print("A list of data.frames\\cr")
+                    else:
+                        print("A data.frame\\cr")
                 elif child['type'] == 'Matrix':
-                    print("A matrix\\cr")
+                    if child.get('array', False):
+                        print("A list of matrices\\cr")
+                    else:
+                        print("A matrix\\cr")
                 elif child['type'] == 'type_string':
-                    print("A character string\\cr")
+                    if child.get('array', False):
+                        print("A list of character strings\\cr")
+                    else:
+                        print("A character string\\cr")
                 elif child['type'] == 'type_real':
-                    print("A numeric\\cr")
+                    if child.get('array', False):
+                        print("A list of numerics\\cr")
+                    else:
+                        print("A numeric\\cr")
                 elif child['type'] == 'type_int':
-                    print("An integer\\cr")
+                    if child.get('array', False):
+                        print("A list of integers\\cr")
+                    else:
+                        print("An integer\\cr")
                 else:
-                    print("A \link{so_", child['type'], "} object\\cr", sep='')
+                    if child.get('array', False):
+                        print("A list of \link{so_", child['type'], "} objects\\cr", sep='')
+                    else:
+                        print("A \link{so_", child['type'], "} object\\cr", sep='')
         if 'attributes' in struct:
             for attr in struct['attributes']:
                 if attr['type'] == 'type_string':
