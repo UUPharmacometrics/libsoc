@@ -272,8 +272,18 @@ structure = {
             { 'name' : 'LogLikelihood', 'type' : 'type_real' },
             { 'name' : 'Deviance', 'type' : 'type_real' },
             { 'name' : 'IndividualContribtoLL', 'type' : 'Table' },
+            { 'name' : 'InformationCriteria', 'type' : 'InformationCriteria' },
         ],
         'xpath' : 'SO/SOBlock/Estimation/OFMeasures',
+        'namespace' : 'so'
+    },
+    'InformationCriteria' : {
+        'children' : [
+            { 'name' : 'AIC', 'type' : 'type_real' },
+            { 'name' : 'BIC', 'type' : 'type_real' },
+            { 'name' : 'DIC', 'type' : 'type_real' },
+        ],
+        'xpath' : 'SO/SOBlock/Estimation/OFMeasures/InformationCriteria',
         'namespace' : 'so'
     },
     'Simulation' : {
