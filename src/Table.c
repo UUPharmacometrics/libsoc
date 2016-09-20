@@ -453,33 +453,33 @@ int so_Table_xml(so_Table *self, xmlTextWriterPtr writer, char *element_name)
                         }
                     } else {
                         value_string = pharmml_double_to_string(number);
+                        if (!value_string) return 1;
+                    }
+                    if (special_string) {
+                        rc = xmlTextWriterWriteElement(writer, BAD_CAST special_string, NULL);
+                    } else {
+                        rc = xmlTextWriterWriteElement(writer, BAD_CAST pharmml_valueType_to_element(self->columns[j]->valueType), BAD_CAST value_string);
+                        free(value_string);
                     }
                 } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_INT) {
                     int *ptr = (int *) self->columns[j]->column;
                     value_string = pharmml_int_to_string(ptr[i]);
+                    if (!value_string) return 1;
+                    rc = xmlTextWriterWriteElement(writer, BAD_CAST pharmml_valueType_to_element(self->columns[j]->valueType), BAD_CAST value_string);
+                    free(value_string);
                 } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_STRING || self->columns[j]->valueType == PHARMML_VALUETYPE_ID) {
                     char **ptr = (char **) self->columns[j]->column;
                     value_string = ptr[i];
-                }
-                if (self->columns[j]->valueType == PHARMML_VALUETYPE_BOOLEAN) {
+                    rc = xmlTextWriterWriteElement(writer, BAD_CAST pharmml_valueType_to_element(self->columns[j]->valueType), BAD_CAST value_string);
+                } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_BOOLEAN) {
                     bool *ptr = (bool *) self->columns[j]->column;
                     if (ptr[i]) {
                         rc = xmlTextWriterWriteElement(writer, BAD_CAST "ct:True", NULL);
-                        if (rc < 0) return 1;
                     } else {
                         rc = xmlTextWriterWriteElement(writer, BAD_CAST "ct:False", NULL);
-                        if (rc < 0) return 1;
                     }
-                } else if (special_string) {
-                    rc = xmlTextWriterWriteElement(writer, BAD_CAST special_string, NULL);
-                    if (rc < 0) return 1;
-                } else {
-                    rc = xmlTextWriterWriteElement(writer, BAD_CAST pharmml_valueType_to_element(self->columns[j]->valueType), BAD_CAST value_string);
-                    if (self->columns[j]->valueType == PHARMML_VALUETYPE_REAL || self->columns[j]->valueType == PHARMML_VALUETYPE_INT) {
-                        free(value_string);
-                    }
-                    if (rc < 0) return 1;
                 }
+                if (rc < 0) return 1;
             }
             rc = xmlTextWriterEndElement(writer);
             if (rc < 0) return 1;
@@ -509,9 +509,11 @@ int so_Table_xml(so_Table *self, xmlTextWriterPtr writer, char *element_name)
                     if (self->columns[j]->valueType == PHARMML_VALUETYPE_REAL) {
                         double *ptr = (double *) self->columns[j]->column;
                         value_string = pharmml_double_to_string(ptr[i]);
+                        if (!value_string) return 1;
                     } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_INT) {
                         int *ptr = (int *) self->columns[j]->column;
                         value_string = pharmml_int_to_string(ptr[i]);
+                        if (!value_string) return 1;
                     } else if (self->columns[j]->valueType == PHARMML_VALUETYPE_STRING || self->columns[j]->valueType == PHARMML_VALUETYPE_ID) {
                         char **ptr = (char **) self->columns[j]->column;
                         value_string = ptr[i];
@@ -721,20 +723,19 @@ int so_Table_characters(so_Table *table, const char *ch, int len)
         }
         column = table->columns[table->current_column - 1];
         str[len] = '\0';
-    }
 
-    if (table->in_real) {
-        double real = pharmml_string_to_double(str);
-        fail = so_Column_add_real(column, real);
-    } else if (table->in_int) {
-        int integer = pharmml_string_to_int(str);
-        fail = so_Column_add_int(column, integer);
-    } else if (table->in_string) {
-        fail = so_Column_add_string(column, str);
-    }
+        if (table->in_real) {
+            double real = pharmml_string_to_double(str);
+            fail = so_Column_add_real(column, real);
+        } else if (table->in_int) {
+            int integer = pharmml_string_to_int(str);
+            fail = so_Column_add_int(column, integer);
+        } else if (table->in_string) {
+            fail = so_Column_add_string(column, str);
+        }
 
-    if (table->in_real || table->in_int || table->in_string) {
         str[len] = saved;
+
     }
 
     return fail;

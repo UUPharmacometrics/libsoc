@@ -146,6 +146,7 @@ def print_remove_child(name, child, cls):
     print("\tif (fail) {")
     print("\t\terror(\"Failed to remove ", child, " from ", name, "\");", sep='') 
     print("\t}")
+    print("\treturn(R_NilValue);")
     print("}")
 
 def print_get_child(name, child):
