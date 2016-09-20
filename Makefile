@@ -88,39 +88,36 @@ R:
 	for FILE in $(addprefix src/, $(SOC_SRCS)); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
 	R CMD build R
 
-#Fetch and compile R package dependencies for windows
-.PHONY: R-windep
-R-windep:
-	rm -rf R-windep
-	mkdir -p R-windep
-	mkdir -p R-windep/include
-	mkdir -p R-windep/lib
-	wget -P R-windep http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
-	cd R-windep; tar xvfz libiconv-1.14.tar.gz
-	cd R-windep/libiconv-1.14/;./configure --host=x86_64-w64-mingw32;make
-	cp R-windep/libiconv-1.14/include/iconv.h R-windep/include
-	cp R-windep/libiconv-1.14/lib/.libs/libiconv-2.dll R-windep/lib
-	cp R-windep/libiconv-1.14/lib/.libs/libiconv.dll.a R-windep/lib
-	cp R-windep/libiconv-1.14/lib/libcharset.dll.a R-windep/lib
-	cp R-windep/libiconv-1.14/libcharset/lib/.libs/libcharset-1.dll R-windep/lib
-	wget -P R-windep http://zlib.net/zlib-1.2.8.tar.gz
-	cd R-windep; tar xvfz zlib-1.2.8.tar.gz
-	cd R-windep/zlib-1.2.8/win32; sed -i 's/PREFIX =/PREFIX = x86_64-w64-mingw32-/' Makefile.gcc
-	cd R-windep/zlib-1.2.8; make -f win32/Makefile.gcc
-	cp R-windep/zlib-1.2.8/zconf.h R-windep/include
-	cp R-windep/zlib-1.2.8/zlib.h R-windep/include
-	cp R-windep/zlib-1.2.8/zlib1.dll R-windep/lib
-	cp R-windep/zlib-1.2.8/libz.dll.a R-windep/lib
-	wget -P R-windep ftp://xmlsoft.org/libxml2/libxml2-2.9.3.tar.gz
-	cd R-windep; tar xvfz libxml2-2.9.3.tar.gz
-	cd R-windep/libxml2-2.9.3; ./configure --host=x86_64-w64-mingw32 --without-python --without-docbook --without-ftp --without-http --without-schematron --with-lzma=no --with-zlib=/home/rikard/moose/soc/R-windep --with-iconv=/home/rikard/moose/soc/R-windep; make 
+#Fetch and compile dependencies for windows
+.PHONY: windep
+windep:
+	rm -rf windep
+	mkdir -p windep
+	mkdir -p windep/include
+	mkdir -p windep/lib
+	wget -P windep http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz
+	cd windep; tar xvfz libiconv-1.14.tar.gz
+	cd windep/libiconv-1.14/;./configure --host=x86_64-w64-mingw32;make
+	cp windep/libiconv-1.14/include/iconv.h windep/include
+	cp windep/libiconv-1.14/lib/.libs/libiconv-2.dll windep/lib
+	cp windep/libiconv-1.14/lib/.libs/libiconv.dll.a windep/lib
+	cp windep/libiconv-1.14/lib/libcharset.dll.a windep/lib
+	cp windep/libiconv-1.14/libcharset/lib/.libs/libcharset-1.dll windep/lib
+	wget -P windep http://zlib.net/zlib-1.2.8.tar.gz
+	cd windep; tar xvfz zlib-1.2.8.tar.gz
+	cd windep/zlib-1.2.8/win32; sed -i 's/PREFIX =/PREFIX = x86_64-w64-mingw32-/' Makefile.gcc
+	cd windep/zlib-1.2.8; make -f win32/Makefile.gcc
+	cp windep/zlib-1.2.8/zconf.h windep/include
+	cp windep/zlib-1.2.8/zlib.h windep/include
+	cp windep/zlib-1.2.8/zlib1.dll windep/lib
+	cp windep/zlib-1.2.8/libz.dll.a windep/lib
+	wget -P windep ftp://xmlsoft.org/libxml2/libxml2-2.9.3.tar.gz
+	cd windep; tar xvfz libxml2-2.9.3.tar.gz
+	cd windep/libxml2-2.9.3; ./configure --host=x86_64-w64-mingw32 --without-python --without-docbook --without-ftp --without-http --without-schematron --with-lzma=no --with-zlib=/home/rikard/moose/soc/windep --with-iconv=/home/rikard/moose/soc/windep; make 
 #	--without-html --without-legacy --without-regexps --without-sax1 --without-schemas --without-valid --without-xpath 
-	cp -r R-windep/libxml2-2.9.3/include/libxml R-windep/include
-	cp R-windep/libxml2-2.9.3/.libs/libxml2-2.dll R-windep/lib
-	cp R-windep/libxml2-2.9.3/.libs/libxml2.dll.a R-windep/lib
-	mkdir -p R/libs/x64
-	cp R-windep/lib/* R/libs/x64
-	cp -r R-windep/include R/src/wininclude
+	cp -r windep/libxml2-2.9.3/include/libxml windep/include
+	cp windep/libxml2-2.9.3/.libs/libxml2-2.dll windep/lib
+	cp windep/libxml2-2.9.3/.libs/libxml2.dll.a windep/lib
 
 #generate:
 #	python3 generate.py
