@@ -158,6 +158,11 @@ int main(int argc, const char *argv[])
 
     LIBXML_TEST_VERSION
 
+    xmlLineNumbersDefault(1);
+    xmlThrDefIndentTreeOutput(1);
+    xmlKeepBlanksDefault(0);
+    xmlThrDefTreeIndentString("  ");
+
     if (strcmp(command, "validate") == 0) {
         validate(argv[2]);
     } else if (strcmp(command, "pretty") == 0) {
