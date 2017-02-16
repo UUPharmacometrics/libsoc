@@ -31,6 +31,10 @@ so_SO_write <- function(self, filename, pretty) {
     .Call("r_so_SO_write", self, filename, pretty)
 }
 
+so_SO_all_population_estimates <- function(self) {
+    .Call("r_so_SO_all_population_estimates", self)
+}
+
 so_Table_ref <- function(self) {
     .Call("r_so_Table_ref", self)
 }
@@ -43,11 +47,16 @@ so_Matrix_free <- function(self) {
     .Call("r_so_Matrix_free", self)
 }
 
-so_SO$methods(
+so_SO$methods(list(
     write = function(filename, pretty=TRUE) {
         fail = so_SO_write(.self$.cobj, filename, ifelse(pretty, 1L, 0L))
         if (fail != 0) {
             stop(paste0("Could not write to file ", filename))
         }
+    },
+    all_population_estimates = function() {
+        so_SO_all_population_estimates(.self$.cobj)
     }
+
+    )
 )

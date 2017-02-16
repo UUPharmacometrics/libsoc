@@ -19,6 +19,7 @@
 #include <Rdefines.h>
 #include <so.h>
 #include "soc.h"
+#include <so/soext.h>
 
 SEXP r_so_SO_read(SEXP name)
 {
@@ -49,6 +50,20 @@ SEXP r_so_SO_write(SEXP so, SEXP filename, SEXP pretty)
     UNPROTECT(1);
 
     return ret;
+}
+
+SEXP r_so_SO_all_population_estimates(SEXP so)
+{
+    so_Table *table = so_SO_all_population_estimates(R_ExternalPtrAddr(so));
+
+    if (!table) {
+        error("Could not gather any population estimates");
+    }
+
+    SEXP df = table2df(table);
+    so_Table_free(table);
+
+    return df;
 }
 
 SEXP r_so_Table_ref(SEXP self)

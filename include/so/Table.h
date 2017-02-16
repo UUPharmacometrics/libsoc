@@ -41,6 +41,7 @@ int so_Table_get_number_of_columns(so_Table *self);
 int so_Table_get_number_of_rows(so_Table *self);
 void *so_Table_get_column_from_number(so_Table *self, int number);
 void *so_Table_get_column_from_name(so_Table *self, char *name);
+int so_Table_get_index_from_name(so_Table *self, char *name);
 int so_Table_new_column(so_Table *self, char *columnId, pharmml_columnType columnType, pharmml_valueType valueType, void *data);
 int so_Table_new_column_no_copy(so_Table *self, char *columnId, pharmml_columnType columnType, pharmml_valueType valueType, void *data);
 void so_Table_set_ExternalFile(so_Table *self, so_ExternalFile *value);

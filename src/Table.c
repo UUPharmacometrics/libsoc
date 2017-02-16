@@ -284,6 +284,22 @@ void *so_Table_get_column_from_name(so_Table *self, char *name)
 }
 
 /** \memberof so_Table
+ *  Get the index of a column from its columnId
+ *  \param self - pointer to an so_Table
+ *  \return index of the column or -1 if not found
+ */
+int so_Table_get_index_from_name(so_Table *self, char *name)
+{
+    for (int i = 0; i < self->numcols; i++) {
+        if (strcmp(name, self->columns[i]->columnId) == 0) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+/** \memberof so_Table
  * Create a new column and add to table. A new buffer will be created for the data
  * and number_of_rows of the data will be copied.
  * \param self - pointer to an so_Table
