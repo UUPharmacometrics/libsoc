@@ -23,5 +23,6 @@ so_SO *so_SO_read(char *filename);
 int so_SO_write(so_SO *self, char *filename, int pretty);
 so_SOBlock *so_SO_get_SOBlock_from_name(so_SO *self, char *name);
 so_Table *so_SO_all_population_estimates(so_SO *self);
+so_Table *so_SO_all_standard_errors(so_SO *self);
 
 #endif

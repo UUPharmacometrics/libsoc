@@ -66,6 +66,20 @@ SEXP r_so_SO_all_population_estimates(SEXP so)
     return df;
 }
 
+SEXP r_so_SO_all_standard_errors(SEXP so)
+{
+    so_Table *table = so_SO_all_standard_errors(R_ExternalPtrAddr(so));
+
+    if (!table) {
+        error("Could not gather any population estimates");
+    }
+
+    SEXP df = table2df(table);
+    so_Table_free(table);
+
+    return df;
+}
+
 SEXP r_so_Table_ref(SEXP self)
 {
     so_Table_ref(R_ExternalPtrAddr(self));

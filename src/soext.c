@@ -237,3 +237,98 @@ so_Table *so_SO_all_population_estimates(so_SO *self)
 
     return table;
 }
+
+/** \memberof so_SO
+ * Gather all mle standard errors for all parameters over all SOBlocks
+ * \param self - The SO structure
+ * \return - A pointer to a newly created table with the results
+ */
+so_Table *so_SO_all_standard_errors(so_SO *self)
+{
+    so_Table *table = so_Table_new();
+
+    if (!table) {
+        return table;
+    }
+
+    int numcols = 0;
+
+    // Find all parameters and create an empty column for each
+    for (int i = 0; i < so_SO_get_number_of_SOBlock(self); i++) {
+        so_SOBlock *block = so_SO_get_SOBlock(self, i);
+        so_Estimation *est = so_SOBlock_get_Estimation(block);
+        if (!est)
+            continue;
+        so_PrecisionPopulationEstimates *ppe = so_Estimation_get_PrecisionPopulationEstimates(est);
+        if (!ppe)
+            continue;
+        so_MLE *mle = so_PrecisionPopulationEstimates_get_MLE(ppe);
+        if (!mle)
+            continue;
+        so_Table *se = so_MLE_get_StandardError(mle);
+        if (!se)
+            continue;
+        int numrows_se = so_Table_get_number_of_rows(se);
+        char **names = (char **) so_Table_get_column_from_name(se, "Parameter");
+        pharmml_valueType value_type = so_Table_get_valueType(se, 1);      // SEs are in the second column
+        pharmml_columnType column_type = PHARMML_COLTYPE_UNDEFINED;         // SE table does not support this in the SO
+        for (int row = 0; row < numrows_se; row++) {
+            char *columnId = names[row];
+            if (so_Table_get_index_from_name(table, columnId) == -1) {    // Do we not yet have this parameter?
+                so_Table_new_column_no_copy(table, columnId, column_type, value_type, NULL);
+                numcols++;
+            }
+        }
+    }
+
+    // Add one row per SOBlock
+    for (int i = 0; i < so_SO_get_number_of_SOBlock(self); i++) {
+        so_SOBlock *block = so_SO_get_SOBlock(self, i);
+        so_Estimation *est = so_SOBlock_get_Estimation(block);
+        double *data = NULL;
+        char **names;
+        int numrows;
+        if (est) {
+            so_PrecisionPopulationEstimates *pe = so_Estimation_get_PrecisionPopulationEstimates(est);
+            if (pe) {
+                so_MLE *mle = so_PrecisionPopulationEstimates_get_MLE(pe);
+                if (mle) {
+                    so_Table *se = so_MLE_get_StandardError(mle);
+                    if (se) {
+                        data = (double *) so_Table_get_column_from_name(se, "SE");
+                        names = (char **) so_Table_get_column_from_name(se, "Parameter");
+                        numrows = so_Table_get_number_of_rows(se);
+                    }
+                }
+            }
+        }
+
+        table->numrows++;
+
+        for (int col = 0; col < numcols; col++) {
+            so_Column *new_column = table->columns[col];
+            if (data) {
+                // Find row in se table
+                char *id = so_Table_get_columnId(table, col);
+                if (id) {
+                    int found = 0;
+                    for (int row = 0; row < numrows; row++) {           // Loop through rows to find id
+                        if (strcmp(names[row], id) == 0) {
+                            so_Column_add_real(new_column, data[row]);
+                            found = 1;
+                            break;
+                        }
+                    }
+                    if (!found)
+                        so_Column_add_real(new_column, pharmml_na());
+                } else {
+                    so_Column_add_real(new_column, pharmml_na());
+                }
+            } else {        // No table set all to NA
+                so_Column_add_real(new_column, pharmml_na());
+            }
+        }
+    }
+
+    return table;
+}

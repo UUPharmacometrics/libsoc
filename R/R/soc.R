@@ -35,6 +35,10 @@ so_SO_all_population_estimates <- function(self) {
     .Call("r_so_SO_all_population_estimates", self)
 }
 
+so_SO_all_standard_errors <- function(self) {
+    .Call("r_so_SO_all_standard_errors", self)
+}
+
 so_Table_ref <- function(self) {
     .Call("r_so_Table_ref", self)
 }
@@ -56,6 +60,9 @@ so_SO$methods(list(
     },
     all_population_estimates = function() {
         so_SO_all_population_estimates(.self$.cobj)
+    },
+    all_standard_errors = function() {
+        so_SO_all_standard_errors(.self$.cobj)
     }
 
     )
