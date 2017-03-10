@@ -13,13 +13,19 @@ libsoc uses libxml2 to read and write XML. To build the libxml2-dev must be inst
 Bindings to R, in the form of an R package, are also available.
 
 To build:
+``` 
 cd generator
 python3 generate.py
 cd ..
 make
+```
 
 To build documentation:
+```
 make doc
+```
 
 To build R source package:
+```
 make R
+```
