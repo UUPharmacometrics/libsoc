@@ -1,0 +1,4 @@
+0.6
+
+* Add methods all_standard_errors and all_parameter_estimates on an SO to gather values across SOBlocks
+* Fix bug stopping IndivContribToLL from being loaded

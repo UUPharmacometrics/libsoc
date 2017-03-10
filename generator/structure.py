@@ -272,7 +272,7 @@ structure = {
             { 'name' : 'LogLikelihood', 'type' : 'type_real' },
             { 'name' : 'Deviance', 'type' : 'type_real' },
             { 'name' : 'ToolObjFunction', 'type' : 'type_real' },
-            { 'name' : 'IndividualContribtoLL', 'type' : 'Table' },
+            { 'name' : 'IndividualContribToLL', 'type' : 'Table' },
             { 'name' : 'InformationCriteria', 'type' : 'InformationCriteria' },
         ],
         'xpath' : 'SO/SOBlock/Estimation/OFMeasures',
