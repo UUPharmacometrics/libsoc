@@ -10,7 +10,7 @@ Dependencies:
 libsoc uses libxml2 to read and write XML. To build the libxml2-dev must be installed.
 
 
-Bindings to R, in the form of an R package, are also available.
+Bindings to R, in the form of an R package, are available.
 
 To build:
 ``` 
