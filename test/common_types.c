@@ -6,11 +6,11 @@
 void main()
 {
     assert(strcmp(pharmml_columnType_to_string(0), "undefined") == 0);
-    assert(strcmp(pharmml_columnType_to_string(PHARMML_COLTYPE_STRUCT_PARAMETER), "structParameter") == 0);
+    assert(strcmp(pharmml_columnType_to_string(PHARMML_COLTYPE_STRUCTPARAMETER), "structParameter") == 0);
     assert(strcmp(pharmml_columnType_to_string(228), "undefined") == 0);
 
     assert(pharmml_string_to_columnType("undefined") == 0);
-    assert(pharmml_string_to_columnType("varParameter_var") == PHARMML_COLTYPE_VAR_PARAMETER_VAR);
+    assert(pharmml_string_to_columnType("varParameter") == PHARMML_COLTYPE_VARPARAMETER);
     assert(pharmml_string_to_columnType("nonsenseparameter") == PHARMML_COLTYPE_UNDEFINED);
 
     assert(strcmp(pharmml_valueType_to_string(PHARMML_VALUETYPE_STRING), "string") == 0);
