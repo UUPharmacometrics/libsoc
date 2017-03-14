@@ -22,7 +22,7 @@ isnull <- function(pointer) {
 }
 
 so_SO_read <- function(name) {
-    ext = .Call("r_so_SO_read", name)
+    ext = .Call("r_so_SO_read", path.expand(name))
     so = so_SO$new(cobj=ext)
     return(so)
 }
