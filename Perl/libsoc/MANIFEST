@@ -1,0 +1,8 @@
+Changes
+libsoc.xs
+Makefile.PL
+MANIFEST
+ppport.h
+README
+t/libsoc.t
+lib/libsoc.pm
