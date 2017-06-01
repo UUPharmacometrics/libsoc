@@ -197,17 +197,13 @@ SEXP table2df(so_Table *table)
             double *col1 = (double *) so_Table_get_column_from_number(table, j);
             PROTECT(col = NEW_NUMERIC(numrows));
             double *ptr = NUMERIC_POINTER(col);
-            for (int i = 0; i < numrows; i++) {
-                *ptr++ = col1[i];
-            }
+            memcpy(ptr, col1, numrows * sizeof(double));
             SET_ELEMENT(list, j, col);
         } else if (vt == PHARMML_VALUETYPE_INT) {
             int *col1 = (int *) so_Table_get_column_from_number(table, j);
             PROTECT(col = NEW_INTEGER(numrows));
             int *ptr = INTEGER_POINTER(col);
-            for (int i = 0; i < numrows; i++) {
-                *ptr++ = col1[i];
-            }
+            memcpy(ptr, col1, numrows * sizeof(int));
             SET_ELEMENT(list, j, col);
         } else if (vt == PHARMML_VALUETYPE_STRING) {
             char **col2 = (char **) so_Table_get_column_from_number(table, j);
