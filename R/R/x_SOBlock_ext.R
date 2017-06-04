@@ -30,7 +30,6 @@ so_SOBlock_add_message <- function(type, toolname, name, content, severity) {
     stopifnot(is(severity, "integer"), length(severity) == 1)
     invisible(.Call("R_so_SOBlock_add_message", .self$.cobj, type, toolname, name, content, severity))
 }
-
 so_SOBlock$methods(add_message = so_SOBlock_add_message)
 
 so_SOBlock_add_rawresults_datafile <- function(description, path, oid) {
@@ -42,7 +41,6 @@ so_SOBlock_add_rawresults_datafile <- function(description, path, oid) {
     stopifnot(is(oid, "character"), length(oid) == 1)
     invisible(.Call("R_so_SOBlock_add_rawresults_datafile", .self$.cobj, description, path, oid))
 }
-
 so_SOBlock$methods(add_rawresults_datafile = so_SOBlock_add_rawresults_datafile)
 
 so_SOBlock_add_rawresults_graphicsfile <- function(description, path, oid) {
@@ -54,5 +52,12 @@ so_SOBlock_add_rawresults_graphicsfile <- function(description, path, oid) {
     stopifnot(is(oid, "character"), length(oid) == 1)
     invisible(.Call("R_so_SOBlock_add_rawresults_graphicsfile", .self$.cobj, description, path, oid))
 }
-
 so_SOBlock$methods(add_rawresults_graphicsfile = so_SOBlock_add_rawresults_graphicsfile)
+
+so_SOBlock_all_simulated_profiles <- function() {
+    if (isnull(.self$.cobj)) {
+        stop(".cobj is NULL")
+    }
+    invisible(.Call("R_so_SOBlock_all_simulated_profiles", .self$.cobj))
+}
+so_SOBlock$methods(all_simulated_profiles = so_SOBlock_all_simulated_profiles)

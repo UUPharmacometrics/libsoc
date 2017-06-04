@@ -18,6 +18,7 @@
 #include <R.h>
 #include <Rdefines.h>
 #include <so.h>
+#include "soc.h"
 
 SEXP R_so_SOBlock_add_message(SEXP self, SEXP type, SEXP toolname, SEXP name, SEXP content, SEXP severity)
 {
@@ -55,4 +56,18 @@ SEXP R_so_SOBlock_add_rawresults_graphicsfile(SEXP self, SEXP description, SEXP 
     so_SOBlock_add_rawresults_graphicsfile(c_SOBlock, c_description, c_path, c_oid);
 
     return R_NilValue;
+}
+
+SEXP R_so_SOBlock_all_simulated_profiles(SEXP self)
+{
+    so_Table *table = so_SOBlock_all_simulated_profiles(R_ExternalPtrAddr(self));
+
+    if (!table) {
+        error("Could not gather any population estimates");
+    }
+
+    SEXP df = table2df(table);
+    so_Table_free(table);
+
+    return df;
 }

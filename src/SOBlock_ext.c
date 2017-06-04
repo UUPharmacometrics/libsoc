@@ -80,3 +80,101 @@ void so_SOBlock_add_message(so_SOBlock *self, char *type, char *toolname, char *
     so_Message_set_Content(m, content);
     so_Message_set_Severity(m, &severity);
 }
+
+so_Table *so_SOBlock_all_simulated_profiles(so_SOBlock *self)
+{
+    so_Simulation *simulation = so_SOBlock_get_Simulation(self);
+    if (!simulation) return NULL;
+    int num_simulation_blocks = so_Simulation_get_number_of_SimulationBlock(simulation);
+    if (!num_simulation_blocks) return NULL;
+
+    so_Table *table = so_Table_new();
+
+    if (!table) {
+        return table;
+    }
+
+    int numcols = 0;
+    int have_name = 0;
+
+    // Find all blocks and profiles and create one column for each unique column
+    for (int i = 0; i < num_simulation_blocks; i++) {
+        so_SimulationBlock *block = so_Simulation_get_SimulationBlock(simulation, i);
+        int num_simulation_profiles = so_SimulationBlock_get_number_of_SimulatedProfiles(block);
+        for (int j = 0; j < num_simulation_profiles; j++) {
+            so_SimulationSubType *subtype = so_SimulationBlock_get_SimulatedProfiles(block, j);
+            if (so_SimulationSubType_get_name(subtype)) {  // Have a name?
+                have_name = 1;
+            }
+            so_Table *current_table = so_SimulationSubType_get_base(subtype);
+            int current_numcols = so_Table_get_number_of_columns(current_table);
+            for (int col = 0; col < current_numcols; col++) {
+                pharmml_valueType value_type = so_Table_get_valueType(current_table, col);
+                pharmml_columnType column_type = PHARMML_COLTYPE_UNDEFINED;        // FIXME
+                char *columnId = so_Table_get_columnId(current_table, col);
+                if (so_Table_get_index_from_name(table, columnId) == -1) {    // Do we not yet have this column?
+                    so_Table_new_column_no_copy(table, columnId, column_type, value_type, NULL);
+                    numcols++;
+                }
+            }
+        }
+    }
+    if (have_name) {
+        so_Table_new_column_no_copy(table, "name", PHARMML_COLTYPE_UNDEFINED, PHARMML_VALUETYPE_STRING, NULL);
+    }
+    so_Table_new_column_no_copy(table, "replicate", PHARMML_COLTYPE_UNDEFINED, PHARMML_VALUETYPE_INT, NULL);
+
+    // Add data
+    for (int i = 0; i < num_simulation_blocks; i++) {
+        so_SimulationBlock *block = so_Simulation_get_SimulationBlock(simulation, i);
+        int num_simulation_profiles = so_SimulationBlock_get_number_of_SimulatedProfiles(block);
+        for (int j = 0; j < num_simulation_profiles; j++) {
+            so_SimulationSubType *subtype = so_SimulationBlock_get_SimulatedProfiles(block, j);
+            so_Table *current_table = so_SimulationSubType_get_base(subtype);
+            int current_numrows = so_Table_get_number_of_rows(current_table); 
+
+            // Loop through all cols except name and replicate
+            for (int col = 0; col < numcols; col++) {
+                so_Column *target_column = table->columns[col];
+                char *columnId = so_Table_get_columnId(table, col);
+                void *data = so_Table_get_column_from_name(current_table, columnId);
+                pharmml_valueType value_type = so_Table_get_valueType(current_table, col);
+                if (data) {      // Is this column available?
+                    for (int row = 0; row < current_numrows; row++) {
+                        if (value_type == PHARMML_VALUETYPE_REAL) {
+                            double *real = (double *) data;     // FIXME: Need special merge function
+                            so_Column_add_real(target_column, real[row]);
+                        } else {    // FIXME: Assume string
+                            char **string = (char **) data;
+                            so_Column_add_string(target_column, string[row]);
+                        }
+                    }
+                } else {
+                    for (int row = 0; row < current_numrows; row++) {
+                        so_Column_add_real(target_column, pharmml_na());
+                    }
+                } 
+            }
+
+            // Handle name column
+            if (have_name) {
+                so_Column *name_column = table->columns[numcols];
+                char *name = so_SimulationSubType_get_name(subtype);
+                for (int row = 0; row < current_numrows; row++) {
+                    so_Column_add_string(name_column, name);
+                } 
+            }
+
+            // Handle replicate column
+            so_Column *replicate_column = table->columns[numcols + have_name];
+            int *replicate = so_SimulationBlock_get_replicate(block);
+            for (int row = 0; row < current_numrows; row++) {
+                so_Column_add_int(replicate_column, *replicate);
+            }
+
+            table->numrows += current_numrows;
+        }
+    }
+
+    return table;
+}

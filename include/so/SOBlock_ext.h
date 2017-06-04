@@ -21,5 +21,6 @@
 void so_SOBlock_add_rawresults_datafile(so_SOBlock *self, char *description, char *path, char *oid);
 void so_SOBlock_add_rawresults_graphicsfile(so_SOBlock *self, char *description, char *path, char *oid);
 void so_SOBlock_add_message(so_SOBlock *self, char *type, char *toolname, char *name, char *content, int severity);
+so_Table *so_SOBlock_all_simulated_profiles(so_SOBlock *self);
 
 #endif
