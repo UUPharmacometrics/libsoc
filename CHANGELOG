@@ -1,6 +1,7 @@
 0.6
 
 * Add methods all_standard_errors and all_parameter_estimates on an SO to gather values across SOBlocks
+* Add method all_simulated_profiles on an SOBlock to gather values across SimulationBlocks
 * Fix bug stopping IndivContribToLL from being loaded
 * Add path.expand() to file in so_SO_read() call in R
 * Minor speedup in loading data.frames into R
