@@ -110,19 +110,21 @@ so_Table *so_SOBlock_all_simulated_profiles(so_SOBlock *self)
             int current_numcols = so_Table_get_number_of_columns(current_table);
             for (int col = 0; col < current_numcols; col++) {
                 pharmml_valueType value_type = so_Table_get_valueType(current_table, col);
-                pharmml_columnType column_type = PHARMML_COLTYPE_UNDEFINED;        // FIXME
+                pharmml_columnType *column_type = so_Table_get_columnType(current_table, col);
+                int num_column_types = so_Table_get_num_columnTypes(current_table, col);
                 char *columnId = so_Table_get_columnId(current_table, col);
                 if (so_Table_get_index_from_name(table, columnId) == -1) {    // Do we not yet have this column?
-                    so_Table_new_column_no_copy(table, columnId, column_type, value_type, NULL);
+                    so_Table_new_column_no_copy(table, columnId, column_type, num_column_types, value_type, NULL);
                     numcols++;
                 }
             }
         }
     }
+    pharmml_columnType *undefined = { PHARMML_COLTYPE_UNDEFINED };
     if (have_name) {
-        so_Table_new_column_no_copy(table, "name", PHARMML_COLTYPE_UNDEFINED, PHARMML_VALUETYPE_STRING, NULL);
+        so_Table_new_column_no_copy(table, "name", undefined, 1, PHARMML_VALUETYPE_STRING, NULL);
     }
-    so_Table_new_column_no_copy(table, "replicate", PHARMML_COLTYPE_UNDEFINED, PHARMML_VALUETYPE_INT, NULL);
+    so_Table_new_column_no_copy(table, "replicate", undefined, 1, PHARMML_VALUETYPE_INT, NULL);
 
     // Add data
     for (int i = 0; i < num_simulation_blocks; i++) {
