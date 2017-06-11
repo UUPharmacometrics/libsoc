@@ -17,6 +17,7 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <so/private/column.h>
 #include <pharmml/string.h>
 
@@ -69,18 +70,18 @@ int so_Column_set_columnType_from_string(so_Column *col, char *columnType)
             p++;
         }
         start = p;
-        while (!isspace(*p)) {
+        while (!isspace(*p) && *p) {
             p++;
         }
         char old = *p;
-        if (!old) {
-            return 0;
-        }
         *p = '\0';
-        int fail = so_Column_add_columnType_from_string(col, p);
+        int fail = so_Column_add_columnType_from_string(col, start);
         *p = old;
         if (fail) {
             return fail;
+        }
+        if (!old) {
+            return 0;
         }
     }
 }
@@ -100,7 +101,7 @@ void so_Column_remove_columnType(so_Column *col)
 int so_Column_add_columnType(so_Column *col, pharmml_columnType columnType)
 {
     pharmml_columnType *array;
-    array = realloc(col>columnType, (col->num_columnType + 1) * sizeof(pharmml_columnType));
+    array = realloc(col->columnType, (col->num_columnType + 1) * sizeof(pharmml_columnType));
     if (!array) {
         return 1;
     }

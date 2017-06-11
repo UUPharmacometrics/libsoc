@@ -195,10 +195,11 @@ so_Table *so_SO_all_population_estimates(so_SO *self)
         int numcols_mle = so_Table_get_number_of_columns(mle);
         for (int col = 0; col < numcols_mle; col++) {
             pharmml_valueType value_type = so_Table_get_valueType(mle, col);
-            pharmml_columnType column_type = PHARMML_COLTYPE_UNDEFINED;        // Currently no support for multiple types so set unknown for now
+            pharmml_columnType *column_type = so_Table_get_columnType(mle, col);
+            int number_of_columnTypes = so_Table_get_num_columnTypes(mle, col);
             char *columnId = so_Table_get_columnId(mle, col);
             if (so_Table_get_index_from_name(table, columnId) == -1) {    // Do we not yet have this parameter?
-                so_Table_new_column_no_copy(table, columnId, column_type, value_type, NULL);
+                so_Table_new_column_no_copy(table, columnId, column_type, number_of_columnTypes, value_type, NULL);
                 numcols++;
             }
         }
@@ -275,7 +276,7 @@ so_Table *so_SO_all_standard_errors(so_SO *self)
         for (int row = 0; row < numrows_se; row++) {
             char *columnId = names[row];
             if (so_Table_get_index_from_name(table, columnId) == -1) {    // Do we not yet have this parameter?
-                so_Table_new_column_no_copy(table, columnId, column_type, value_type, NULL);
+                so_Table_new_column_no_copy(table, columnId, &column_type, 1, value_type, NULL);
                 numcols++;
             }
         }
