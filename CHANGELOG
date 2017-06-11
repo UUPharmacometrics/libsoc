@@ -5,3 +5,4 @@
 * Fix bug stopping IndivContribToLL from being loaded
 * Add path.expand() to file in so_SO_read() call in R
 * Minor speedup in loading data.frames into R
+* columnTypes are allowed to be a space separated array of types

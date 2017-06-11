@@ -22,12 +22,12 @@
 #include <stdint.h>
 #include <pharmml/common_types.h>
 
-#define NUMCOLTYPES 37
+#define NUMCOLTYPES 44
 static char *coltypenames[] = {
-    "undefined", "addl", "adm", "arm", "censoring", "cmt", "covariate", "dose", "duration", "dv", "dvid", "epoch",
-    "evid", "id", "idv", "ii", "limit", "mdv", "occasion", "rate", "reg", "replicate", "ss", "ssEndTime", "ssPeriod", "time",
+    "undefined", "addl", "adm", "arm", "censoring", "cmt", "covariate", "date", "dat1", "dat2", "dat3", "dose", "duration", "dv", "dvid", "epoch",
+    "evid", "id", "idv", "ii", "limit", "mdv", "occasion", "rate", "reg", "replicate", "ss", "ssEndTime", "ssPeriod", "time", "varLevel", "ytype",
     "indivParameter", "popParameter", "randEffect", "residual", "statPrecision", "strataVariable", "structParameter",
-    "varParameter_var", "varParameter_stdev", "varParameter_cov", "varParameter_corr"
+    "varParameter", "variance", "stdev", "covariance", "correlation",
 };
 
 #define NUMVALTYPES 5
@@ -53,6 +53,35 @@ pharmml_columnType pharmml_string_to_columnType(const char *str)
     }
 
     return PHARMML_COLTYPE_UNDEFINED;
+}
+
+char *pharmml_columnType_array_to_string(pharmml_columnType *colTypes, int num_columnTypes)
+{
+    char *string;
+    if (num_columnTypes == 0) {
+        string = malloc(10);
+        if (!string)
+            return NULL;
+        strcpy(string, coltypenames[0]);
+    } else {
+        const char *first_columnType_string = pharmml_columnType_to_string(colTypes[0]);
+        string = malloc(strlen(first_columnType_string) + 1);
+        if (!string)
+            return NULL;
+        strcpy(string, first_columnType_string);
+        for (int i = 1; i < num_columnTypes; i++) {
+            const char *substr = pharmml_columnType_to_string(colTypes[i]);
+            char *new_string = realloc(string, strlen(string) + strlen(substr) + 2);
+            if (!new_string) {
+                free(string);
+                return NULL;
+            }
+            string = new_string;
+            strcat(string, " ");
+            strcat(string, substr);
+        }
+    }
+    return string;
 }
 
 const char *pharmml_valueType_to_string(pharmml_valueType valtype)

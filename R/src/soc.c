@@ -113,36 +113,34 @@ so_Table *df2table(SEXP df)
     so_Table_set_number_of_rows(table, numrows);
 
     const char *current_col_name;
-    pharmml_columnType column_type;
     pharmml_valueType value_type;
     void *data;
+    SEXP col_types = GET_ATTR(df, install("columnType"));
 
     for (int i = 0; i < numcols; i++) {
         SEXP col_names = GET_ATTR(df, R_NamesSymbol);
         current_col_name = CHAR(STRING_ELT(col_names, i));
 
-        SEXP col_types = GET_ATTR(df, install("columnType"));
-        if (col_types == R_NilValue) {
-            column_type = PHARMML_COLTYPE_UNDEFINED;
-        } else {
-            column_type = pharmml_string_to_columnType(CHAR(STRING_ELT(col_types, i)));
-        }
-
         if (isReal(VECTOR_ELT(df, i))) {
             value_type = PHARMML_VALUETYPE_REAL;
             data = (void *) NUMERIC_POINTER(VECTOR_ELT(df, i));
-            so_Table_new_column(table, (char *) current_col_name, column_type, value_type, data);
+            so_Table_new_column(table, (char *) current_col_name, NULL, 0, value_type, data);
         } else if (isString(VECTOR_ELT(df, i))) {
             value_type = PHARMML_VALUETYPE_STRING;
             char **buffer = malloc(numrows * sizeof(char *));
             for (int j = 0; j < numrows; j++) {
                 buffer[j] = pharmml_strdup(CHAR(STRING_ELT(VECTOR_ELT(df, i), j)));
             }
-            so_Table_new_column_no_copy(table, (char *) current_col_name, column_type, value_type, buffer);
+            so_Table_new_column_no_copy(table, (char *) current_col_name, NULL, 0, value_type, buffer);
         } else if (isInteger(VECTOR_ELT(df, i))) {
             value_type = PHARMML_VALUETYPE_INT;
             data = (void *) INTEGER_POINTER(VECTOR_ELT(df, i));
-            so_Table_new_column(table, (char *) current_col_name, column_type, value_type, data);
+            so_Table_new_column(table, (char *) current_col_name, NULL, 0, value_type, data);
+        }
+
+        SEXP column_col_types = VECTOR_ELT(col_types, i);
+        for (int j = 0; j < length(column_col_types); j++) {
+            so_Table_add_columnType(table, i, pharmml_string_to_columnType(CHAR(STRING_ELT(column_col_types, j))));
         }
     }
 
@@ -184,9 +182,16 @@ SEXP table2df(so_Table *table)
 
     // Create columnType attribute
     SEXP column_type;
-    PROTECT(column_type = NEW_STRING(numcols));
+    PROTECT(column_type = NEW_LIST(numcols));
     for (int i = 0; i < numcols; i++) {
-        SET_STRING_ELT(column_type, i, mkChar(pharmml_columnType_to_string(so_Table_get_columnType(table, i))));
+        SEXP column_colTypes;
+        int number_of_columnTypes = so_Table_get_num_columnTypes(table, i);
+        PROTECT(column_colTypes = NEW_STRING(number_of_columnTypes));
+        for (int j = 0; j < number_of_columnTypes; j++) {
+            SET_STRING_ELT(column_colTypes, j, mkChar(pharmml_columnType_to_string(so_Table_get_columnType(table, i)[j])));
+        }
+        SET_ELEMENT(column_type, i, column_colTypes);
+        UNPROTECT(1);
     }
     SET_ATTR(list, install("columnType"), column_type);
 

@@ -17,6 +17,7 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <so/private/column.h>
 #include <pharmml/string.h>
 
@@ -30,6 +31,7 @@ so_Column *so_Column_new()
 void so_Column_free(so_Column *col)
 {
     free(col->columnId);
+    free(col->columnType);
 
     // If the data is allocated strings free them.
     if (col->valueType == PHARMML_VALUETYPE_STRING) {
@@ -53,9 +55,35 @@ int so_Column_set_columnId(so_Column *col, char *columnId)
     }
 }
 
-void so_Column_set_columnType_from_string(so_Column *col, char *columnType)
+int so_Column_add_columnType_from_string(so_Column *col, char *columnType)
 {
-    col->columnType = pharmml_string_to_columnType(columnType);
+    return so_Column_add_columnType(col, pharmml_string_to_columnType(columnType));
+}
+
+// Set columnType from space separated string
+int so_Column_set_columnType_from_string(so_Column *col, char *columnType)
+{
+    char *p = columnType;
+    char *start;
+    while (1) {
+        while (isspace(*p)) {
+            p++;
+        }
+        start = p;
+        while (!isspace(*p) && *p) {
+            p++;
+        }
+        char old = *p;
+        *p = '\0';
+        int fail = so_Column_add_columnType_from_string(col, start);
+        *p = old;
+        if (fail) {
+            return fail;
+        }
+        if (!old) {
+            return 0;
+        }
+    }
 }
 
 void so_Column_set_valueType_from_string(so_Column *col, char *valueType)
@@ -63,9 +91,24 @@ void so_Column_set_valueType_from_string(so_Column *col, char *valueType)
     col->valueType = pharmml_string_to_valueType(valueType);
 }
 
-void so_Column_set_columnType(so_Column *col, pharmml_columnType columnType)
+void so_Column_remove_columnType(so_Column *col)
 {
-    col->columnType = columnType;
+    free(col->columnType);
+    col->columnType = NULL;
+    col->num_columnType = 0;
+}
+
+int so_Column_add_columnType(so_Column *col, pharmml_columnType columnType)
+{
+    pharmml_columnType *array;
+    array = realloc(col->columnType, (col->num_columnType + 1) * sizeof(pharmml_columnType));
+    if (!array) {
+        return 1;
+    }
+    array[col->num_columnType] = columnType;
+    col->num_columnType++;
+    col->columnType = array;
+    return 0;
 }
 
 void so_Column_set_valueType(so_Column *col, pharmml_valueType valueType)
