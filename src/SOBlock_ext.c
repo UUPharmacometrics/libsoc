@@ -120,7 +120,7 @@ so_Table *so_SOBlock_all_simulated_profiles(so_SOBlock *self)
             }
         }
     }
-    pharmml_columnType *undefined = { PHARMML_COLTYPE_UNDEFINED };
+    pharmml_columnType undefined[] = { PHARMML_COLTYPE_UNDEFINED };
     if (have_name) {
         so_Table_new_column_no_copy(table, "name", undefined, 1, PHARMML_VALUETYPE_STRING, NULL);
     }
