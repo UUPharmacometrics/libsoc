@@ -52,16 +52,16 @@ so_Matrix_free <- function(self) {
 }
 
 id_column <- function(table) {
-    colTypes <- attributes(predictions)$columnType
+    colTypes <- attributes(table)$columnType
     if (is.null(colTypes)) {
-        error("Could not find columnTypes attribute. Did this data.frame not come from an SO object?")
+        stop("Could not find columnTypes attribute. Did this data.frame not come from an SO object?")
     }
     for (i in 1:length(colTypes)) {
         if ("id" %in% colTypes[[i]]) {
             return(i)
         }
     }
-    error("Could not find ID column")
+    stop("Could not find ID column")
 }
 
 id_column_name <- function(table) {
@@ -69,20 +69,37 @@ id_column_name <- function(table) {
 }
 
 idv_column <- function(table) {
-    colTypes <- attributes(predictions)$columnType
+    colTypes <- attributes(table)$columnType
     if (is.null(colTypes)) {
-        error("Could not find columnTypes attribute. Did this data.frame not come from an SO object?")
+        stop("Could not find columnTypes attribute. Did this data.frame not come from an SO object?")
     }
     for (i in 1:length(colTypes)) {
         if ("idv" %in% colTypes[[i]]) {
             return(i)
         }
     }
-    error("Could not find idv column")
+    stop("Could not find idv column")
 }
 
 idv_column_name <- function(table) {
     names(table)[idv_column(table)]
+}
+
+dv_column <- function(table) {
+    colTypes <- attributes(table)$columnType
+    if (is.null(colTypes)) {
+        stop("Could not find columnTypes attribute. Did this data.frame not come from an SO object?")
+    }
+    for (i in 1:length(colTypes)) {
+        if ("dv" %in% colTypes[[i]]) {
+            return(i)
+        }
+    }
+    stop("Could not find dv column")
+}
+
+dv_column_name <- function(table) {
+    names(table)[dv_column(table)]
 }
 
 so_SO$methods(list(

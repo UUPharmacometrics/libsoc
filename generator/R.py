@@ -575,6 +575,8 @@ with open("../NAMESPACE", "w") as ns:
     print("export(id_column_name)", file=ns)
     print("export(idv_column)", file=ns)
     print("export(idv_column_name)", file=ns)
+    print("export(dv_column)", file=ns)
+    print("export(dv_column_name)", file=ns)
 
 for name in structure:
     if structure[name]['namespace'] == 'so':
