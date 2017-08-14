@@ -51,6 +51,40 @@ so_Matrix_free <- function(self) {
     .Call("r_so_Matrix_free", self)
 }
 
+id_column <- function(table) {
+    colTypes <- attributes(predictions)$columnType
+    if (is.null(colTypes)) {
+        error("Could not find columnTypes attribute. Did this data.frame not come from an SO object?")
+    }
+    for (i in 1:length(colTypes)) {
+        if ("id" %in% colTypes[[i]]) {
+            return(i)
+        }
+    }
+    error("Could not find ID column")
+}
+
+id_column_name <- function(table) {
+    names(table)[id_column(table)]
+}
+
+idv_column <- function(table) {
+    colTypes <- attributes(predictions)$columnType
+    if (is.null(colTypes)) {
+        error("Could not find columnTypes attribute. Did this data.frame not come from an SO object?")
+    }
+    for (i in 1:length(colTypes)) {
+        if ("idv" %in% colTypes[[i]]) {
+            return(i)
+        }
+    }
+    error("Could not find idv column")
+}
+
+idv_column_name <- function(table) {
+    names(table)[idv_column(table)]
+}
+
 so_SO$methods(list(
     write = function(filename, pretty=TRUE) {
         fail = so_SO_write(.self$.cobj, filename, ifelse(pretty, 1L, 0L))

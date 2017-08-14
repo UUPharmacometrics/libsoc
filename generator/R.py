@@ -571,6 +571,10 @@ with open("../NAMESPACE", "w") as ns:
     print("useDynLib(libsoc)", file=ns)
     print("import(methods)", file=ns)
     print("export(so_SO_read)", file=ns)
+    print("export(id_column)", file=ns)
+    print("export(id_column_name)", file=ns)
+    print("export(idv_column)", file=ns)
+    print("export(idv_column_name)", file=ns)
 
 for name in structure:
     if structure[name]['namespace'] == 'so':
