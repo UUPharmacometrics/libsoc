@@ -50,6 +50,8 @@ int so_Table_id_column(so_Table *self);
 char *so_Table_id_column_name(so_Table *self);
 int so_Table_idv_column(so_Table *self);
 char *so_Table_idv_column_name(so_Table *self);
+int so_Table_dv_column(so_Table *self);
+char *so_Table_dv_column_name(so_Table *self);
 void so_Table_set_ExternalFile(so_Table *self, so_ExternalFile *value);
 so_ExternalFile *so_Table_get_ExternalFile(so_Table *self);
 so_ExternalFile *so_Table_create_ExternalFile(so_Table *self);

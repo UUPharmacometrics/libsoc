@@ -445,7 +445,7 @@ char *so_Table_id_column_name(so_Table *self)
 /** \memberof so_Table
  * Get column index of the idv column
  * \param self - pointer to an so_Table
- * \return index of the id column starting from 0 or -1 if no idv column present
+ * \return index of the idv column starting from 0 or -1 if no idv column present
  */
 int so_Table_idv_column(so_Table *self)
 {
@@ -457,6 +457,39 @@ int so_Table_idv_column(so_Table *self)
         }
     }
     return -1;
+}
+
+/** \memberof so_Table
+ * Get column index of the dv column
+ * \param self - pointer to an so_Table
+ * \return index of the dv column starting from 0 or -1 if no dv column present
+ */
+int so_Table_dv_column(so_Table *self)
+{
+    for (int i = 0; i < self->numcols; i++) {
+        for (int j = 0; j < self->columns[i]->num_columnType; j++) {
+            if (self->columns[i]->columnType[j] == PHARMML_COLTYPE_DV) {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
+/** \memberof so_Table
+ * Get the columnId of the dv column
+ * \param self - pointer to an so_Table
+ * \return A pointer to the columnId string
+ * \sa so_Table_dv_column
+ */
+char *so_Table_dv_column_name(so_Table *self)
+{
+    int index = so_Table_dv_column(self);
+    if (index != -1) {
+        return self->columns[index]->columnId;
+    } else {
+        return NULL;
+    }
 }
 
 /** \memberof so_Table
