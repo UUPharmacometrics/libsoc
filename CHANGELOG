@@ -6,3 +6,4 @@
 * Add path.expand() to file in so_SO_read() call in R
 * Minor speedup in loading data.frames into R
 * columnTypes are allowed to be a space separated array of types
+* Add functions dv_column, dv_column_name, idv_column, idv_column_name, id_column and id_column_name to lookup indices and names for these columns
