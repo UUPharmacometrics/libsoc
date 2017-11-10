@@ -19,6 +19,8 @@
 #include <memory.h>
 #include <libxml/SAX.h>
 #include <libxml/xmlwriter.h>
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
 
 #include <so.h>
 #include <so/private/SO.h>
@@ -332,4 +334,134 @@ so_Table *so_SO_all_standard_errors(so_SO *self)
     }
 
     return table;
+}
+
+/** \memberof so_SO
+ * Check if a parameter is a variability parameter connected to RUV
+ * \param self - The SO structure
+ * \param name - The name of the parameter
+ * \return -  0 if connected to RUV, 1 if not connected to RUV, -1 if error
+ */
+int so_SO_is_ruv_parameter(so_SO *self, const char *name)
+{
+    int result = -1;
+
+    so_PharmMLRef *ref = so_SO_get_PharmMLRef(self);
+    char *pharmml_name = so_PharmMLRef_get_name(ref);
+
+    xmlDoc *doc = xmlParseFile(pharmml_name);   // Every call will parse the PharmML. This could be cached.
+    if (!doc) {
+        goto end;
+    }
+    xmlXPathContext *context = xmlXPathNewContext(doc);
+    if (!context) {
+        goto end;
+    }
+    
+    int fail;
+    fail = xmlXPathRegisterNs(context, BAD_CAST "x", BAD_CAST "http://www.pharmml.org/pharmml/0.8/PharmML");
+    fail |= xmlXPathRegisterNs(context, BAD_CAST "math", BAD_CAST "http://www.pharmml.org/pharmml/0.8/Maths");
+    fail |= xmlXPathRegisterNs(context, BAD_CAST "ct", BAD_CAST "http://www.pharmml.org/pharmml/0.8/CommonTypes");
+    fail |= xmlXPathRegisterNs(context, BAD_CAST "ds", BAD_CAST "http://www.pharmml.org/pharmml/0.8/Dataset");
+    fail |= xmlXPathRegisterNs(context, BAD_CAST "mdef", BAD_CAST "http://www.pharmml.org/pharmml/0.8/ModelDefinition");
+    fail |= xmlXPathRegisterNs(context, BAD_CAST "msteps", BAD_CAST "http://www.pharmml.org/0.8/ModellingSteps");
+    fail |= xmlXPathRegisterNs(context, BAD_CAST "design", BAD_CAST "http://www.pharmml.org/0.8/TrialDesign");
+    fail |= xmlXPathRegisterNs(context, BAD_CAST "po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
+
+    if (fail) {
+        goto end;
+    }
+
+    xmlXPathObject *randvar_object; 
+    randvar_object = xmlXPathEvalExpression(BAD_CAST "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel/mdef:RandomVariable", context);
+    if (!randvar_object) {
+        goto end;
+    }
+            
+    // Search all RVs for our symbol
+    xmlNodeSet *nodes = randvar_object->nodesetval;
+    int size = nodes ? nodes->nodeNr : 0;
+    xmlXPathObject *search_object;
+    xmlNode *found_randvar = NULL;
+    for (int i = 0; i < size; i++) {
+        if (nodes->nodeTab[i]->type == XML_ELEMENT_NODE) {
+            search_object = xmlXPathNodeEval(nodes->nodeTab[i], BAD_CAST "./mdef:Distribution/po:ProbOnto/po:Parameter[@name='var']/ct:Assign/ct:SymbRef", context);
+            if (!search_object) {
+                continue;
+            }
+            xmlNodeSet *symbnodes = search_object->nodesetval;
+            int symbnodes_size = symbnodes ? symbnodes->nodeNr : 0;
+            if (symbnodes_size != 1) {
+                xmlXPathFreeObject(search_object);
+                continue;
+            }
+            xmlChar *symb_name = xmlGetNoNsProp(symbnodes->nodeTab[0], BAD_CAST "symbIdRef");
+            if (!symb_name) {
+                free(search_object);
+                continue;
+            }
+            if (strcmp((char *) symb_name, name) == 0) {
+                // Found the Correct RandomVariable
+                free(symb_name);
+                xmlXPathFreeObject(search_object);
+                found_randvar = nodes->nodeTab[i];
+                break;
+            }
+            free(symb_name);
+            xmlXPathFreeObject(search_object);
+        }
+    }
+    if (!found_randvar)
+        goto end;
+
+    // Find blkId of VariabilityReference of RandomVariable
+    xmlXPathObject *varref_object = xmlXPathNodeEval(found_randvar, BAD_CAST "./ct:VariabilityReference/ct:SymbRef", context);
+    if (!varref_object)
+        goto end;
+
+    xmlNodeSet *varref_nodes = varref_object->nodesetval;
+    int varref_size = varref_nodes ? varref_nodes->nodeNr : 0;
+    if (varref_size != 1) {
+        xmlXPathFreeObject(varref_object);
+        goto end;
+    }
+    char *varref_blk = (char *) xmlGetNoNsProp(varref_nodes->nodeTab[0], BAD_CAST "blkIdRef");
+    if (!varref_blk) {
+        xmlXPathFreeObject(varref_object);
+        goto end;
+    }
+
+    xmlXPathFreeObject(varref_object);
+
+    // Find residualError VariabilityModel matching blkId
+    const char *xpath_template_string = "/x:PharmML/mdef:ModelDefinition/mdef:VariabilityModel[@blkId='%s' and @type='residualError']";
+    int xpath_size = snprintf(NULL, 0, xpath_template_string, varref_blk);
+    char *xpath_string = malloc(xpath_size);
+    if (!xpath_string) {
+        free(varref_blk);
+        goto end;
+    }
+    sprintf(xpath_string, xpath_template_string, varref_blk);
+    free(varref_blk);
+
+    xmlXPathObject *varmodel_object = xmlXPathEvalExpression(BAD_CAST xpath_string, context);
+    free(xpath_string);
+    if (!varmodel_object)
+        goto end;
+
+    xmlNodeSet *varmodel_nodes = varmodel_object->nodesetval;
+    int varmodel_size = varmodel_nodes ? varmodel_nodes->nodeNr : 0;
+    if (varmodel_size == 1) {
+        result = 0;
+    } else {
+        result = 1;
+    }
+
+    xmlXPathFreeObject(varmodel_object);
+
+end:
+    if (randvar_object) xmlXPathFreeObject(randvar_object);
+    if (context) xmlXPathFreeContext(context);
+    if (doc) xmlFreeDoc(doc);
+    return result;
 }
