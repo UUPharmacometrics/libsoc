@@ -8,4 +8,4 @@
 * columnTypes are allowed to be a space separated array of types
 * Add functions dv_column, dv_column_name, idv_column, idv_column_name, id_column and id_column_name to lookup indices and names for these columns
 * Add functions so_SO_is_ruv_parameter and so_SO_is_structural_parameter to get information from PharmML
-* Add R SO method variability_type to list variability types of parameters
+* Add R SO methods correlation_parameters and variability_type to list variability types of parameters

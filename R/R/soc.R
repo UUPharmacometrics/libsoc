@@ -47,6 +47,10 @@ so_SO_is_ruv_parameter <- function(self, name) {
     .Call("r_so_SO_is_ruv_parameter", self, name)
 }
 
+so_SO_is_correlation_parameter <- function(self, name) {
+    .Call("r_so_SO_is_correlation_parameter", self, name)
+}
+
 so_Table_ref <- function(self) {
     .Call("r_so_Table_ref", self)
 }
@@ -123,6 +127,10 @@ variability_func <- function(symbol, self) {
     }
 }
 
+correlation_func <- function(symbol, self) {
+    so_SO_is_correlation_parameter(self, symbol) == 0
+}
+
 so_SO$methods(list(
     write = function(filename, pretty=TRUE) {
         fail = so_SO_write(.self$.cobj, filename, ifelse(pretty, 1L, 0L))
@@ -138,6 +146,9 @@ so_SO$methods(list(
     },
     variability_type = function(symbols) {
         sapply(symbols, variability_func, .self$.cobj)
+    },
+    correlation_parameters = function(symbols) {
+        sapply(symbols, correlation_func, .self$.cobj)
     }
 
     )

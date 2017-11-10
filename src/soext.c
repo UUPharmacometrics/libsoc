@@ -373,7 +373,57 @@ xmlXPathContext *so_SO_pharmml_context(xmlDoc *doc)
     return context;
 }
 
-/** \memverof so_SO
+/** \memberof so_SO
+ * Check if a parameter is a correlation
+ * \param self - The SO structure
+ * \param name - The name of the parameter
+ * \return - 0 if a correlation, 1 if not a correlation, -1 if error or parameter not found
+ */
+int so_SO_is_correlation_parameter(so_SO *self, const char *name)
+{
+    int result = -1;
+
+    xmlDoc *doc = so_SO_pharmml_dom(self);
+    if (!doc) {
+        return result;
+    }
+    xmlXPathContext *context = so_SO_pharmml_context(doc);
+    if (!context) {
+        xmlFreeDoc(doc);
+        return result;
+    }
+
+    xmlXPathObject *object = xmlXPathEvalExpression(BAD_CAST "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel/mdef:Correlation/mdef:Pairwise/"
+            "mdef:CorrelationCoefficient/ct:Assign/ct:SymbRef", context);
+
+    if (!object) {
+        xmlXPathFreeContext(context);
+        xmlFreeDoc(doc);
+        return result;
+    }
+
+    xmlNodeSet *nodes = object->nodesetval;
+    int size = nodes ? nodes->nodeNr : 0;
+    for (int i = 0; i < size; i++) {
+        char *symb_name = (char *) xmlGetNoNsProp(nodes->nodeTab[i], BAD_CAST "symbIdRef");
+        if (strcmp(symb_name, name) == 0) {
+            free(symb_name);
+            result = 0;
+            break;
+        }
+        free(symb_name);
+    }
+
+    if (result == -1) {
+        result = 1;
+    }
+
+    xmlXPathFreeContext(context);
+    xmlFreeDoc(doc);
+    return result;
+}
+
+/** \memberof so_SO
  * Check if a parameter is a structural parameter
  * \param self - The SO structure
  * \param name - The name of the parameter
