@@ -336,28 +336,25 @@ so_Table *so_SO_all_standard_errors(so_SO *self)
     return table;
 }
 
-/** \memberof so_SO
- * Check if a parameter is a variability parameter connected to RUV
- * \param self - The SO structure
- * \param name - The name of the parameter
- * \return -  0 if connected to RUV, 1 if not connected to RUV, -1 if error
- */
-int so_SO_is_ruv_parameter(so_SO *self, const char *name)
+xmlDoc *so_SO_pharmml_dom(so_SO *self)
 {
-    int result = -1;
-
     so_PharmMLRef *ref = so_SO_get_PharmMLRef(self);
+    if (!ref)
+        return NULL;
+
     char *pharmml_name = so_PharmMLRef_get_name(ref);
 
     xmlDoc *doc = xmlParseFile(pharmml_name);   // Every call will parse the PharmML. This could be cached.
-    if (!doc) {
-        goto end;
-    }
+
+    return doc;
+}
+
+xmlXPathContext *so_SO_pharmml_context(xmlDoc *doc)
+{
     xmlXPathContext *context = xmlXPathNewContext(doc);
-    if (!context) {
-        goto end;
-    }
-    
+    if (!context)
+        return context;
+
     int fail;
     fail = xmlXPathRegisterNs(context, BAD_CAST "x", BAD_CAST "http://www.pharmml.org/pharmml/0.8/PharmML");
     fail |= xmlXPathRegisterNs(context, BAD_CAST "math", BAD_CAST "http://www.pharmml.org/pharmml/0.8/Maths");
@@ -369,10 +366,105 @@ int so_SO_is_ruv_parameter(so_SO *self, const char *name)
     fail |= xmlXPathRegisterNs(context, BAD_CAST "po", BAD_CAST "http://www.pharmml.org/probonto/ProbOnto");
 
     if (fail) {
+        xmlXPathFreeContext(context);
+        return NULL;
+    }
+
+    return context;
+}
+
+/** \memverof so_SO
+ * Check if a parameter is a structural parameter
+ * \param self - The SO structure
+ * \param name - The name of the parameter
+ * \return - 0 if a structural parameter, 1 if not structural, -1 if error or parameter not found
+ */
+int so_SO_is_structural_parameter(so_SO *self, const char *name)
+{
+    int result = -1;
+
+    xmlDoc *doc = so_SO_pharmml_dom(self);
+    if (!doc) {
+        return result;
+    }
+    xmlXPathContext *context = so_SO_pharmml_context(doc);
+    if (!context) {
+        xmlFreeDoc(doc);
+        return result;
+    }
+
+    // Find all variability parameters
+    xmlXPathObject *object = xmlXPathEvalExpression(BAD_CAST "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel"
+            "/mdef:RandomVariable/mdef:Distribution/po:ProbOnto/po:Parameter[@name='var']/ct:Assign/ct:SymbRef|"
+            "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel/mdef:Correlation/mdef:Pairwise/"
+            "mdef:CorrelationCoefficient/ct:Assign/ct:SymbRef", context);
+
+    if (!object) {
+        xmlXPathFreeContext(context);
+        xmlFreeDoc(doc);
+        return result;
+    }
+
+    xmlNodeSet *nodes = object->nodesetval;
+    int size = nodes ? nodes->nodeNr : 0;
+    for (int i = 0; i < size; i++) {
+        char *symb_name = (char *) xmlGetNoNsProp(nodes->nodeTab[i], BAD_CAST "symbIdRef");
+        if (strcmp(symb_name, name) == 0) {
+            free(symb_name);
+            result = 1;
+            goto out;
+        }
+        free(symb_name);
+    }
+
+    // name is not variability but is it a PopulationParameter at all?
+    xmlXPathObject *pop_object = xmlXPathEvalExpression(BAD_CAST "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel/mdef:PopulationParameter", context);
+    if (!pop_object) {
+        goto out;
+    }
+
+    nodes = pop_object->nodesetval;
+    size = nodes ? nodes->nodeNr : 0;
+    for (int i = 0; i < size; i++) {
+        char *symb_name = (char *) xmlGetNoNsProp(nodes->nodeTab[i], BAD_CAST "symbId");
+        if (strcmp(symb_name, name) == 0) {
+            free(symb_name);
+            result = 0;
+            break;
+        }
+        free(symb_name);
+    }
+
+    xmlXPathFreeObject(pop_object);
+out:
+    xmlXPathFreeObject(object);
+    xmlXPathFreeContext(context);
+    xmlFreeDoc(doc);
+
+    return result;
+}
+
+/** \memberof so_SO
+ * Check if a parameter is a variability parameter connected to RUV
+ * \param self - The SO structure
+ * \param name - The name of the parameter
+ * \return -  0 if connected to RUV, 1 if not connected to RUV, -1 if error or parameter not found
+ */
+int so_SO_is_ruv_parameter(so_SO *self, const char *name)
+{
+    int result = -1;
+
+    xmlXPathContext *context = NULL;
+    xmlXPathObject *randvar_object = NULL;
+    xmlDoc *doc = so_SO_pharmml_dom(self);
+    if (!doc) {
+        goto end;
+    }
+    context = so_SO_pharmml_context(doc);
+    if (!context) {
         goto end;
     }
 
-    xmlXPathObject *randvar_object; 
     randvar_object = xmlXPathEvalExpression(BAD_CAST "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel/mdef:RandomVariable", context);
     if (!randvar_object) {
         goto end;

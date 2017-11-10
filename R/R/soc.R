@@ -39,6 +39,14 @@ so_SO_all_standard_errors <- function(self) {
     .Call("r_so_SO_all_standard_errors", self)
 }
 
+so_SO_is_structural_parameter <- function(self, name) {
+    .Call("r_so_SO_is_structural_parameter", self, name)
+}
+
+so_SO_is_ruv_parameter <- function(self, name) {
+    .Call("r_so_SO_is_ruv_parameter", self, name)
+}
+
 so_Table_ref <- function(self) {
     .Call("r_so_Table_ref", self)
 }
@@ -102,6 +110,19 @@ dv_column_name <- function(table) {
     names(table)[dv_column(table)]
 }
 
+variability_func <- function(symbol, self) {
+    struct <- so_SO_is_structural_parameter(self, symbol)
+    if (struct == 0) {
+        "structParameter"
+    } else if (struct == -1) {
+        "unknown"
+    } else if (so_SO_is_ruv_parameter(self, symbol) == 0) {
+        "residualError"
+    } else {
+        "parameterVariability"
+    }
+}
+
 so_SO$methods(list(
     write = function(filename, pretty=TRUE) {
         fail = so_SO_write(.self$.cobj, filename, ifelse(pretty, 1L, 0L))
@@ -114,6 +135,9 @@ so_SO$methods(list(
     },
     all_standard_errors = function() {
         so_SO_all_standard_errors(.self$.cobj)
+    },
+    variability_type = function(symbols) {
+        sapply(symbols, variability_func, .self$.cobj)
     }
 
     )

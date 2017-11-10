@@ -80,6 +80,32 @@ SEXP r_so_SO_all_standard_errors(SEXP so)
     return df;
 }
 
+SEXP r_so_SO_is_structural_parameter(SEXP so, SEXP name)
+{
+    const char *c_name = CHAR(STRING_ELT(name, 0));
+    int res = so_SO_is_structural_parameter(R_ExternalPtrAddr(so), c_name); 
+
+    SEXP ret;
+    PROTECT(ret = NEW_INTEGER(1));
+    INTEGER_POINTER(ret)[0] = res;
+    UNPROTECT(1);
+
+    return ret;
+}
+
+SEXP r_so_SO_is_ruv_parameter(SEXP so, SEXP name)
+{
+    const char *c_name = CHAR(STRING_ELT(name, 0));
+    int res = so_SO_is_ruv_parameter(R_ExternalPtrAddr(so), c_name); 
+
+    SEXP ret;
+    PROTECT(ret = NEW_INTEGER(1));
+    INTEGER_POINTER(ret)[0] = res;
+    UNPROTECT(1);
+
+    return ret;
+}
+
 SEXP r_so_Table_ref(SEXP self)
 {
     so_Table_ref(R_ExternalPtrAddr(self));

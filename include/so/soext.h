@@ -25,5 +25,6 @@ so_SOBlock *so_SO_get_SOBlock_from_name(so_SO *self, char *name);
 so_Table *so_SO_all_population_estimates(so_SO *self);
 so_Table *so_SO_all_standard_errors(so_SO *self);
 int so_SO_is_ruv_parameter(so_SO *self, const char *name);
+int so_SO_is_structural_parameter(so_SO *self, const char *name);
 
 #endif
