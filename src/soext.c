@@ -444,10 +444,12 @@ int so_SO_is_structural_parameter(so_SO *self, const char *name)
     }
 
     // Find all variability parameters
-    xmlXPathObject *object = xmlXPathEvalExpression(BAD_CAST "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel"
-            "/mdef:RandomVariable/mdef:Distribution/po:ProbOnto/po:Parameter[@name='var']/ct:Assign/ct:SymbRef|"
-            "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel/mdef:Correlation/mdef:Pairwise/"
-            "mdef:CorrelationCoefficient/ct:Assign/ct:SymbRef", context);
+    // Normal1: stdev, Normal2: var, Normal3: precision 
+    xmlXPathObject *object = xmlXPathEvalExpression(BAD_CAST
+        "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel/mdef:RandomVariable/mdef:Distribution/po:ProbOnto[@name='Normal1']/po:Parameter[@name='stdev']/ct:Assign/ct:SymbRef|"
+        "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel/mdef:RandomVariable/mdef:Distribution/po:ProbOnto[@name='Normal2']/po:Parameter[@name='var']/ct:Assign/ct:SymbRef|"
+        "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel/mdef:RandomVariable/mdef:Distribution/po:ProbOnto[@name='Normal3']/po:Parameter[@name='precision']/ct:Assign/ct:SymbRef|"
+        "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel/mdef:Correlation/mdef:Pairwise/mdef:CorrelationCoefficient/ct:Assign/ct:SymbRef", context);
 
     if (!object) {
         xmlXPathFreeContext(context);
