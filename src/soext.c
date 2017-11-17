@@ -496,30 +496,11 @@ out:
     return result;
 }
 
-/** \memberof so_SO
- * Check if a parameter is a variability parameter connected to RUV
- * \param self - The SO structure
- * \param name - The name of the parameter
- * \return -  0 if connected to RUV, 1 if not connected to RUV, -1 if error or parameter not found
- */
-int so_SO_is_ruv_parameter(so_SO *self, const char *name)
+xmlNode *so_SO_pharmml_find_random_variable(xmlXPathContext *context, const char *name)
 {
-    int result = -1;
-
-    xmlXPathContext *context = NULL;
-    xmlXPathObject *randvar_object = NULL;
-    xmlDoc *doc = so_SO_pharmml_dom(self);
-    if (!doc) {
-        goto end;
-    }
-    context = so_SO_pharmml_context(doc);
-    if (!context) {
-        goto end;
-    }
-
-    randvar_object = xmlXPathEvalExpression(BAD_CAST "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel/mdef:RandomVariable", context);
+    xmlXPathObject *randvar_object = xmlXPathEvalExpression(BAD_CAST "/x:PharmML/mdef:ModelDefinition/mdef:ParameterModel/mdef:RandomVariable", context);
     if (!randvar_object) {
-        goto end;
+        return NULL;
     }
             
     // Search all RVs for our symbol
@@ -529,7 +510,10 @@ int so_SO_is_ruv_parameter(so_SO *self, const char *name)
     xmlNode *found_randvar = NULL;
     for (int i = 0; i < size; i++) {
         if (nodes->nodeTab[i]->type == XML_ELEMENT_NODE) {
-            search_object = xmlXPathNodeEval(nodes->nodeTab[i], BAD_CAST "./mdef:Distribution/po:ProbOnto/po:Parameter[@name='var']/ct:Assign/ct:SymbRef", context);
+            search_object = xmlXPathNodeEval(nodes->nodeTab[i], BAD_CAST
+                   "./mdef:Distribution/po:ProbOnto[@name='Normal1']/po:Parameter[@name='stdev']/ct:Assign/ct:SymbRef|"
+                   "./mdef:Distribution/po:ProbOnto[@name='Normal2']/po:Parameter[@name='var']/ct:Assign/ct:SymbRef|"
+                   "./mdef:Distribution/po:ProbOnto[@name='Normal3']/po:Parameter[@name='precision']/ct:Assign/ct:SymbRef", context);
             if (!search_object) {
                 continue;
             }
@@ -541,7 +525,7 @@ int so_SO_is_ruv_parameter(so_SO *self, const char *name)
             }
             xmlChar *symb_name = xmlGetNoNsProp(symbnodes->nodeTab[0], BAD_CAST "symbIdRef");
             if (!symb_name) {
-                free(search_object);
+                xmlXPathFreeObject(search_object);
                 continue;
             }
             if (strcmp((char *) symb_name, name) == 0) {
@@ -555,6 +539,30 @@ int so_SO_is_ruv_parameter(so_SO *self, const char *name)
             xmlXPathFreeObject(search_object);
         }
     }
+    return found_randvar;
+}
+
+/** \memberof so_SO
+ * Check if a parameter is a variability parameter connected to RUV
+ * \param self - The SO structure
+ * \param name - The name of the parameter
+ * \return -  0 if connected to RUV, 1 if not connected to RUV, -1 if error or parameter not found
+ */
+int so_SO_is_ruv_parameter(so_SO *self, const char *name)
+{
+    int result = -1;
+
+    xmlXPathContext *context = NULL;
+    xmlDoc *doc = so_SO_pharmml_dom(self);
+    if (!doc) {
+        goto end;
+    }
+    context = so_SO_pharmml_context(doc);
+    if (!context) {
+        goto end;
+    }
+
+    xmlNode *found_randvar = so_SO_pharmml_find_random_variable(context, name);
     if (!found_randvar)
         goto end;
 
@@ -604,7 +612,6 @@ int so_SO_is_ruv_parameter(so_SO *self, const char *name)
     xmlXPathFreeObject(varmodel_object);
 
 end:
-    if (randvar_object) xmlXPathFreeObject(randvar_object);
     if (context) xmlXPathFreeContext(context);
     if (doc) xmlFreeDoc(doc);
     return result;
