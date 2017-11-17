@@ -106,6 +106,23 @@ SEXP r_so_SO_is_ruv_parameter(SEXP so, SEXP name)
     return ret;
 }
 
+SEXP r_so_SO_random_variable_from_variability_parameter(SEXP so, SEXP name)
+{
+    const char *c_name = CHAR(STRING_ELT(name, 0));
+    char *res_string = so_SO_random_variable_from_variability_parameter(R_ExternalPtrAddr(so), c_name); 
+
+    SEXP res = PROTECT(res = NEW_STRING(1));
+    if (res_string) {
+        SET_STRING_ELT(res, 0, mkChar(res_string));
+        free(res_string);
+    } else {
+        SET_STRING_ELT(res, 0, NA_STRING);
+    }
+
+    UNPROTECT(1);
+    return res;
+}
+
 SEXP r_so_SO_is_correlation_parameter(SEXP so, SEXP name)
 {
     const char *c_name = CHAR(STRING_ELT(name, 0));

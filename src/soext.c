@@ -543,6 +543,43 @@ xmlNode *so_SO_pharmml_find_random_variable(xmlXPathContext *context, const char
 }
 
 /** \memberof so_SO
+ * Get the name of the RandomVariable connected to a variability parameter
+ * \param self - The SO structure
+ * \param name - The name of the variability parameter
+ * \return - A pointer to the name or NULL if not found or error. The returned string needs to be freed.
+ */
+char *so_SO_random_variable_from_variability_parameter(so_SO *self, const char *name)
+{
+    xmlDoc *doc = so_SO_pharmml_dom(self);
+    if (!doc) {
+        return NULL;
+    }
+    xmlXPathContext *context = so_SO_pharmml_context(doc);
+    if (!context) {
+        xmlFreeDoc(doc);
+        return NULL;
+    }
+
+    xmlNode *randvar = so_SO_pharmml_find_random_variable(context, name);
+    if (!randvar) {
+       xmlXPathFreeContext(context);
+       xmlFreeDoc(doc);
+       return NULL;
+    }
+
+    char *random_variable_name = (char *) xmlGetNoNsProp(randvar, BAD_CAST "symbId");
+
+    xmlXPathFreeContext(context);
+    xmlFreeDoc(doc);
+
+    if (!random_variable_name) {
+        return NULL;
+    }
+
+    return pharmml_strdup(random_variable_name);
+}
+
+/** \memberof so_SO
  * Check if a parameter is a variability parameter connected to RUV
  * \param self - The SO structure
  * \param name - The name of the parameter

@@ -47,6 +47,10 @@ so_SO_is_ruv_parameter <- function(self, name) {
     .Call("r_so_SO_is_ruv_parameter", self, name)
 }
 
+so_SO_random_variable_from_variability_parameter <- function(self, name) {
+    .Call("r_so_SO_random_variable_from_variability_parameter", self, name)
+}
+
 so_SO_is_correlation_parameter <- function(self, name) {
     .Call("r_so_SO_is_correlation_parameter", self, name)
 }
@@ -127,6 +131,10 @@ variability_func <- function(symbol, self) {
     }
 }
 
+random_variable_func <- function(symbol, self) {
+    so_SO_random_variable_from_variability_parameter(self, symbol)
+}
+
 correlation_func <- function(symbol, self) {
     so_SO_is_correlation_parameter(self, symbol) == 0
 }
@@ -149,6 +157,9 @@ so_SO$methods(list(
     },
     correlation_parameters = function(symbols) {
         sapply(symbols, correlation_func, .self$.cobj)
+    },
+    random_variable_from_variability_parameter = function(symbols) {
+        sapply(symbols, random_variable_func, .self$.cobj)
     }
 
     )

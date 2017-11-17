@@ -27,5 +27,6 @@ so_Table *so_SO_all_standard_errors(so_SO *self);
 int so_SO_is_ruv_parameter(so_SO *self, const char *name);
 int so_SO_is_structural_parameter(so_SO *self, const char *name);
 int so_SO_is_correlation_parameter(so_SO *self, const char *name);
+char *so_SO_random_variable_from_variability_parameter(so_SO *self, const char *name);
 
 #endif
