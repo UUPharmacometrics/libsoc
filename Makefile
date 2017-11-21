@@ -49,16 +49,6 @@ gen/%.o: gen/%.c include/so/%.h include/so/private/%.h
 doc:
 	doxygen
 
-.PHONY: utils
-utils:
-	cd utils; $(CC) sotool.c -osotool `xml2-config --libs --cflags`
-
-.PHONY: install_utils
-install_utils:
-	cp utils/sotool /usr/bin
-	mkdir -p /usr/share/libsoc
-	cp -rf utils/schema/* /usr/share/libsoc
-
 .PHONY: clean
 clean:
 	rm -f libsoc.so
@@ -78,7 +68,6 @@ clean:
 	rm -f fortran/libsoc.mod
 	rm -f fortran/libsoc.f03
 	rm -f fortran/test
-	rm -f utils/sotool
 
 .PHONY: R
 R:
