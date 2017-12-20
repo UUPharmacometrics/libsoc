@@ -112,3 +112,13 @@ void pharmml_free_string_array(char **array, int length)
     }
     free(array);
 }
+
+int so_string_path_length(char *path)
+{
+    for (int i = strlen(path) - 1; i != 0; i--) {
+        if (path[i] == '/' || path[i] == '\\') {
+            return i + 1;
+        }
+    }
+    return 0;
+}

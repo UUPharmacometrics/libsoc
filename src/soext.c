@@ -108,6 +108,13 @@ so_SO *so_SO_read(char *filename)
         return NULL;
     }
 
+    int path_length = so_string_path_length(filename);
+    char *path = NULL;
+    if (path_length) {
+        path = pharmml_strndup(filename, path_length);
+    }
+    so->path = path;
+
     return so;
 }
 
@@ -145,6 +152,13 @@ int so_SO_write(so_SO *self, char *filename, int pretty)
     if (rc < 0) return 1;
 
     xmlFreeTextWriter(writer);
+
+    int path_length = so_string_path_length(filename);
+    char *path = NULL;
+    if (path_length) {
+        path = pharmml_strndup(filename, path_length);
+    }
+    self->path = path;
 
     return 0;
 }
@@ -342,9 +356,20 @@ xmlDoc *so_SO_pharmml_dom(so_SO *self)
     if (!ref)
         return NULL;
 
+    xmlDoc *doc;
     char *pharmml_name = so_PharmMLRef_get_name(ref);
-
-    xmlDoc *doc = xmlParseFile(pharmml_name);   // Every call will parse the PharmML. This could be cached.
+    if (so_string_path_length(pharmml_name) == 0 && self->path) {     // PharmMLRef does not contain path and we have path to SO
+        int size = strlen(pharmml_name) + strlen(self->path) + 1;
+        char *path = malloc(size);
+        if (!path)
+            return NULL;
+        sprintf(path, "%s%s", self->path, pharmml_name);
+printf("QQ: %s\n", path);
+        doc = xmlParseFile(path);
+        free(path);
+    } else {
+        doc = xmlParseFile(pharmml_name);   // Every call will parse the PharmML. This could be cached.
+    }
 
     return doc;
 }

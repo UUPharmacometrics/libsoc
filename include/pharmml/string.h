@@ -26,5 +26,6 @@ char *pharmml_strdup(const char *str);
 char *pharmml_strndup(const char *str, size_t n);
 int pharmml_copy_string_array(char **source, char **dest, int length);
 void pharmml_free_string_array(char **array, int length);
+int so_string_path_length(char *path);
 
 #endif

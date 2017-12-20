@@ -52,7 +52,7 @@ structure = {
             { 'name' : "writtenVersion", 'value' : "0.3.1" },
         ],
         'xpath' : 'SO',
-        'fields' : [ 'int error;' ],
+        'fields' : [ 'int error;', 'char *path;' ],
         'namespace' : 'so'
     },
     'PharmMLRef' : {
