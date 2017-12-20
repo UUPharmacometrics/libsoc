@@ -1,0 +1,68 @@
+---
+title: "Working with SO files in R with libsoc"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Working with SO files in R with libsoc}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+## Reading an SO file
+It is easy to read a Standard Output file into R.
+
+```{r read_so}
+filename <- system.file("extdata", "pheno.SO.xml",  package="libsoc")
+so <- libsoc::so_SO_read(filename)
+```
+
+## Navigating the SO structure
+The SO R object closely follows the tree structure of the SO XML. We can extract the population parameter estimates like this:
+
+```{r estimates}
+param <- so$SOBlock[[1]]$Estimation$PopulationEstimates$MLE
+param
+```
+
+The result is a data.frame with the population estimates and the names of the parameters as column names. Note the way we go deeper in the SO tree with successive use of the $-opterator. As an SO can contain more than one SOBlock the SOBlock-structure is a list. In the example we simply select the first (and only) SOBlock.
+
+## Getting information on parameter type
+If the SO is linked to a PharmML (for example if it was generated with "nmoutput2so -generate_pharmml") parameter information can be retrieved from the ParameterModel.
+
+```{r parameter_types}
+cols <- colnames(param)
+so$variability_type(cols)
+```
+
+## Obtaining some parameter uncertainty measures
+
+The covariance matrix is of standard R matrix type:
+
+```{r covariance_matrix}
+so$SOBlock[[1]]$Estimation$PrecisionPopulationEstimates$MLE$CovarianceMatrix
+```
+
+```{r standard_error}
+so$SOBlock[[1]]$Estimation$PrecisionPopulationEstimates$MLE$StandardError
+```
+
+```{r relative_standard_error}
+so$SOBlock[[1]]$Estimation$PrecisionPopulationEstimates$MLE$RelativeStandardError
+```
+
+## Getting the OFV
+
+```{r OFV}
+so$SOBlock[[1]]$Estimation$OFMeasures$Deviance
+```
+
+## Getting the Predictions
+```{r predictions}
+pred <- so$SOBlock[[1]]$Estimation$Predictions
+head(pred, 20)
+```
+
+## Getting the Residuals
+```{r residuals}
+res <- so$SOBlock[[1]]$Estimation$Residuals$ResidualTable
+head(res, 20)
+```

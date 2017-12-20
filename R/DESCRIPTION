@@ -8,6 +8,8 @@ Depends:
     R (>= 2.14.1)
 Imports:
     methods
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
 SystemRequirements: libxml2: libxml2-dev (deb), libxml2-devel (rpm)
 NeedsCompilation: yes
 Description: Handle 'PharmML' (Pharmacometrics Markup Language) standard output (SO) XML files.
