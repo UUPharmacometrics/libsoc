@@ -364,7 +364,6 @@ xmlDoc *so_SO_pharmml_dom(so_SO *self)
         if (!path)
             return NULL;
         sprintf(path, "%s%s", self->path, pharmml_name);
-printf("QQ: %s\n", path);
         doc = xmlParseFile(path);
         free(path);
     } else {
