@@ -52,6 +52,7 @@ The names of the random variables corresponding to the variability parameters ca
 so$random_variable_from_variability_parameter(cols)
 ```
 
+
 ## Obtaining some parameter uncertainty measures
 
 The covariance matrix is of standard R matrix type:
@@ -85,6 +86,31 @@ so$SOBlock[[1]]$Estimation$OFMeasures$Deviance
 ```{r predictions}
 pred <- so$SOBlock[[1]]$Estimation$Predictions
 head(pred, 20)
+```
+
+## Getting information on table columns
+Each table in the SO structure has a columnType attribute that gives an array of columnTypes taken directly from the xml.
+
+```{r columnType}
+attributes(pred)$columnType
+```
+
+The portable way of finding the column name/number for id, idv and dv columns is to use the provided functions.
+
+```{r id_column}
+libsoc::id_column(pred)
+```
+
+```{r id_column_name}
+libsoc::id_column_name(pred)
+```
+
+```{r idv_column}
+libsoc::idv_column(pred)
+```
+
+```{r idv_column_name}
+libsoc::idv_column_name(pred)
 ```
 
 ## Getting the Residuals
