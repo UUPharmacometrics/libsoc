@@ -25,12 +25,31 @@ param
 
 The result is a data.frame with the population estimates and the names of the parameters as column names. Note the way we go deeper in the SO tree with successive use of the $-opterator. As an SO can contain more than one SOBlock the SOBlock-structure is a list. In the example we simply select the first (and only) SOBlock.
 
-## Getting information on parameter type
+libsoc also has a special function for extracting the parameter estimates across all SOBlocks
+
+```{r parameter_estimates}
+so$all_population_estimates()
+```
+
+## Getting information on parameters
 If the SO is linked to a PharmML (for example if it was generated with "nmoutput2so -generate_pharmml") parameter information can be retrieved from the ParameterModel.
 
 ```{r parameter_types}
 cols <- colnames(param)
 so$variability_type(cols)
+```
+
+It is also possible to get information on which parameters represent correlations.
+```{r correlations}
+so$correlation_parameters(cols)
+```
+
+This example has no correlation parameters.
+
+
+The names of the random variables corresponding to the variability parameters can be retrieved:
+```{r random_variables}
+so$random_variable_from_variability_parameter(cols)
 ```
 
 ## Obtaining some parameter uncertainty measures
@@ -41,10 +60,17 @@ The covariance matrix is of standard R matrix type:
 so$SOBlock[[1]]$Estimation$PrecisionPopulationEstimates$MLE$CovarianceMatrix
 ```
 
+The standard error for the parameters can be extracted for each SOBlock separately:
 ```{r standard_error}
 so$SOBlock[[1]]$Estimation$PrecisionPopulationEstimates$MLE$StandardError
 ```
 
+Or more conveniently for all SOBlocks together:
+```{r standard_error2}
+so$all_standard_errors()
+```
+
+Relative standard errors can currently only be retrieved for each SOBlock separately:
 ```{r relative_standard_error}
 so$SOBlock[[1]]$Estimation$PrecisionPopulationEstimates$MLE$RelativeStandardError
 ```
