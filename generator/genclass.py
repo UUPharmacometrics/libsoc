@@ -168,6 +168,15 @@ class genclass:
                     print("\t\t\t\treturn NULL;", file=f)
                     print("\t\t\t}", file=f)
                     print("\t\t}", file=f)
+        if self.class_name == "so_SO":  # Special case for SO path
+            print(file=f)
+            print("\t\tif (self->path) {", file=f)
+            print("\t\t\tdest->path = pharmml_strdup(self->path);", file=f)
+            print("\t\t\tif (!dest->path) {", file=f)
+            print("\t\t\t\tso_SO_free(dest);", file=f)
+            print("\t\t\t\treturn NULL;", file=f)
+            print("\t\t\t}", file=f)
+            print("\t\t}", file=f)
         print("\t}", file=f)
         print(file=f)
         print("\treturn dest;", file=f)
@@ -201,6 +210,8 @@ class genclass:
                     print("\t\tif (self->", a['name'], ") free(self->", a['name'], ");", sep='', file=f)
         if self.extends:
             print("\t\tfree(self->base);", file=f)
+        if self.class_name == "so_SO":      # Special case for SO path
+            print("\t\tfree(self->path);", file=f)
         print("\t\tfree(self);", file=f)
         print("\t}", file=f)
         print("}", file=f)
