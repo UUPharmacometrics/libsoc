@@ -594,6 +594,7 @@ for name in structure:
 os.chdir("../man")
 for name in structure:
     if structure[name]['namespace'] == 'so':
-        with open(name + ".Rd", "w") as f:
-            sys.stdout = f
-            print_documentation(name, structure[name])
+        if name != "SO":        # Fixed documentation for SO
+            with open(name + ".Rd", "w") as f:
+                sys.stdout = f
+                print_documentation(name, structure[name])

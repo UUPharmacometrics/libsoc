@@ -27,6 +27,8 @@ R/src/include/*
 R/NAMESPACE
 R/man/*
 !R/man/libsoc.Rd
+!R/man/so_SO_read.Rd
+!R/man/SO.Rd
 
 windep/
 
