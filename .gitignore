@@ -24,6 +24,7 @@ R/R/gen-*
 R/src/gen-*
 R/src/static-*
 R/src/include/*
+R/src/libsoc_init.c
 R/NAMESPACE
 R/man/*
 !R/man/libsoc.Rd

@@ -22,6 +22,8 @@ import sys
 import common
 from structure import structure
 
+functions = []
+
 def get_R_type(so_type):
     if so_type == 'Table':
         is_type = 'data.frame'
@@ -38,7 +40,9 @@ def get_R_type(so_type):
     return is_type
 
 def print_new(name):
-    print("SEXP r_so_", name, "_new()", sep='')
+    func_name = "r_so_" + name + "_new"
+    functions.append({'name' : func_name, 'numargs' : 0})
+    print("SEXP ", func_name, "()", sep='')
     print("{")
     print("\tso_", name, " *obj = so_", name, "_new();", sep='')
     print("\tif (!obj) {")
@@ -48,7 +52,9 @@ def print_new(name):
     print("}")
 
 def print_copy(name):
-    print("SEXP r_so_", name, "_copy(SEXP self)", sep='')
+    func_name = "r_so_" + name + "_copy"
+    functions.append({'name' : func_name, 'numargs' : 1})
+    print("SEXP ", func_name, "(SEXP self)", sep='')
     print("{")
     print("\tso_", name, " *obj = so_", name, "_copy(R_ExternalPtrAddr(self));", sep='')
     print("\tif (!obj) {")
@@ -58,27 +64,35 @@ def print_copy(name):
     print("}")
 
 def print_free(name):
-    print("SEXP r_so_", name, "_free(SEXP self)", sep='')
+    func_name = "r_so_" + name + "_free"
+    functions.append({'name' : func_name, 'numargs' : 1})
+    print("SEXP ", func_name, "(SEXP self)", sep='')
     print("{")
     print("\tso_", name, "_free(R_ExternalPtrAddr(self));", sep='')
     print("\treturn R_NilValue;")
     print("}")
 
 def print_ref_unref(name):
-    print("SEXP r_so_", name, "_ref(SEXP self)", sep='')
+    func_name = "r_so_" + name + "_ref"
+    functions.append({'name' : func_name, 'numargs' : 1})
+    print("SEXP ", func_name, "(SEXP self)", sep='')
     print("{")
     print("\tso_", name, "_ref(R_ExternalPtrAddr(self));", sep='')
     print("\treturn R_NilValue;")
     print("}")
     print()
-    print("SEXP r_so_", name, "_unref(SEXP self)", sep='')
+    func_name = "r_so_" + name + "_unref"
+    functions.append({'name' : func_name, 'numargs' : 1})
+    print("SEXP ", func_name, "(SEXP self)", sep='')
     print("{")
     print("\tso_", name, "_unref(R_ExternalPtrAddr(self));", sep='')
     print("\treturn R_NilValue;")
     print("}")
 
 def print_attribute_getter(name, attr):
-    print("SEXP ", common.create_get_name(name, attr['name'], prefix="r_so"), "(SEXP self)", sep='')
+    func_name = common.create_get_name(name, attr['name'], prefix="r_so")
+    functions.append({'name' : func_name, 'numargs' : 1})
+    print("SEXP ", func_name, "(SEXP self)", sep='')
     print("{")
     if attr['type'] == 'type_string': 
         print("\tchar *value = ", common.create_get_name(name, attr['name'], prefix="so"), "(R_ExternalPtrAddr(self));", sep='')
@@ -103,7 +117,9 @@ def print_attribute_getter(name, attr):
     print("}")
 
 def print_attribute_setter(name, attr):
-    print("SEXP " + common.create_set_name(name, attr['name'], prefix="r_so") + "(SEXP self, SEXP string)", sep='')
+    func_name = common.create_set_name(name, attr['name'], prefix="r_so")
+    functions.append({'name' : func_name, 'numargs' : 2})
+    print("SEXP " + func_name + "(SEXP self, SEXP string)", sep='')
     print("{")
     if attr['type'] == 'type_string':
         print("\tchar *c_string = (char *) CHAR(STRING_ELT(string, 0));")
@@ -118,7 +134,9 @@ def print_attribute_setter(name, attr):
     print("}")
 
 def print_get_number_of(name, child, cls):
-    print("SEXP r_so_", name, "_get_number_of_", child, "(SEXP self)", sep='')
+    func_name = "r_so_" + name + "_get_number_of_" + child
+    functions.append({'name' : func_name, 'numargs' : 1})
+    print("SEXP ", func_name, "(SEXP self)", sep='')
     print("{")
     print("\tint number = so_", name, "_get_number_of_", child, "(R_ExternalPtrAddr(self));", sep='')
     print("\tSEXP r_int = PROTECT(NEW_INTEGER(1));")
@@ -128,7 +146,9 @@ def print_get_number_of(name, child, cls):
     print("}")
 
 def print_add_child(name, child):
-    print("SEXP r_so_", name, "_add_", child['name'], "(SEXP self, SEXP child)", sep='')
+    func_name = "r_so_" + name + "_add_" + child['name']
+    functions.append({'name' : func_name, 'numargs' : 2})
+    print("SEXP ", func_name, "(SEXP self, SEXP child)", sep='')
     print("{")
     if child['type'] == 'Table':
         print("\tint fail = so_", name, "_add_", child['name'], "(R_ExternalPtrAddr(self), df2table(child));", sep='')
@@ -141,7 +161,9 @@ def print_add_child(name, child):
     print("}")
 
 def print_remove_child(name, child, cls):
-    print("SEXP r_so_", name, "_remove_", child, "(SEXP self, SEXP index)", sep='')
+    func_name = "r_so_" + name + "_remove_" + child
+    functions.append({'name' : func_name, 'numargs' : 2})
+    print("SEXP ", func_name, "(SEXP self, SEXP index)", sep='')
     print("{")
     print("\tint fail = so_", name, "_remove_", child, "(R_ExternalPtrAddr(self), INTEGER(index)[0]);", sep='')
     print("\tif (fail) {")
@@ -151,10 +173,14 @@ def print_remove_child(name, child, cls):
     print("}")
 
 def print_get_child(name, child):
-    print("SEXP ", common.create_get_name(name, child['name'], prefix="r_so"), "(SEXP self", sep ='', end='')
+    func_name = common.create_get_name(name, child['name'], prefix="r_so")
+    numargs = 1
+    print("SEXP ", func_name, "(SEXP self", sep ='', end='')
     if child.get("array", False):
+        numargs += 1
         print(", SEXP index", end='')
     print(")")
+    functions.append({'name' : func_name, 'numargs' : numargs})
     print("{")
     if child['type'] == "type_string":
         this_type = "char"
@@ -202,7 +228,9 @@ def print_get_child(name, child):
     print("}")
 
 def print_set_child(name, child):
-    print("SEXP ", common.create_set_name(name, child['name'], prefix="r_so"), "(SEXP self, SEXP child)", sep='')
+    func_name = common.create_set_name(name, child['name'], prefix="r_so")
+    functions.append({'name' : func_name, 'numargs' : 2})
+    print("SEXP ", func_name, "(SEXP self, SEXP child)", sep='')
     print("{")
     if child['type'] == "Table":
         print("\tso_Table *table = df2table(child);", sep='')
@@ -226,7 +254,9 @@ def print_set_child(name, child):
 
 def print_create_child(name, child, cls):
     if cls != 'type_string' and cls != 'type_real' and cls != 'type_int':
-        print("SEXP r_so_", name, "_create_", child, "(SEXP self)", sep='')
+        func_name = "r_so_" + name + "_create_" + child
+        functions.append({'name' : func_name, 'numargs' : 1})
+        print("SEXP ", func_name, "(SEXP self)", sep='')
         print("{")
         print("\tso_", cls, " *child = so_", name, "_create_", child, "(R_ExternalPtrAddr(self));", sep='')
         print("\treturn R_MakeExternalPtr(child, R_NilValue, R_NilValue);")
@@ -568,7 +598,7 @@ for name in structure:
 os.chdir("../R")
 
 with open("../NAMESPACE", "w") as ns:
-    print("useDynLib(libsoc)", file=ns)
+    print("useDynLib(libsoc, .registration=TRUE)", file=ns)
     print("import(methods)", file=ns)
     print("export(so_SO_read)", file=ns)
     print("export(id_column)", file=ns)
@@ -577,6 +607,30 @@ with open("../NAMESPACE", "w") as ns:
     print("export(idv_column_name)", file=ns)
     print("export(dv_column)", file=ns)
     print("export(dv_column_name)", file=ns)
+
+with open("../src/libsoc_init.c", "w") as init:
+    print("#include <R.h>", file=init)
+    print("#include <Rinternals.h>", file=init)
+    print("#include <R_ext/Rdynload.h>", file=init)
+    print(file=init)
+    for f in functions:
+        print("SEXP ", f['name'], "(", file=init, sep='', end='')
+        arguments = []
+        for i in range(0, f['numargs']):
+            arguments.append("SEXP arg" + str(i))
+        print(",".join(arguments), ");", sep='', file=init)
+    print(file=init)
+    print("static const R_CallMethodDef c_symbols[] = {", file=init)
+    for f in functions:
+        print('\t{ "', f['name'], '", (DL_FUNC) &', f['name'], ', ', f['numargs'], ' },', file=init, sep='')
+    print("\t{ NULL, NULL, 0 }", file=init)
+    print("};", file=init)
+    print(file=init)
+    print("void R_init_libsoc(DllInfo *info)", file=init)
+    print("{", file=init)
+    print("\tR_registerRoutines(info, NULL, c_symbols, NULL, NULL);", file=init)
+    print("\tR_useDynamicSymbols(info, TRUE);", file=init)
+    print("}", file=init)
 
 for name in structure:
     if structure[name]['namespace'] == 'so':
