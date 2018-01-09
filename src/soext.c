@@ -648,7 +648,7 @@ int so_SO_is_ruv_parameter(so_SO *self, const char *name)
 
     // Find residualError VariabilityModel matching blkId
     const char *xpath_template_string = "/x:PharmML/mdef:ModelDefinition/mdef:VariabilityModel[@blkId='%s' and @type='residualError']";
-    int xpath_size = snprintf(NULL, 0, xpath_template_string, varref_blk);
+    int xpath_size = snprintf(NULL, 0, xpath_template_string, varref_blk) + 1;
     char *xpath_string = malloc(xpath_size);
     if (!xpath_string) {
         free(varref_blk);
