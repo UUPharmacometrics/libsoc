@@ -632,7 +632,7 @@ int so_Table_xml(so_Table *self, xmlTextWriterPtr writer, char *element_name)
         if (rc) return rc;
 
         if (self->write_external_file) {
-            char *delimiter_string;
+            char *delimiter_string = " ";
             if (strcmp(self->ExternalFile->delimiter, "COMMA") == 0) {
                 delimiter_string = ",";
             } else if (strcmp(self->ExternalFile->delimiter, "SPACE") == 0) {
@@ -646,7 +646,7 @@ int so_Table_xml(so_Table *self, xmlTextWriterPtr writer, char *element_name)
 
             for (int i = 0; i < self->numrows; i++) {
                 for (int j = 0; j < self->numcols; j++) {
-                    char *value_string;
+                    char *value_string = "";
                     if (self->columns[j]->valueType == PHARMML_VALUETYPE_REAL) {
                         double *ptr = (double *) self->columns[j]->column;
                         value_string = pharmml_double_to_string(ptr[i]);
