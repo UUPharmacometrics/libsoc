@@ -20,7 +20,7 @@ Maintainer: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
 Package: \tab libsoc\cr
 Type: \tab Package\cr
 Version: \tab 0.6.2\cr
-Date: \tab 2018-01-11\cr
+Date: \tab 2018-01-12\cr
 License: \tab LGPL-3\cr
 }
 Depends on libxml2, libiconv and zlib.
