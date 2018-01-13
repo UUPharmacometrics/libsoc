@@ -23,7 +23,7 @@ Version: \tab 0.6.2\cr
 Date: \tab 2018-01-12\cr
 License: \tab LGPL-3\cr
 }
-Depends on libxml2, libiconv and zlib.
+Depends on libxml2, libiconv and zlib. More information and source code for these libraries can be found on the sites linked below.
 \tabular{ll}{
 libxml2 \tab http://xmlsoft.org \cr
 libiconv \tab https://www.gnu.org/software/libiconv \cr
