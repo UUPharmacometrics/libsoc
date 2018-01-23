@@ -1,6 +1,6 @@
 Package: libsoc
-Version: 0.6.2
-Date: 2018-01-12
+Version: 0.6.3
+Date: 2018-01-23
 Title: Read, Create and Write 'PharmML' Standard Output (so) XML Files
 Author: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
 Maintainer: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>

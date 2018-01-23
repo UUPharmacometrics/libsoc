@@ -73,6 +73,8 @@ clean:
 R:
 	cd generator; python3 R.py
 	cp -r include R/src/
+	mkdir -p R/inst/source
+	cp windep/*.tar.xz R/inst/source
 	for FILE in $(addprefix gen/, $(SOC_GENSRCS)); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
 	for FILE in $(addprefix src/, $(SOC_SRCS)); do cp "$$FILE" R/src/static-$$(basename "$$FILE"); done
 	R CMD build R
