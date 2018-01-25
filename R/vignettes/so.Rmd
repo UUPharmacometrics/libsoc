@@ -118,3 +118,15 @@ libsoc::idv_column_name(pred)
 res <- so$SOBlock[[1]]$Estimation$Residuals$ResidualTable
 head(res, 20)
 ```
+
+## Reading messages
+
+Messages from a run is stored in the TaskInformation structure. Each message contains a Name a Severity from 1 to 10, the message content and the name of the tool that emitted the message.
+```{r messages}
+messages <- so$SOBlock[[1]]$TaskInformation$Message
+messages[[1]]$Name
+messages[[1]]$Content
+messages[[1]]$Severity
+messages[[1]]$Toolname
+messages[[13]]$Content
+```

@@ -1,0 +1,70 @@
+---
+title: "Creating a new Standard Output file from scratch"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Creating a new Standard Output file from scratch}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+## Creating a simple SO with PopulationEstimate
+This section will walk you through the creation of a simple SO file.
+
+First we create the data structure with the maximum likelihood parameter estimates.
+
+```{r create_mle}
+MLE <- data.frame(POP_CL=2.23, POP_V=40, IVCL=0.4, IVV=0.3)
+```
+
+Next we add the additional columnType attribute.
+
+```{r add_columntypes}
+attributes(MLE)$columnType <- list(c("structuralParameter"), c("structuralParameter"), c("varParameter", "variance"), c("varParameter", "variance"))
+```
+
+This sets POP_CL and POP_V to be structural parameters and IVCL and IVV to be variability parameters on the variance scale.
+
+The next step is to create the PopulationEstimates object.
+
+```{r create_popest_object}
+library(libsoc)
+popest <- so_PopulationEstimates$new()
+```
+
+The MLE data.frame can now be attached.
+
+```{r attach_MLE}
+popest$MLE <- MLE
+```
+
+Now we create the parent objects of the PopulationEstimates.
+
+```{r parent_objects}
+est <- so_Estimation$new()
+est$PopulationEstimates <- popest
+block <- so_SOBlock$new()
+block$blkId <- "myEstimationRun"
+block$Estimation <- est
+so <- so_SO$new()
+so$add_SOBlock(block)
+```
+
+It is possible to add messages using a convenient method
+
+```{r add_message}
+block$add_message("WARNING", "myTool", "name_of_warning", "This is the description", 2)
+```
+
+Another method adds a rawresults datafile from the tool.
+
+```{r add_rawres}
+block$add_rawresults_datafile("Description", "file", "id1")
+```
+
+The resulting structure can be inspected
+```{r result}
+so
+```
+
+
+And written using so$so_write("filename.SO.xml")
