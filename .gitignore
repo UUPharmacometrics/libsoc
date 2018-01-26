@@ -28,6 +28,7 @@ R/src/libsoc_init.c
 R/inst/source
 R/NAMESPACE
 R/man/*
+R/vignettes/*.html
 !R/man/libsoc.Rd
 !R/man/so_SO_read.Rd
 !R/man/SO.Rd
