@@ -1,6 +1,6 @@
 Package: libsoc
-Version: 0.6.3
-Date: 2018-01-23
+Version: 0.6.4
+Date: 2018-01-25
 Title: Read, Create and Write 'PharmML' Standard Output (so) XML Files
 Author: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
 Maintainer: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
@@ -8,7 +8,7 @@ Depends:
     R (>= 2.14.1)
 Imports:
     methods
-Suggests: knitr, rmarkdown
+Suggests: knitr, rmarkdown, testthat
 VignetteBuilder: knitr
 SystemRequirements: libxml2: libxml2-dev (deb), libxml2-devel (rpm)
 NeedsCompilation: yes
