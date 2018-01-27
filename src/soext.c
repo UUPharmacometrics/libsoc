@@ -304,7 +304,7 @@ so_Table *so_SO_all_standard_errors(so_SO *self)
         so_Estimation *est = so_SOBlock_get_Estimation(block);
         double *data = NULL;
         char **names;
-        int numrows;
+        int numrows = 0;
         if (est) {
             so_PrecisionPopulationEstimates *pe = so_Estimation_get_PrecisionPopulationEstimates(est);
             if (pe) {
