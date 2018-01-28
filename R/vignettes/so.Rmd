@@ -130,3 +130,10 @@ messages[[1]]$Severity
 messages[[1]]$Toolname
 messages[[13]]$Content
 ```
+## iOFV
+OFV values for each individual separately is in the OFMeasures section
+
+```{r iofv}
+iofv <- so$SOBlock[[1]]$Estimation$OFMeasures$IndividualContribToLL
+head(iofv)
+```
