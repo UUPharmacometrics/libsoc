@@ -1,3 +1,7 @@
+0.7
+
+* Let correlation_parameters return NA instead of FALSE for parameters that could not be found
+
 0.6
 
 * Add methods all_standard_errors and all_parameter_estimates on an SO to gather values across SOBlocks

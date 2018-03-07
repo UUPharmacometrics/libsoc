@@ -136,7 +136,14 @@ random_variable_func <- function(symbol, self) {
 }
 
 correlation_func <- function(symbol, self) {
-    so_SO_is_correlation_parameter(self, symbol) == 0
+    corr <- so_SO_is_correlation_parameter(self, symbol)
+    if (corr == 0) {
+        TRUE
+    } else if (corr == 1) {
+        FALSE
+    } else {
+        NA
+    }
 }
 
 so_SO$methods(list(
