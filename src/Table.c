@@ -544,7 +544,7 @@ int so_Table_xml(so_Table *self, xmlTextWriterPtr writer, char *element_name)
        if (rc != 0) return rc;
     }
 
-    char temp_colnum[10];
+    char temp_colnum[12];
 
     if (self->numcols > 0) {
         rc = xmlTextWriterStartElement(writer, BAD_CAST "ds:Definition");
@@ -561,7 +561,7 @@ int so_Table_xml(so_Table *self, xmlTextWriterPtr writer, char *element_name)
             rc = xmlTextWriterWriteAttribute(writer, BAD_CAST "valueType", BAD_CAST pharmml_valueType_to_string(self->columns[i]->valueType));
             if (rc < 0) return 1;
 
-            snprintf(temp_colnum, 10, "%d", i + 1);
+            snprintf(temp_colnum, 12, "%d", i + 1);
             rc = xmlTextWriterWriteAttribute(writer, BAD_CAST "columnNum", BAD_CAST temp_colnum);
             if (rc < 0) return 1;
             rc = xmlTextWriterEndElement(writer);

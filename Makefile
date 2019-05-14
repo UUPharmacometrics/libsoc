@@ -8,7 +8,7 @@ SOC_SRCS := soext.c SOBlock_ext.c Table.c column.c common_types.c Matrix.c strin
 SOC_OBJS := $(SOC_SRCS:.c=.o)
 
 CC := gcc
-CFLAGS := -std=c99 -Wall -pedantic -c -g -fpic -I. -Iinclude `xml2-config --cflags`
+CFLAGS := -std=c99 -Wall -pedantic -Wformat-truncation=2 -c -g -fpic -I. -Iinclude `xml2-config --cflags`
 #CFLAGS := -std=c99 -pedantic -c -g -fpic -I. -Iinclude
 #CC := x86_64-w64-mingw32-gcc
 LIBS := -lxml2 
