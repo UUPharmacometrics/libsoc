@@ -1,6 +1,6 @@
 Package: libsoc
 Version: 0.7
-Date: 2018-03-07
+Date: 2019-04-14
 Title: Read, Create and Write 'PharmML' Standard Output (so) XML Files
 Author: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
 Maintainer: Rikard Nordgren <rikard.nordgren@farmbio.uu.se>
@@ -18,4 +18,4 @@ Description: Handle 'PharmML' (Pharmacometrics Markup Language) standard output 
 URL: https://github.com/rikardn/libsoc
 BugReports: https://github.com/rikardn/libsoc/issues
 License: LGPL-3
-Copyright: 2015-2018 Rikard Nordgren
+Copyright: 2015-2019 Rikard Nordgren
