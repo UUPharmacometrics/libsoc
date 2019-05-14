@@ -32,6 +32,12 @@ R/vignettes/*.html
 !R/man/libsoc.Rd
 !R/man/so_SO_read.Rd
 !R/man/SO.Rd
+!R/man/dv_column.Rd
+!R/man/dv_column_name.Rd
+!R/man/id_column.Rd
+!R/man/id_column_name.Rd
+!R/man/idv_column.Rd
+!R/man/idv_column_name.Rd
 
 windep/
 
