@@ -4,7 +4,6 @@ LIBSOC_INC_PATH=${LIB_XML}/include/libxml2
 LIBSOC_LIB_PATH=${LIB_XML}/lib/${R_ARCH}
 
 PKG_CFLAGS=-Iinclude -I${LIBSOC_INC_PATH}
-PKG_CXXFLAGS=-DLIBXML_STATIC
 PKG_LIBS=-L${LIBSOC_LIB_PATH} -lxml2 -lz -liconv -llzma -lws2_32
 
 all: winlibs
