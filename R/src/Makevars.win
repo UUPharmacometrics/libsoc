@@ -1,7 +1,7 @@
-LIB_XML ?= ../windows/libxml2-2.9.4
+LIB_XML ?= ../windows/libxml2-2.9.10
 
 LIBSOC_INC_PATH=${LIB_XML}/include/libxml2
-LIBSOC_LIB_PATH=${LIB_XML}/lib/${R_ARCH}
+LIBSOC_LIB_PATH=${LIB_XML}/lib/${R_ARCH}${CRT}
 
 PKG_CFLAGS=-Iinclude -I${LIBSOC_INC_PATH}
 PKG_LIBS=-L${LIBSOC_LIB_PATH} -lxml2 -lz -liconv -llzma -lws2_32
