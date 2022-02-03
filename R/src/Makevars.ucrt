@@ -1,2 +1,9 @@
-CRT=-ucrt
-include Makevars.win
+PKG_CFLAGS=-Iinclude -I$(R_TOOLS_SOFT)/include/libxml2  -DLIBXML_STATIC
+PKG_LIBS=-lxml2 -lz -liconv -llzma -lws2_32
+
+all: 
+
+clean:
+	rm -f $(OBJECTS) xml2.dll
+
+.PHONY: all clean
