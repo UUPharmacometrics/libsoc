@@ -2,17 +2,17 @@
 
 # libsoc - Library to handle standardised output files
 # Copyright (C) 2015 Rikard Nordgren
-# 
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 3 of the License, or (at your option) any later version.
-# 
+#
 # his library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
@@ -94,7 +94,7 @@ def print_attribute_getter(name, attr):
     functions.append({'name' : func_name, 'numargs' : 1})
     print("SEXP ", func_name, "(SEXP self)", sep='')
     print("{")
-    if attr['type'] == 'type_string': 
+    if attr['type'] == 'type_string':
         print("\tchar *value = ", common.create_get_name(name, attr['name'], prefix="so"), "(R_ExternalPtrAddr(self));", sep='')
     elif attr['type'] == 'type_int':
         print("\tint *value = ", common.create_get_name(name, attr['name'], prefix="so"), "(R_ExternalPtrAddr(self));", sep='')
@@ -155,7 +155,7 @@ def print_add_child(name, child):
     else:
         print("\tint fail = so_", name, "_add_", child['name'], "(R_ExternalPtrAddr(self), R_ExternalPtrAddr(child));", sep='')
     print("\tif (fail) {")
-    print("\t\terror(\"Failed to add ", child['name'], " to ", name, "\");", sep='') 
+    print("\t\terror(\"Failed to add ", child['name'], " to ", name, "\");", sep='')
     print("\t}")
     print("\treturn(R_NilValue);")
     print("}")
@@ -167,7 +167,7 @@ def print_remove_child(name, child, cls):
     print("{")
     print("\tint fail = so_", name, "_remove_", child, "(R_ExternalPtrAddr(self), INTEGER(index)[0]);", sep='')
     print("\tif (fail) {")
-    print("\t\terror(\"Failed to remove ", child, " from ", name, "\");", sep='') 
+    print("\t\terror(\"Failed to remove ", child, " from ", name, "\");", sep='')
     print("\t}")
     print("\treturn(R_NilValue);")
     print("}")
@@ -489,7 +489,7 @@ def print_documentation(name, struct):
     print("\\alias{so_", name, "}", sep='')
     print("\\title{so_", name, " reference class}", sep='')     # Special for "abstract" class (extends)
     print("\\description{")
-    print("\tReference Class for the ", struct['xpath'], " element of a PharmML-SO data structure", sep='') 
+    print("\tReference Class for the ", struct['xpath'], " element of a PharmML-SO data structure", sep='')
     print("}")
     print("\\section{Methods}{")
     print("so_", name, "$new() - Create a new empty so_", name, " object\\cr", sep='')
@@ -618,6 +618,8 @@ with open("../src/libsoc_init.c", "w") as init:
         arguments = []
         for i in range(0, f['numargs']):
             arguments.append("SEXP arg" + str(i))
+        if not arguments:
+            arguments.append("void")
         print(",".join(arguments), ");", sep='', file=init)
     print(file=init)
     print("static const R_CallMethodDef c_symbols[] = {", file=init)

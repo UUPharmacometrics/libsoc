@@ -1,5 +1,5 @@
 Package: libsoc
-Version: 0.7.4
+Version: 0.7.5
 Date: 2022-10-19
 Title: Read, Create and Write 'PharmML' Standard Output (so) XML Files
 Author: Rikard Nordgren <rikard.nordgren@farmaci.uu.se>
