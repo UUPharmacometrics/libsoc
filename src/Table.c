@@ -39,7 +39,7 @@
  * \return A pointer to the newly created struct or NULL if memory allocation failed
  * \sa so_Table_copy, so_Table_free
  */
-so_Table *so_Table_new()
+so_Table *so_Table_new(void)
 {
     so_Table *table = calloc(sizeof(so_Table), 1);
     if (table) {

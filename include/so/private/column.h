@@ -34,7 +34,7 @@ typedef struct {
     void *column;
 } so_Column;
 
-so_Column *so_Column_new();
+so_Column *so_Column_new(void);
 void so_Column_free(so_Column *col);
 int so_Column_set_columnId(so_Column *col, char *columnId);
 void so_Column_set_valueType_from_string(so_Column *col, char *valueType);

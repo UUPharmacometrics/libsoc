@@ -30,7 +30,7 @@
 
 static char *last_error;
 
-char *so_get_last_error()
+char *so_get_last_error(void)
 {
     return last_error;
 }

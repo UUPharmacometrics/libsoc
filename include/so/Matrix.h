@@ -22,7 +22,7 @@
 
 typedef struct so_Matrix so_Matrix;
 
-so_Matrix *so_Matrix_new();
+so_Matrix *so_Matrix_new(void);
 so_Matrix *so_Matrix_copy(so_Matrix *source);
 void so_Matrix_free(so_Matrix *self);
 void so_Matrix_ref(so_Matrix *self);

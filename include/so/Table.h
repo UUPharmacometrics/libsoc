@@ -24,7 +24,7 @@
 
 typedef struct so_Table so_Table;
 
-so_Table *so_Table_new();
+so_Table *so_Table_new(void);
 so_Table *so_Table_copy(so_Table *source);
 void so_Table_free(so_Table *table);
 void so_Table_ref(so_Table *self);

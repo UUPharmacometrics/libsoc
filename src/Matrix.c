@@ -33,7 +33,7 @@
  * \return A pointer to the newly created struct or NULL if memory allocation failed
  * \sa so_Matrix_copy, so_Matrix_free
  */
-so_Matrix *so_Matrix_new()
+so_Matrix *so_Matrix_new(void)
 {
     so_Matrix *matrix = calloc(sizeof(so_Matrix), 1);
     if (matrix) {

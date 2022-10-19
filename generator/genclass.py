@@ -1,16 +1,16 @@
 # libsoc - Library to handle standardised output files
 # Copyright (C) 2015 Rikard Nordgren
-# 
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 3 of the License, or (at your option) any later version.
-# 
+#
 # his library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, see <http://www.gnu.org/licenses/>.
 
@@ -385,11 +385,11 @@ class genclass:
                     print(self.prefix_class(e['type']), " *", self.class_name, "_create_", e['name'], "(", self.class_name, " *self)", sep='', file=f)
                     print("{", file=f)
                     print("\t", self.prefix_class(e['type']), " *obj = ", self.prefix_class(e['type']), "_new(", sep='', end='', file=f)
-                    if e['type'] in need_name:
-                        print('"', end='', file=f)
-                        if 'prefix' in e:
-                            print(e['prefix'], ":", sep='', end='', file=f)
-                        print(e['name'], '"', sep='', end='', file=f)
+                    #if e['type'] in need_name:
+                    #    print('"', end='', file=f)
+                    #    if 'prefix' in e:
+                    #        print(e['prefix'], ":", sep='', end='', file=f)
+                    #    print(e['name'], '"', sep='', end='', file=f)
                     print(");", sep='', file=f)
                     print("\tif (obj) {", file=f)
                     if is_array:
@@ -467,7 +467,7 @@ class genclass:
         print("int ", self.class_name, "_set_base(", self.class_name, " *self, ", self.prefix_class(self.extends), " *value)", sep='', file=f)
         print("{", file=f)
         print("\t", self.prefix_class(self.extends), "_unref(value);", sep='', file=f)
-        print("\tself->base = value;", file=f) 
+        print("\tself->base = value;", file=f)
         print("\treturn 0;", file=f)
         print("}", file=f)
         print(file=f)
@@ -491,13 +491,13 @@ class genclass:
             if self.attributes:
                 items_to_test += self.attributes
             # Check if any sub-element is non-NULL
-            print("\tif (", end='', file=f) 
+            print("\tif (", end='', file=f)
             for e in items_to_test[:-1]:
                 print("self->", e['name'], ' || ', sep='', end='', file=f)
             print("self->", items_to_test[-1]['name'], ") {", sep='', file=f)
 
         if self.extends:
-            print("\t\trc = ", self.prefix_class(self.extends), "_xml(self->base, writer, element_name);", sep='', file=f) 
+            print("\t\trc = ", self.prefix_class(self.extends), "_xml(self->base, writer, element_name);", sep='', file=f)
             print("\t\tif (rc != 0) return rc;", file=f)
         else:
             if self.element_name:
@@ -613,11 +613,11 @@ class genclass:
                 if e['type'] != "type_string" and e['type'] != "type_real" and e['type'] != "type_int":
                     if e['type'] in self.structure and 'attributes' in self.structure[e['type']]:
                         print("\t\t", self.prefix_class(e['type']), " *", e['name'], " = ", self.prefix_class(e['type']), "_new(", end='', sep='', file=f)
-                        if e['type'] in need_name:  # FIXME this should be put into a function
-                            print('"', end='', file=f)
-                            if 'prefix' in e:
-                                print(e['prefix'], ":", sep='', end='', file=f)
-                            print(e['name'], '"', sep='', end='', file=f)
+                        #if e['type'] in need_name:  # FIXME this should be put into a function
+                        #    print('"', end='', file=f)
+                        #    if 'prefix' in e:
+                        #        print(e['prefix'], ":", sep='', end='', file=f)
+                        #    print(e['name'], '"', sep='', end='', file=f)
                         print(");", sep='', file=f)
                     else:
                         print("\t\t", self.prefix_class(e['type']), " *", e['name'], " = ", self.class_name, "_create_", e['name'], "(self);", sep='', file=f)
@@ -816,8 +816,8 @@ class genclass:
             print(" * \\return A pointer to the newly created struct or NULL if memory allocation failed", file=f)
             print(" * \\sa ", self.class_name, "_copy, ", self.class_name, "_free", sep='', file=f)
             print(" */", file=f)
-            
-            print(self.class_name, " *", self.class_name, "_new();", sep='', file=f)
+
+            print(self.class_name, " *", self.class_name, "_new(void);", sep='', file=f)
 
             print("/** \\memberof ", self.class_name, sep='', file=f)
             print(" * Create a copy of a ", self.class_name, " structure.", sep='', file=f)
@@ -983,7 +983,7 @@ class genclass:
             if self.attributes:
                 for a in self.attributes:
                     if a['type'] == 'type_string':
-                        print("\tchar *", a['name'], ";", sep='', file=f) 
+                        print("\tchar *", a['name'], ";", sep='', file=f)
                     elif a['type'] == 'type_int':
                         print("\tint *", a['name'], ";", sep='', file=f)
                         print("\tint ", a['name'], "_number;", sep='', file=f)
@@ -1001,7 +1001,7 @@ class genclass:
                     else:
                         print("\t", self.prefix_class(e['type']), " *", sep='', end='', file=f)
                         if e.get('array', False):
-                            print("*", end='', file=f)    
+                            print("*", end='', file=f)
                         print(e['name'], ";", sep='', file=f)
                 for e in self.children:
                     if e.get('array', False):
@@ -1014,7 +1014,7 @@ class genclass:
                 for e in self.fields:
                     print("\t", e, sep='', file=f)
             print("};", file=f)
-     
+
             print(file=f)
             print("int ", self.class_name, "_start_element(", self.class_name, " *self, const char *localname, int nb_attributes, const char **attributes);", sep='', file=f)
             print("void ", self.class_name, "_end_element(", self.class_name, " *self, const char *localname);", sep='', file=f)
