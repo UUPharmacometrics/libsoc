@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/bin/sh
 
 # Configuration script to find cflags and libs paths for libxml2
 # But more importantly to give a proper error message if unavailable
 
-if type xml2-config >/dev/null 2>&1; then
+if command -v xml2-config >/dev/null 2>&1; then
     CFLAGS=$(xml2-config --cflags)
     LIBS=$(xml2-config --libs)
 else
