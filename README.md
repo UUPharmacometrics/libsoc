@@ -1,5 +1,4 @@
-[![CRAN_Release_Badge](http://www.r-pkg.org/badges/version/libsoc)](https://CRAN.R-project.org/package=libsoc)
-[![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/libsoc)](https://CRAN.R-project.org/package=libsoc)
+***NOTE: This package is no longer maintained. It will no longer be available on CRAN. Please open an issue if you are interested in taking on the maintenance***
 
 The standard output c library (libsoc) is a portable c library to create, write, read and manipulate PharmML-SO files from C. 
 
